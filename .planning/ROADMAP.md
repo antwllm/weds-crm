@@ -29,7 +29,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. When a new lead is created, William receives an SMS on his phone via Free Mobile containing a vCard download link (hosted on GCP bucket), the prospect receives an SMS via Twilio, and contact@weds.fr receives an email recap with the vCard attached
   4. Submitting a second Mariages.net email with the same email or phone number as an existing lead triggers a duplicate warning rather than creating a second lead record
   5. The application deploys and restarts cleanly on GCP Cloud Run with all secrets sourced from Secret Manager
-**Plans**: TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Project scaffolding, database schema, config, test infrastructure
+- [ ] 01-02-PLAN.md — Google OAuth authentication, Express app, Sentry entry point
+- [ ] 01-03-PLAN.md — Email parser (TDD), Gmail service, vCard generation, Cloud Storage
+- [ ] 01-04-PLAN.md — SMS services (TDD) and notification orchestrator
+- [ ] 01-05-PLAN.md — Pipeline orchestrator, Pub/Sub webhook, cron scheduler, end-to-end wiring
 
 ### Phase 2: Lead Management UI
 **Goal**: William can manage his entire pipeline from one screen — viewing all leads, dragging them between stages, editing their details, adding notes, and reading the full interaction history — entirely in French
@@ -73,7 +80,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and Automation Core | 0/TBD | Not started | - |
+| 1. Foundation and Automation Core | 0/5 | Not started | - |
 | 2. Lead Management UI | 0/TBD | Not started | - |
 | 3. Pipedrive Sync | 0/TBD | Not started | - |
 | 4. Gmail Inbox, AI Drafting, and WhatsApp | 0/TBD | Not started | - |
