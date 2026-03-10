@@ -1,30 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { AppLayout } from '@/components/layout/AppLayout'
-
-function PipelinePage() {
-  return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold">Pipeline</h2>
-      <p className="text-muted-foreground mt-2">Vue Kanban des leads</p>
-    </div>
-  );
-}
-
-function LeadDetailPage() {
-  return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold">Detail du lead</h2>
-    </div>
-  );
-}
-
-function LeadFormPage() {
-  return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold">Nouveau Lead</h2>
-    </div>
-  );
-}
+import { PipelinePage } from '@/pages/PipelinePage'
+import { LeadDetailPage } from '@/pages/LeadDetailPage'
+import { LeadFormPage } from '@/pages/LeadFormPage'
 
 function App() {
   return (
