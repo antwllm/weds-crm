@@ -45,7 +45,7 @@ Plans:
 **Requirements**: LEAD-01, LEAD-02, LEAD-03, LEAD-04, LEAD-05, LEAD-06, LEAD-07, LEAD-08, LEAD-10, INFR-03
 **Success Criteria** (what must be TRUE):
   1. William can create a lead manually from a form and it appears immediately in the pipeline with the correct source badge
-  2. William can drag a lead card between Kanban columns (Nouveau, Contacté, RDV, Devis envoyé, Signé, Perdu) and the status change persists on refresh
+  2. William can drag a lead card between Kanban columns (Nouveau, Contacte, RDV, Devis envoye, Signe, Perdu) and the status change persists on refresh
   3. William can switch to list view, filter leads by status, date range, or source, and see matching leads with their source badges
   4. William can open a lead, edit any field, add a timestamped note, and see the full chronological activity history (emails, notes, status changes) on the same page
   5. All UI text, labels, status names, and notification copy render in French throughout
@@ -66,7 +66,13 @@ Plans:
   1. Creating or updating a lead in the CRM creates or updates the corresponding Person and Deal in Pipedrive with all custom fields populated (event date, message body, source, vCard URL)
   2. Changing a lead's status in Pipedrive triggers a webhook that updates the lead's status in the CRM, and the reverse also works — a status change in the CRM updates the Pipedrive deal stage
   3. Rapidly updating the same lead in both systems does not result in an infinite update loop — the second system's webhook is silently discarded within the suppression window
-**Plans**: TBD
+**Plans:** 4 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — Pipedrive API client, field config, retry utility, schema migration, test fixtures
+- [ ] 03-02-PLAN.md — CRM-to-Pipedrive push sync (create Person+Deal, update deal stage/fields)
+- [ ] 03-03-PLAN.md — Pipedrive webhook endpoint, sync-pull handlers, dual-layer loop prevention
+- [ ] 03-04-PLAN.md — One-time Pipedrive import with history, manual push button in UI
 
 ### Phase 4: Gmail Inbox, AI Drafting, and WhatsApp
 **Goal**: William never leaves the CRM to handle lead correspondence — he reads Gmail threads, composes replies using templates or AI-generated drafts, reviews every draft before sending, manages the AI prompt in the app, and sends or reads WhatsApp messages directly from the lead record
@@ -84,11 +90,11 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Automation Core | 0/5 | Not started | - |
 | 2. Lead Management UI | 5/5 | Complete   | 2026-03-10 |
-| 3. Pipedrive Sync | 0/TBD | Not started | - |
+| 3. Pipedrive Sync | 0/4 | Not started | - |
 | 4. Gmail Inbox, AI Drafting, and WhatsApp | 0/TBD | Not started | - |
