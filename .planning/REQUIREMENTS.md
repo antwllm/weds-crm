@@ -125,10 +125,10 @@
 | PARS-02 | Phase 1 | Complete |
 | PARS-03 | Phase 1 | Complete |
 | PARS-04 | Phase 1 | Complete |
-| SYNC-01 | Phase 3 | Pending |
+| SYNC-01 | Phase 3 | In Progress |
 | SYNC-02 | Phase 3 | Pending |
 | SYNC-03 | Phase 3 | Pending |
-| SYNC-04 | Phase 3 | Pending |
+| SYNC-04 | Phase 3 | In Progress |
 | INFR-01 | Phase 1 | Complete |
 | INFR-02 | Phase 1 | Complete |
 | INFR-03 | Phase 2 | Complete |

@@ -69,7 +69,7 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Pipedrive API client, field config, retry utility, schema migration, test fixtures
+- [x] 03-01-PLAN.md — Pipedrive API client, field config, retry utility, schema migration, test fixtures
 - [ ] 03-02-PLAN.md — CRM-to-Pipedrive push sync (create Person+Deal, update deal stage/fields)
 - [ ] 03-03-PLAN.md — Pipedrive webhook endpoint, sync-pull handlers, dual-layer loop prevention
 - [ ] 03-04-PLAN.md — One-time Pipedrive import with history, manual push button in UI
@@ -96,5 +96,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation and Automation Core | 0/5 | Not started | - |
 | 2. Lead Management UI | 5/5 | Complete   | 2026-03-10 |
-| 3. Pipedrive Sync | 0/4 | Not started | - |
+| 3. Pipedrive Sync | 1/4 | In progress | - |
 | 4. Gmail Inbox, AI Drafting, and WhatsApp | 0/TBD | Not started | - |

@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Phase 3 context gathered
-last_updated: "2026-03-10T18:58:58.839Z"
-last_activity: 2026-03-10 — Completed 02-05 SPA Production Build
+status: in-progress
+stopped_at: Completed 03-01 Pipedrive API Foundation
+last_updated: "2026-03-10T19:27:02.000Z"
+last_activity: 2026-03-10 — Completed 03-01 Pipedrive API Foundation
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 10
-  completed_plans: 10
-  percent: 100
+  total_plans: 14
+  completed_plans: 11
+  percent: 79
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Every Mariages.net lead is captured, organized, and actionable from a single interface — no switching between Gmail, Pipedrive, and phone
-**Current focus:** Phase 2 complete — ready for Phase 3 (Pipedrive Sync) or Phase 4 (Gmail AI + WhatsApp)
+**Current focus:** Phase 3 in progress — Pipedrive Sync (bidirectional sync with loop prevention)
 
 ## Current Position
 
-Phase: 2 of 4 (Lead Management UI) -- COMPLETE
-Plan: 5 of 5 in current phase (completed)
-Status: Phase 2 Complete
-Last activity: 2026-03-10 — Completed 02-05 SPA Production Build
+Phase: 3 of 4 (Pipedrive Sync)
+Plan: 1 of 4 in current phase (completed)
+Status: Phase 3 In Progress
+Last activity: 2026-03-10 — Completed 03-01 Pipedrive API Foundation
 
-Progress: [██████████] 100%
+Progress: [███████░░░] 79%
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Progress: [██████████] 100%
 | Phase 02 P04 | 3min | 2 tasks | 11 files |
 | Phase 02 P03 | 5min | 2 tasks | 9 files |
 | Phase 02 P05 | 5min | 2 tasks | 12 files |
+| Phase 03 P01 | 3min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,9 @@ Recent decisions affecting current work:
 - [Phase 02-04]: Lead detail fetches all leads via useLeads() and filters by id client-side
 - [Phase 02-05]: Split name into separate Prenom/Nom fields based on user feedback
 - [Phase 02-05]: Budget parsing uses parseInt to match backend z.number().int() validation
+- [Phase 03-01]: Default Pipedrive field hash keys embedded as fallbacks in field-config.ts
+- [Phase 03-01]: Module-level cached field config with _resetFieldConfig() for test isolation
+- [Phase 03-01]: withRetry uses alertNotificationFailure with failedChannel='pipedrive_sync' for SMS alerts
 
 ### Pending Todos
 
@@ -108,6 +112,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-10T18:58:58.830Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-pipedrive-sync/03-CONTEXT.md
+Last session: 2026-03-10T19:27:02.000Z
+Stopped at: Completed 03-01-PLAN.md
+Resume file: .planning/phases/03-pipedrive-sync/03-01-SUMMARY.md
