@@ -50,6 +50,14 @@ const envSchema = z.object({
   // Sentry (toujours optionnel)
   SENTRY_DSN: z.string().optional(),
 
+  // Pipedrive (requis en production, optionnel en dev/test)
+  PIPEDRIVE_API_TOKEN: isProduction
+    ? z.string().min(1, 'PIPEDRIVE_API_TOKEN est requis en production')
+    : z.string().optional(),
+  PIPEDRIVE_FIELD_CONFIG: z.string().optional(), // JSON blob of PipedriveFieldConfig
+  PIPEDRIVE_WEBHOOK_USER: z.string().optional(),
+  PIPEDRIVE_WEBHOOK_PASSWORD: z.string().optional(),
+
   // Gmail Pub/Sub
   GMAIL_PUBSUB_TOPIC: isProduction
     ? z.string().min(1, 'GMAIL_PUBSUB_TOPIC est requis en production')
