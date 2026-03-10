@@ -51,6 +51,7 @@ Progress: [████░░░░░░] 40%
 
 *Updated after each plan completion*
 | Phase 01 P02 | 5min | 2 tasks | 8 files |
+| Phase 01 P03 | 5min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,9 @@ Recent decisions affecting current work:
 - 01-01: Zod v4 for env validation with production/dev conditional requirements
 - 01-01: Lazy DB initialization (getDb()) to avoid connection at import time
 - 01-01: Structured JSON logging for Cloud Run log aggregation
+- 01-03: Phone normalization returns E.164 format in ParsedLead for downstream consistency
+- 01-03: Gmail service uses DI pattern (gmail client as first arg) for testability
+- 01-03: Module-scoped label cache with _resetLabelCache() for test isolation
 - 01-04: Free Mobile API uses GET with query params (matches their API design)
 - 01-04: Triple alerting is best-effort -- never throws even if alert channels fail
 - 01-04: Promise.allSettled for independent notification dispatch (not Promise.all)

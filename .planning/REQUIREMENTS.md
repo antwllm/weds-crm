@@ -17,7 +17,7 @@
 - [ ] **LEAD-08**: User can view a chronological activity history per lead (emails, notes, status changes)
 - [ ] **LEAD-09**: System detects duplicate leads by email and phone before creation and warns the user
 - [ ] **LEAD-10**: Each lead displays a source badge (e.g. "Mariages.net")
-- [ ] **LEAD-11**: System generates a vCard file for each lead and stores a download link
+- [x] **LEAD-11**: System generates a vCard file for each lead and stores a download link
 
 ### Email / Inbox
 
@@ -40,10 +40,10 @@
 
 ### Parsing & Automation
 
-- [ ] **PARS-01**: System polls Gmail for Mariages.net emails and extracts lead data (name, date, email, phone, message)
+- [x] **PARS-01**: System polls Gmail for Mariages.net emails and extracts lead data (name, date, email, phone, message)
 - [ ] **PARS-02**: System creates a new lead in the database from parsed email data
-- [ ] **PARS-03**: System archives processed emails and removes the trigger label
-- [ ] **PARS-04**: System skips already-processed emails (duplicate email detection)
+- [x] **PARS-03**: System archives processed emails and removes the trigger label
+- [x] **PARS-04**: System skips already-processed emails (duplicate email detection)
 
 ### Pipedrive Sync
 
@@ -107,7 +107,7 @@
 | LEAD-08 | Phase 2 | Pending |
 | LEAD-09 | Phase 1 | Pending |
 | LEAD-10 | Phase 2 | Pending |
-| LEAD-11 | Phase 1 | Pending |
+| LEAD-11 | Phase 1 | Complete |
 | MAIL-01 | Phase 4 | Pending |
 | MAIL-02 | Phase 4 | Pending |
 | MAIL-03 | Phase 4 | Pending |
@@ -121,10 +121,10 @@
 | NOTF-03 | Phase 1 | Complete |
 | NOTF-04 | Phase 4 | Pending |
 | NOTF-05 | Phase 4 | Pending |
-| PARS-01 | Phase 1 | Pending |
+| PARS-01 | Phase 1 | Complete |
 | PARS-02 | Phase 1 | Pending |
-| PARS-03 | Phase 1 | Pending |
-| PARS-04 | Phase 1 | Pending |
+| PARS-03 | Phase 1 | Complete |
+| PARS-04 | Phase 1 | Complete |
 | SYNC-01 | Phase 3 | Pending |
 | SYNC-02 | Phase 3 | Pending |
 | SYNC-03 | Phase 3 | Pending |
