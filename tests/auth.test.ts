@@ -11,18 +11,18 @@ vi.stubEnv('NODE_ENV', 'test');
 
 // Mock pg Pool so we don't need a real database
 vi.mock('pg', () => {
-  const mockPool = {
-    query: vi.fn().mockResolvedValue({ rows: [] }),
-    connect: vi.fn().mockResolvedValue({
+  class MockPool {
+    query = vi.fn().mockResolvedValue({ rows: [] });
+    connect = vi.fn().mockResolvedValue({
       query: vi.fn().mockResolvedValue({ rows: [] }),
       release: vi.fn(),
-    }),
-    end: vi.fn().mockResolvedValue(undefined),
-    on: vi.fn(),
-  };
+    });
+    end = vi.fn().mockResolvedValue(undefined);
+    on = vi.fn();
+  }
   return {
     default: {
-      Pool: vi.fn(() => mockPool),
+      Pool: MockPool,
     },
   };
 });
