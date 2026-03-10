@@ -54,3 +54,13 @@ export async function apiFetch<T>(
 
   return response.json() as Promise<T>;
 }
+
+/** Manually sync a CRM lead to Pipedrive (create or update) */
+export async function syncLeadToPipedrive(
+  leadId: number,
+): Promise<{ status: string; pipedriveDealId?: number }> {
+  return apiFetch<{ status: string; pipedriveDealId?: number }>(
+    `/leads/${leadId}/sync-pipedrive`,
+    { method: 'POST' },
+  );
+}

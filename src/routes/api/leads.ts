@@ -207,6 +207,48 @@ router.patch('/:id', async (req, res) => {
   }
 });
 
+// --- POST /api/leads/:id/sync-pipedrive ---
+router.post('/:id/sync-pipedrive', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      res.status(400).json({ error: 'ID invalide' });
+      return;
+    }
+
+    const db = getDb();
+
+    const [lead] = await db
+      .select()
+      .from(leads)
+      .where(eq(leads.id, id))
+      .limit(1);
+
+    if (!lead) {
+      res.status(404).json({ error: 'Lead non trouve' });
+      return;
+    }
+
+    const action = lead.pipedriveDealId ? 'update' : 'create';
+    await syncLeadToPipedrive(lead, action);
+
+    // Re-fetch lead to get updated pipedriveDealId
+    const [updated] = await db
+      .select()
+      .from(leads)
+      .where(eq(leads.id, id))
+      .limit(1);
+
+    res.json({ status: 'synced', pipedriveDealId: updated?.pipedriveDealId });
+  } catch (error) {
+    logger.error('Echec synchronisation manuelle Pipedrive', {
+      leadId: req.params.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    res.status(500).json({ error: 'Echec de synchronisation Pipedrive' });
+  }
+});
+
 // --- DELETE /api/leads/:id ---
 router.delete('/:id', async (req, res) => {
   try {

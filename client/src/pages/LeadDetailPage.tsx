@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Trash2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Trash2, Loader2, RefreshCw, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -14,6 +14,9 @@ import {
 } from '@/components/ui/alert-dialog';
 import { LeadDetail } from '@/components/leads/LeadDetail';
 import { useLeads, useDeleteLead } from '@/hooks/useLeads';
+import { syncLeadToPipedrive } from '@/lib/api';
+import { useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 export function LeadDetailPage() {
@@ -23,8 +26,23 @@ export function LeadDetailPage() {
 
   const { data: leads, isLoading } = useLeads();
   const deleteLead = useDeleteLead();
+  const queryClient = useQueryClient();
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const lead = leads?.find((l) => l.id === leadId);
+
+  async function handleSync() {
+    setIsSyncing(true);
+    try {
+      await syncLeadToPipedrive(leadId);
+      toast.success('Synchronisation Pipedrive reussie');
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+    } catch {
+      toast.error('Echec de la synchronisation Pipedrive');
+    } finally {
+      setIsSyncing(false);
+    }
+  }
 
   function handleDelete() {
     deleteLead.mutate(leadId, {
@@ -75,6 +93,27 @@ export function LeadDetailPage() {
           <h1 className="text-xl font-bold">{lead.name}</h1>
         </div>
 
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSync}
+            disabled={isSyncing}
+          >
+            {isSyncing ? (
+              <Loader2 className="h-4 w-4 animate-spin" data-icon="inline-start" />
+            ) : lead.pipedriveDealId ? (
+              <RefreshCw className="h-4 w-4" data-icon="inline-start" />
+            ) : (
+              <Upload className="h-4 w-4" data-icon="inline-start" />
+            )}
+            {isSyncing
+              ? 'Synchronisation...'
+              : lead.pipedriveDealId
+                ? 'Re-synchroniser Pipedrive'
+                : 'Envoyer vers Pipedrive'}
+          </Button>
+
         <AlertDialog>
           <AlertDialogTrigger
             render={
@@ -104,6 +143,7 @@ export function LeadDetailPage() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+        </div>
       </div>
 
       {/* Lead detail content */}
