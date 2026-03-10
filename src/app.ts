@@ -8,6 +8,7 @@ import { ensureAuthenticated } from './auth/middleware.js';
 import healthRouter from './routes/health.js';
 import authRouter from './routes/auth.js';
 import webhookRouter from './routes/webhook.js';
+import leadsRouter from './routes/api/leads.js';
 import { config } from './config.js';
 
 const app = express();
@@ -51,6 +52,9 @@ app.use('/webhook', webhookRouter);
 app.get('/', ensureAuthenticated, (_req, res) => {
   res.send('Weds CRM - Systeme actif');
 });
+
+// API routes (protected via middleware in each router)
+app.use('/api/leads', leadsRouter);
 
 // Sentry error handler (must be after all routes)
 Sentry.setupExpressErrorHandler(app);
