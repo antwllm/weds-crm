@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: weds
+      POSTGRES_PASSWORD: weds_dev
+      POSTGRES_DB: weds_crm
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U weds -d weds_crm"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      - "8082:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 8080
+      DATABASE_URL: postgresql://weds:weds_dev@db:5432/weds_crm
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-placeholder}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-placeholder}
+      GOOGLE_REDIRECT_URI: http://localhost:8082/auth/google/callback
+      SESSION_SECRET: ${SESSION_SECRET:-dev-session-secret-change-me}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER:-}
+      FREE_MOBILE_USER: ${FREE_MOBILE_USER:-}
+      FREE_MOBILE_PASS: ${FREE_MOBILE_PASS:-}
+      GCS_BUCKET_NAME: ${GCS_BUCKET_NAME:-}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      GMAIL_PUBSUB_TOPIC: ${GMAIL_PUBSUB_TOPIC:-}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-contact@weds.fr}
+      # ALLOWED_USER_EMAIL: set in .env if needed (must be a valid email)
+
+volumes:
+  pgdata:
