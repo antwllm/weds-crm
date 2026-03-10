@@ -35,6 +35,7 @@ export interface Lead {
   message: string | null;
   source: string | null;
   status: LeadStatus | null;
+  budget: number | null;
   vCardUrl: string | null;
   gmailMessageId: string | null;
   pipedrivePersonId: number | null;
