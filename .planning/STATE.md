@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-03-10T08:58:51.487Z"
+stopped_at: Completed 01-05-PLAN.md
+last_updated: "2026-03-10T09:11:35.274Z"
 last_activity: 2026-03-10 — Completed 01-04 SMS and notification orchestrator
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
+  completed_plans: 5
   percent: 40
 ---
 
@@ -52,6 +52,7 @@ Progress: [████░░░░░░] 40%
 *Updated after each plan completion*
 | Phase 01 P02 | 5min | 2 tasks | 8 files |
 | Phase 01 P03 | 5min | 2 tasks | 8 files |
+| Phase 01 P05 | 2min | 3 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,10 @@ Recent decisions affecting current work:
 - [Phase 01-02]: Serialize full user object (tokens) into session for downstream Gmail API access
 - [Phase 01-02]: connect-pg-simple with createTableIfMissing for auto session table creation
 - [Phase 01-02]: getPool() exported from db/index.ts to share pool between Drizzle and session store
+- [Phase 01]: Module-level concurrency guard for pipeline runs
+- [Phase 01]: Pub/Sub webhook triggers full sweep not historyId-based
+- [Phase 01]: oauthTokens table with upsert for token persistence
+- [Phase 01]: Docker Compose on port 8082 to avoid port conflicts
 
 ### Pending Todos
 
@@ -89,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-10T08:58:51.485Z
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-03-10T09:11:35.272Z
+Stopped at: Completed 01-05-PLAN.md
 Resume file: None
