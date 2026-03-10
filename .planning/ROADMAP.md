@@ -49,7 +49,14 @@ Plans:
   3. William can switch to list view, filter leads by status, date range, or source, and see matching leads with their source badges
   4. William can open a lead, edit any field, add a timestamped note, and see the full chronological activity history (emails, notes, status changes) on the same page
   5. All UI text, labels, status names, and notification copy render in French throughout
-**Plans**: TBD
+**Plans:** 5 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — React SPA scaffold with Vite, Tailwind v4, shadcn/ui, app layout, routing, API layer
+- [ ] 02-02-PLAN.md — Backend API routes for leads CRUD, activities, notes, and budget field migration
+- [ ] 02-03-PLAN.md — Kanban pipeline board with drag-and-drop, list view, filters, and source badges
+- [ ] 02-04-PLAN.md — Lead detail page with inline editing, activity timeline, notes, and lead creation form
+- [ ] 02-05-PLAN.md — Production build wiring (Express static serving, Dockerfile) and full UI verification
 
 ### Phase 3: Pipedrive Sync
 **Goal**: William can continue using Pipedrive during the migration — every CRM action propagates to Pipedrive and every Pipedrive change propagates back, with no infinite loops and no silent data loss
@@ -82,6 +89,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Automation Core | 0/5 | Not started | - |
-| 2. Lead Management UI | 0/TBD | Not started | - |
+| 2. Lead Management UI | 0/5 | Not started | - |
 | 3. Pipedrive Sync | 0/TBD | Not started | - |
 | 4. Gmail Inbox, AI Drafting, and WhatsApp | 0/TBD | Not started | - |
