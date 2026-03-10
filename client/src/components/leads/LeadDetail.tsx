@@ -45,17 +45,38 @@ export function LeadDetail({ lead }: LeadDetailProps) {
     );
   }
 
+  // Split stored "Prénom Nom" into two parts
+  const nameParts = (lead.name || '').split(' ');
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts.slice(1).join(' ') || '';
+
+  function handleNameSave(part: 'first' | 'last', value: string) {
+    const newFirst = part === 'first' ? value.trim() : firstName;
+    const newLast = part === 'last' ? value.trim() : lastName;
+    const fullName = `${newFirst} ${newLast}`.trim();
+    handleSave('name', fullName);
+  }
+
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       {/* Left column: Editable fields */}
       <div className="space-y-1">
-        <InlineField
-          label="Nom"
-          value={lead.name || ''}
-          onSave={(v) => handleSave('name', v)}
-          type="text"
-          placeholder="Nom du lead"
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <InlineField
+            label="Prenom"
+            value={firstName}
+            onSave={(v) => handleNameSave('first', v)}
+            type="text"
+            placeholder="Prenom"
+          />
+          <InlineField
+            label="Nom"
+            value={lastName}
+            onSave={(v) => handleNameSave('last', v)}
+            type="text"
+            placeholder="Nom"
+          />
+        </div>
         <InlineField
           label="Email"
           value={lead.email || ''}

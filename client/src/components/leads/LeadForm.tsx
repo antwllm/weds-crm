@@ -19,14 +19,16 @@ export function LeadForm() {
   const navigate = useNavigate();
   const createLead = useCreateLead();
 
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [source, setSource] = useState('manuel');
   const [budget, setBudget] = useState('');
   const [message, setMessage] = useState('');
-  const [nameError, setNameError] = useState('');
+  const [firstNameError, setFirstNameError] = useState('');
+  const [lastNameError, setLastNameError] = useState('');
 
   const sourceOptions = Object.entries(SOURCE_BADGES).map(([value, info]) => ({
     value,
@@ -35,22 +37,31 @@ export function LeadForm() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setNameError('');
+    setFirstNameError('');
+    setLastNameError('');
 
-    if (!name.trim()) {
-      setNameError('Le nom est requis');
-      return;
+    let hasError = false;
+    if (!firstName.trim()) {
+      setFirstNameError('Le prenom est requis');
+      hasError = true;
     }
+    if (!lastName.trim()) {
+      setLastNameError('Le nom est requis');
+      hasError = true;
+    }
+    if (hasError) return;
+
+    const fullName = `${firstName.trim()} ${lastName.trim()}`;
 
     const data: CreateLeadRequest = {
-      name: name.trim(),
+      name: fullName,
     };
     if (email.trim()) data.email = email.trim();
     if (phone.trim()) data.phone = phone.trim();
     if (eventDate.trim()) data.eventDate = eventDate.trim();
     if (source) data.source = source;
     if (budget.trim()) {
-      const num = parseFloat(budget.trim());
+      const num = parseInt(budget.trim(), 10);
       if (!isNaN(num)) data.budget = num;
     }
     if (message.trim()) data.message = message.trim();
@@ -68,21 +79,39 @@ export function LeadForm() {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-lg space-y-4">
-      <div className="space-y-1.5">
-        <label className="text-sm font-medium">
-          Nom <span className="text-destructive">*</span>
-        </label>
-        <Input
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-            if (nameError) setNameError('');
-          }}
-          placeholder="Prenom Nom"
-        />
-        {nameError && (
-          <p className="text-sm text-destructive">{nameError}</p>
-        )}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium">
+            Prenom <span className="text-destructive">*</span>
+          </label>
+          <Input
+            value={firstName}
+            onChange={(e) => {
+              setFirstName(e.target.value);
+              if (firstNameError) setFirstNameError('');
+            }}
+            placeholder="Marie"
+          />
+          {firstNameError && (
+            <p className="text-sm text-destructive">{firstNameError}</p>
+          )}
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-sm font-medium">
+            Nom <span className="text-destructive">*</span>
+          </label>
+          <Input
+            value={lastName}
+            onChange={(e) => {
+              setLastName(e.target.value);
+              if (lastNameError) setLastNameError('');
+            }}
+            placeholder="Dupont"
+          />
+          {lastNameError && (
+            <p className="text-sm text-destructive">{lastNameError}</p>
+          )}
+        </div>
       </div>
 
       <div className="space-y-1.5">
