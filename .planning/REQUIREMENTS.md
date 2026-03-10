@@ -47,8 +47,8 @@
 
 ### Pipedrive Sync
 
-- [ ] **SYNC-01**: System pushes new leads to Pipedrive as Person + Deal with all custom fields
-- [ ] **SYNC-02**: System syncs status changes from CRM to Pipedrive deal stage
+- [x] **SYNC-01**: System pushes new leads to Pipedrive as Person + Deal with all custom fields
+- [x] **SYNC-02**: System syncs status changes from CRM to Pipedrive deal stage
 - [ ] **SYNC-03**: System receives Pipedrive webhook events and updates local leads accordingly
 - [ ] **SYNC-04**: System prevents sync loops (local change → Pipedrive webhook → local change)
 
@@ -126,7 +126,7 @@
 | PARS-03 | Phase 1 | Complete |
 | PARS-04 | Phase 1 | Complete |
 | SYNC-01 | Phase 3 | In Progress |
-| SYNC-02 | Phase 3 | Pending |
+| SYNC-02 | Phase 3 | Complete |
 | SYNC-03 | Phase 3 | Pending |
 | SYNC-04 | Phase 3 | In Progress |
 | INFR-01 | Phase 1 | Complete |
