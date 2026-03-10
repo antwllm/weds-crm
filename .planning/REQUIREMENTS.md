@@ -33,8 +33,10 @@
 ### Notifications
 
 - [ ] **NOTF-01**: System sends SMS to prospect via Twilio when a new lead is captured
-- [ ] **NOTF-02**: System sends SMS notification to admin (William) via Free Mobile on new lead
+- [ ] **NOTF-02**: System sends SMS notification to admin (William) via Free Mobile on new lead, including a vCard download link (stored on Google Drive or GCP bucket)
 - [ ] **NOTF-03**: System sends email recap to contact@weds.fr with vCard attachment on new lead
+- [ ] **NOTF-04**: User can send WhatsApp messages to prospects via WhatsApp Business API
+- [ ] **NOTF-05**: User can view WhatsApp Business conversations linked to a lead within the CRM
 
 ### Parsing & Automation
 
@@ -61,8 +63,7 @@
 
 ### Extended Notifications
 
-- **NOTF-04**: User can send WhatsApp messages to prospects via WhatsApp Business API
-- **NOTF-05**: System sends follow-up reminders when a lead has not been replied to in 48h
+- **NOTF-06**: System sends follow-up reminders when a lead has not been replied to in 48h
 
 ### Email Enhancements
 
@@ -96,46 +97,48 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LEAD-01 | — | Pending |
-| LEAD-02 | — | Pending |
-| LEAD-03 | — | Pending |
-| LEAD-04 | — | Pending |
-| LEAD-05 | — | Pending |
-| LEAD-06 | — | Pending |
-| LEAD-07 | — | Pending |
-| LEAD-08 | — | Pending |
-| LEAD-09 | — | Pending |
-| LEAD-10 | — | Pending |
-| LEAD-11 | — | Pending |
-| MAIL-01 | — | Pending |
-| MAIL-02 | — | Pending |
-| MAIL-03 | — | Pending |
-| MAIL-04 | — | Pending |
-| MAIL-05 | — | Pending |
-| MAIL-06 | — | Pending |
-| MAIL-07 | — | Pending |
-| MAIL-08 | — | Pending |
-| NOTF-01 | — | Pending |
-| NOTF-02 | — | Pending |
-| NOTF-03 | — | Pending |
-| PARS-01 | — | Pending |
-| PARS-02 | — | Pending |
-| PARS-03 | — | Pending |
-| PARS-04 | — | Pending |
-| SYNC-01 | — | Pending |
-| SYNC-02 | — | Pending |
-| SYNC-03 | — | Pending |
-| SYNC-04 | — | Pending |
-| INFR-01 | — | Pending |
-| INFR-02 | — | Pending |
-| INFR-03 | — | Pending |
-| INFR-04 | — | Pending |
+| LEAD-01 | Phase 2 | Pending |
+| LEAD-02 | Phase 2 | Pending |
+| LEAD-03 | Phase 2 | Pending |
+| LEAD-04 | Phase 2 | Pending |
+| LEAD-05 | Phase 2 | Pending |
+| LEAD-06 | Phase 2 | Pending |
+| LEAD-07 | Phase 2 | Pending |
+| LEAD-08 | Phase 2 | Pending |
+| LEAD-09 | Phase 1 | Pending |
+| LEAD-10 | Phase 2 | Pending |
+| LEAD-11 | Phase 1 | Pending |
+| MAIL-01 | Phase 4 | Pending |
+| MAIL-02 | Phase 4 | Pending |
+| MAIL-03 | Phase 4 | Pending |
+| MAIL-04 | Phase 4 | Pending |
+| MAIL-05 | Phase 4 | Pending |
+| MAIL-06 | Phase 4 | Pending |
+| MAIL-07 | Phase 4 | Pending |
+| MAIL-08 | Phase 4 | Pending |
+| NOTF-01 | Phase 1 | Pending |
+| NOTF-02 | Phase 1 | Pending |
+| NOTF-03 | Phase 1 | Pending |
+| NOTF-04 | Phase 4 | Pending |
+| NOTF-05 | Phase 4 | Pending |
+| PARS-01 | Phase 1 | Pending |
+| PARS-02 | Phase 1 | Pending |
+| PARS-03 | Phase 1 | Pending |
+| PARS-04 | Phase 1 | Pending |
+| SYNC-01 | Phase 3 | Pending |
+| SYNC-02 | Phase 3 | Pending |
+| SYNC-03 | Phase 3 | Pending |
+| SYNC-04 | Phase 3 | Pending |
+| INFR-01 | Phase 1 | Pending |
+| INFR-02 | Phase 1 | Pending |
+| INFR-03 | Phase 1 | Pending |
+| INFR-04 | Phase 1 | Pending |
 
 **Coverage:**
-- v1 requirements: 34 total
-- Mapped to phases: 0
-- Unmapped: 34
+- v1 requirements: 36 total
+- Mapped to phases: 36
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-10*
-*Last updated: 2026-03-10 after initial definition*
+*Last updated: 2026-03-10 — NOTF-04 and NOTF-05 promoted to v1 (WhatsApp Business); NOTF-02 updated to include vCard download link in admin SMS; NOTF-06 renumbered from NOTF-04; coverage updated 34 → 36*
