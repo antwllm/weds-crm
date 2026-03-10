@@ -5,6 +5,7 @@ import { getDb } from '../../db/index.js';
 import { leads, activities } from '../../db/schema.js';
 import { ensureAuthenticated } from '../../auth/middleware.js';
 import { logger } from '../../logger.js';
+import { syncLeadToPipedrive } from '../../services/pipedrive/sync-push.js';
 
 const router = Router();
 
@@ -108,6 +109,19 @@ router.post('/', async (req, res) => {
     });
 
     logger.info('Lead cree manuellement', { leadId: newLead.id, name: data.name });
+
+    // Fire-and-forget sync to Pipedrive (don't block API response)
+    setImmediate(async () => {
+      try {
+        await syncLeadToPipedrive(newLead, 'create');
+      } catch (error) {
+        logger.error('Sync Pipedrive echoue apres creation', {
+          leadId: newLead.id,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    });
+
     res.status(201).json(newLead);
   } catch (error) {
     logger.error('Erreur lors de la creation du lead', { error });
@@ -173,6 +187,18 @@ router.patch('/:id', async (req, res) => {
         to: data.status,
       });
     }
+
+    // Fire-and-forget sync to Pipedrive (don't block API response)
+    setImmediate(async () => {
+      try {
+        await syncLeadToPipedrive(updated, 'update');
+      } catch (error) {
+        logger.error('Sync Pipedrive echoue apres mise a jour', {
+          leadId: id,
+          error: error instanceof Error ? error.message : String(error),
+        });
+      }
+    });
 
     res.json(updated);
   } catch (error) {
