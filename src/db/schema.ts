@@ -40,6 +40,7 @@ export const leads = pgTable('leads', {
   phone: varchar('phone', { length: 20 }), // E.164 normalized
   eventDate: varchar('event_date', { length: 50 }),
   message: text('message'),
+  budget: integer('budget'), // Nullable -- not all leads have a budget
   source: varchar('source', { length: 50 }).default('mariages.net'),
   status: leadStatusEnum('status').default('nouveau'),
   vCardUrl: text('vcard_url'),

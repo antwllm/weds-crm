@@ -27,6 +27,36 @@ export interface PipelineResult {
   notifications: NotificationResult[];
 }
 
+// --- API request/response types ---
+
+export interface LeadFilters {
+  status?: string;
+  source?: string;
+  dateFrom?: string;
+  dateTo?: string;
+}
+
+export interface CreateLeadRequest {
+  name: string;
+  email?: string;
+  phone?: string;
+  eventDate?: string;
+  message?: string;
+  budget?: number;
+  source?: string;
+}
+
+export interface UpdateLeadRequest {
+  name?: string;
+  email?: string;
+  phone?: string;
+  eventDate?: string;
+  message?: string;
+  budget?: number;
+  source?: string;
+  status?: string;
+}
+
 // --- Drizzle inferred types ---
 
 export type Lead = typeof leads.$inferSelect;
