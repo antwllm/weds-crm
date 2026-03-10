@@ -13,7 +13,7 @@ Four phases that build the system from the ground up: the backend automation cor
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Foundation and Automation Core** - Infrastructure, auth, Gmail parsing, lead creation, and all notifications running headlessly
-- [ ] **Phase 2: Lead Management UI** - Kanban pipeline board, lead list, detail view, status management, notes, and activity history
+- [x] **Phase 2: Lead Management UI** - Kanban pipeline board, lead list, detail view, status management, notes, and activity history (completed 2026-03-10)
 - [ ] **Phase 3: Pipedrive Sync** - Bidirectional sync with loop prevention and field key resolution — migration safety net
 - [ ] **Phase 4: Gmail Inbox, AI Drafting, and WhatsApp** - Embedded Gmail inbox, email-to-lead linking, templates, AI draft generation, review workflow, and WhatsApp Business messaging
 
@@ -49,7 +49,7 @@ Plans:
   3. William can switch to list view, filter leads by status, date range, or source, and see matching leads with their source badges
   4. William can open a lead, edit any field, add a timestamped note, and see the full chronological activity history (emails, notes, status changes) on the same page
   5. All UI text, labels, status names, and notification copy render in French throughout
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 - [ ] 02-01-PLAN.md — React SPA scaffold with Vite, Tailwind v4, shadcn/ui, app layout, routing, API layer
@@ -89,6 +89,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Automation Core | 0/5 | Not started | - |
-| 2. Lead Management UI | 4/5 | In Progress|  |
+| 2. Lead Management UI | 5/5 | Complete   | 2026-03-10 |
 | 3. Pipedrive Sync | 0/TBD | Not started | - |
 | 4. Gmail Inbox, AI Drafting, and WhatsApp | 0/TBD | Not started | - |

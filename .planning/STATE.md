@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-04-PLAN.md
-last_updated: "2026-03-10T16:22:58.170Z"
-last_activity: 2026-03-10 — Completed 02-03 Pipeline Board & List View
+stopped_at: Completed 02-05-PLAN.md
+last_updated: "2026-03-10T18:18:01.198Z"
+last_activity: 2026-03-10 — Completed 02-05 SPA Production Build
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 10
-  completed_plans: 9
-  percent: 80
+  completed_plans: 10
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Every Mariages.net lead is captured, organized, and actionable from a single interface — no switching between Gmail, Pipedrive, and phone
-**Current focus:** Phase 2 — Lead Management UI
+**Current focus:** Phase 2 complete — ready for Phase 3 (Pipedrive Sync) or Phase 4 (Gmail AI + WhatsApp)
 
 ## Current Position
 
-Phase: 2 of 4 (Lead Management UI)
-Plan: 4 of 5 in current phase (completed)
-Status: Executing
-Last activity: 2026-03-10 — Completed 02-03 Pipeline Board & List View
+Phase: 2 of 4 (Lead Management UI) -- COMPLETE
+Plan: 5 of 5 in current phase (completed)
+Status: Phase 2 Complete
+Last activity: 2026-03-10 — Completed 02-05 SPA Production Build
 
-Progress: [████████░░] 80%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ Progress: [████████░░] 80%
 | Phase 02 P02 | 4min | 2 tasks | 7 files |
 | Phase 02 P04 | 3min | 2 tasks | 11 files |
 | Phase 02 P03 | 5min | 2 tasks | 9 files |
+| Phase 02 P05 | 5min | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -90,6 +91,8 @@ Recent decisions affecting current work:
 - [Phase 02-04]: useLeads hook created in 02-04 as blocking dependency from unexecuted 02-03
 - [Phase 02-04]: InlineField saves immediately on blur/Enter with no debounce -- single-user CRM
 - [Phase 02-04]: Lead detail fetches all leads via useLeads() and filters by id client-side
+- [Phase 02-05]: Split name into separate Prenom/Nom fields based on user feedback
+- [Phase 02-05]: Budget parsing uses parseInt to match backend z.number().int() validation
 
 ### Pending Todos
 
@@ -105,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-10T16:20:58Z
-Stopped at: Completed 02-04-PLAN.md
-Resume file: .planning/phases/02-lead-management-ui/02-04-SUMMARY.md
+Last session: 2026-03-10T18:18:01.196Z
+Stopped at: Completed 02-05-PLAN.md
+Resume file: None
