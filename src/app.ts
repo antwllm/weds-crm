@@ -9,6 +9,7 @@ import healthRouter from './routes/health.js';
 import authRouter from './routes/auth.js';
 import webhookRouter from './routes/webhook.js';
 import leadsRouter from './routes/api/leads.js';
+import activitiesRouter from './routes/api/activities.js';
 import { config } from './config.js';
 
 const app = express();
@@ -55,6 +56,7 @@ app.get('/', ensureAuthenticated, (_req, res) => {
 
 // API routes (protected via middleware in each router)
 app.use('/api/leads', leadsRouter);
+app.use('/api', activitiesRouter);
 
 // Sentry error handler (must be after all routes)
 Sentry.setupExpressErrorHandler(app);
