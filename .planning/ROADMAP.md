@@ -22,7 +22,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 ### Phase 1: Foundation and Automation Core
 **Goal**: The system runs headlessly in production — new Mariages.net leads are captured automatically, stored in the database, deduplicated, vCards generated, and all notifications dispatched — without any manual intervention or UI interaction
 **Depends on**: Nothing (first phase)
-**Requirements**: INFR-01, INFR-02, INFR-03, INFR-04, PARS-01, PARS-02, PARS-03, PARS-04, LEAD-09, LEAD-11, NOTF-01, NOTF-02, NOTF-03
+**Requirements**: INFR-01, INFR-02, INFR-04, PARS-01, PARS-02, PARS-03, PARS-04, LEAD-09, LEAD-11, NOTF-01, NOTF-02, NOTF-03
+**Note**: INFR-03 (responsive UI) deferred to Phase 2 — Phase 1 is headless with no UI
 **Success Criteria** (what must be TRUE):
   1. William can log into the application with his Google account and the session persists across Cloud Run restarts
   2. When a Mariages.net inquiry email arrives, a lead record appears in the database within 2 minutes with all fields populated (name, email, phone, event date, message, source badge)
@@ -35,13 +36,13 @@ Plans:
 - [ ] 01-01-PLAN.md — Project scaffolding, database schema, config, test infrastructure
 - [ ] 01-02-PLAN.md — Google OAuth authentication, Express app, Sentry entry point
 - [ ] 01-03-PLAN.md — Email parser (TDD), Gmail service, vCard generation, Cloud Storage
-- [ ] 01-04-PLAN.md — SMS services (TDD) and notification orchestrator
-- [ ] 01-05-PLAN.md — Pipeline orchestrator, Pub/Sub webhook, cron scheduler, end-to-end wiring
+- [ ] 01-04-PLAN.md — SMS services (TDD) and notification orchestrator with triple alerting
+- [ ] 01-05-PLAN.md — Pipeline orchestrator, Pub/Sub webhook, cron scheduler, token persistence, end-to-end wiring
 
 ### Phase 2: Lead Management UI
 **Goal**: William can manage his entire pipeline from one screen — viewing all leads, dragging them between stages, editing their details, adding notes, and reading the full interaction history — entirely in French
 **Depends on**: Phase 1
-**Requirements**: LEAD-01, LEAD-02, LEAD-03, LEAD-04, LEAD-05, LEAD-06, LEAD-07, LEAD-08, LEAD-10
+**Requirements**: LEAD-01, LEAD-02, LEAD-03, LEAD-04, LEAD-05, LEAD-06, LEAD-07, LEAD-08, LEAD-10, INFR-03
 **Success Criteria** (what must be TRUE):
   1. William can create a lead manually from a form and it appears immediately in the pipeline with the correct source badge
   2. William can drag a lead card between Kanban columns (Nouveau, Contacté, RDV, Devis envoyé, Signé, Perdu) and the status change persists on refresh

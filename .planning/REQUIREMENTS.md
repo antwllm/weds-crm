@@ -131,7 +131,7 @@
 | SYNC-04 | Phase 3 | Pending |
 | INFR-01 | Phase 1 | Pending |
 | INFR-02 | Phase 1 | Pending |
-| INFR-03 | Phase 1 | Pending |
+| INFR-03 | Phase 2 | Pending |
 | INFR-04 | Phase 1 | Pending |
 
 **Coverage:**
@@ -141,4 +141,4 @@
 
 ---
 *Requirements defined: 2026-03-10*
-*Last updated: 2026-03-10 — NOTF-04 and NOTF-05 promoted to v1 (WhatsApp Business); NOTF-02 updated to include vCard download link in admin SMS; NOTF-06 renumbered from NOTF-04; coverage updated 34 → 36*
+*Last updated: 2026-03-10 — INFR-03 moved from Phase 1 to Phase 2 (no UI in Phase 1)*
