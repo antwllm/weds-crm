@@ -56,7 +56,7 @@
 
 - [x] **INFR-01**: User authenticates via Google OAuth 2.0
 - [x] **INFR-02**: All UI text and notifications are in French
-- [ ] **INFR-03**: UI is responsive and usable on mobile
+- [x] **INFR-03**: UI is responsive and usable on mobile
 - [x] **INFR-04**: Application deploys on GCP Cloud Run via Docker
 
 ## v2 Requirements
@@ -131,7 +131,7 @@
 | SYNC-04 | Phase 3 | Pending |
 | INFR-01 | Phase 1 | Complete |
 | INFR-02 | Phase 1 | Complete |
-| INFR-03 | Phase 2 | Pending |
+| INFR-03 | Phase 2 | Complete |
 | INFR-04 | Phase 1 | Complete |
 
 **Coverage:**
