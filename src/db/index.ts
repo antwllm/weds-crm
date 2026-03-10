@@ -36,5 +36,20 @@ export async function closeDb(): Promise<void> {
   }
 }
 
+/**
+ * Get the raw pg Pool instance (needed by connect-pg-simple session store).
+ * Creates the pool if it doesn't exist yet.
+ */
+export function getPool(): pg.Pool {
+  if (!_pool) {
+    const databaseUrl = process.env.DATABASE_URL;
+    if (!databaseUrl) {
+      throw new Error('DATABASE_URL environment variable is required');
+    }
+    _pool = new Pool({ connectionString: databaseUrl });
+  }
+  return _pool;
+}
+
 // Re-export schema for convenience
 export { schema };
