@@ -66,7 +66,7 @@ Plans:
   1. Creating or updating a lead in the CRM creates or updates the corresponding Person and Deal in Pipedrive with all custom fields populated (event date, message body, source, vCard URL)
   2. Changing a lead's status in Pipedrive triggers a webhook that updates the lead's status in the CRM, and the reverse also works — a status change in the CRM updates the Pipedrive deal stage
   3. Rapidly updating the same lead in both systems does not result in an infinite update loop — the second system's webhook is silently discarded within the suppression window
-**Plans:** 4 plans
+**Plans:** 3/4 plans executed
 
 Plans:
 - [x] 03-01-PLAN.md — Pipedrive API client, field config, retry utility, schema migration, test fixtures
@@ -96,5 +96,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation and Automation Core | 0/5 | Not started | - |
 | 2. Lead Management UI | 5/5 | Complete   | 2026-03-10 |
-| 3. Pipedrive Sync | 1/4 | In progress | - |
+| 3. Pipedrive Sync | 3/4 | In Progress|  |
 | 4. Gmail Inbox, AI Drafting, and WhatsApp | 0/TBD | Not started | - |

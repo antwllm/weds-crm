@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-03-10T19:34:11.884Z"
-last_activity: 2026-03-10 — Completed 03-01 Pipedrive API Foundation
+stopped_at: Completed 03-03-PLAN.md
+last_updated: "2026-03-10T19:34:39.322Z"
+last_activity: 2026-03-10 — Completed 03-03 Pipedrive Webhook Pull Sync
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 14
   completed_plans: 13
-  percent: 79
+  percent: 93
 ---
 
 # Project State
@@ -60,6 +60,7 @@ Progress: [█████████░] 93%
 | Phase 02 P05 | 5min | 2 tasks | 12 files |
 | Phase 03 P01 | 3min | 2 tasks | 7 files |
 | Phase 03 P02 | 3min | 2 tasks | 3 files |
+| Phase 03 P03 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -100,6 +101,10 @@ Recent decisions affecting current work:
 - [Phase 03-01]: withRetry uses alertNotificationFailure with failedChannel='pipedrive_sync' for SMS alerts
 - [Phase 03-02]: Fire-and-forget via setImmediate so API response is never delayed by Pipedrive calls
 - [Phase 03-02]: Person search by email before creating to avoid Pipedrive duplicates
+- [Phase 03]: Dual-layer loop prevention: Layer 1 discards API-origin events, Layer 2 uses 5s suppression window on CRM-originated syncs
+- [Phase 03-03]: Deal deleted only adds warning activity and clears pipedriveDealId -- no status change or lead deletion
+- [Phase 03-03]: Deal created performs duplicate detection by email/phone, links existing leads without overwriting CRM values
+- [Phase 03-03]: Basic auth with timingSafeEqual for webhook verification, skippable in dev mode
 
 ### Pending Todos
 
@@ -115,6 +120,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-10T19:34:11.882Z
-Stopped at: Completed 03-02-PLAN.md
+Last session: 2026-03-10T19:34:39.320Z
+Stopped at: Completed 03-03-PLAN.md
 Resume file: None
