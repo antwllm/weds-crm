@@ -49,7 +49,7 @@ Plans:
   3. William can switch to list view, filter leads by status, date range, or source, and see matching leads with their source badges
   4. William can open a lead, edit any field, add a timestamped note, and see the full chronological activity history (emails, notes, status changes) on the same page
   5. All UI text, labels, status names, and notification copy render in French throughout
-**Plans:** 5 plans
+**Plans:** 2/5 plans executed
 
 Plans:
 - [ ] 02-01-PLAN.md — React SPA scaffold with Vite, Tailwind v4, shadcn/ui, app layout, routing, API layer
@@ -89,6 +89,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Automation Core | 0/5 | Not started | - |
-| 2. Lead Management UI | 0/5 | Not started | - |
+| 2. Lead Management UI | 2/5 | In Progress|  |
 | 3. Pipedrive Sync | 0/TBD | Not started | - |
 | 4. Gmail Inbox, AI Drafting, and WhatsApp | 0/TBD | Not started | - |

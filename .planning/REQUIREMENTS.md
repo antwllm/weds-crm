@@ -7,16 +7,16 @@
 
 ### Lead Management
 
-- [ ] **LEAD-01**: User can create a lead manually with name, email, phone, event date, source, and notes
-- [ ] **LEAD-02**: User can view a list of all leads with filters by status, date range, and source
+- [x] **LEAD-01**: User can create a lead manually with name, email, phone, event date, source, and notes
+- [x] **LEAD-02**: User can view a list of all leads with filters by status, date range, and source
 - [ ] **LEAD-03**: User can view leads in a Kanban board with drag-and-drop between pipeline stages
-- [ ] **LEAD-04**: User can edit any lead's fields (name, email, phone, event date, notes)
-- [ ] **LEAD-05**: User can delete a lead
-- [ ] **LEAD-06**: User can assign a status to a lead (Nouveau, Contacté, RDV, Devis envoyé, Signé, Perdu)
-- [ ] **LEAD-07**: User can add timestamped notes to a lead
-- [ ] **LEAD-08**: User can view a chronological activity history per lead (emails, notes, status changes)
+- [x] **LEAD-04**: User can edit any lead's fields (name, email, phone, event date, notes)
+- [x] **LEAD-05**: User can delete a lead
+- [x] **LEAD-06**: User can assign a status to a lead (Nouveau, Contacté, RDV, Devis envoyé, Signé, Perdu)
+- [x] **LEAD-07**: User can add timestamped notes to a lead
+- [x] **LEAD-08**: User can view a chronological activity history per lead (emails, notes, status changes)
 - [x] **LEAD-09**: System detects duplicate leads by email and phone before creation and warns the user
-- [ ] **LEAD-10**: Each lead displays a source badge (e.g. "Mariages.net")
+- [x] **LEAD-10**: Each lead displays a source badge (e.g. "Mariages.net")
 - [x] **LEAD-11**: System generates a vCard file for each lead and stores a download link
 
 ### Email / Inbox
@@ -97,16 +97,16 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LEAD-01 | Phase 2 | Pending |
-| LEAD-02 | Phase 2 | Pending |
+| LEAD-01 | Phase 2 | Complete |
+| LEAD-02 | Phase 2 | Complete |
 | LEAD-03 | Phase 2 | Pending |
-| LEAD-04 | Phase 2 | Pending |
-| LEAD-05 | Phase 2 | Pending |
-| LEAD-06 | Phase 2 | Pending |
-| LEAD-07 | Phase 2 | Pending |
-| LEAD-08 | Phase 2 | Pending |
+| LEAD-04 | Phase 2 | Complete |
+| LEAD-05 | Phase 2 | Complete |
+| LEAD-06 | Phase 2 | Complete |
+| LEAD-07 | Phase 2 | Complete |
+| LEAD-08 | Phase 2 | Complete |
 | LEAD-09 | Phase 1 | Complete |
-| LEAD-10 | Phase 2 | Pending |
+| LEAD-10 | Phase 2 | Complete |
 | LEAD-11 | Phase 1 | Complete |
 | MAIL-01 | Phase 4 | Pending |
 | MAIL-02 | Phase 4 | Pending |
