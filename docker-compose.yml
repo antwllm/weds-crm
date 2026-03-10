@@ -19,10 +19,14 @@ services:
     build: .
     ports:
       - "8082:8080"
+    volumes:
+      - ./gcp-key.json:/app/gcp-key.json:ro
+      - ./client:/app/client:ro
     depends_on:
       db:
         condition: service_healthy
     environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /app/gcp-key.json
       NODE_ENV: development
       PORT: 8080
       DATABASE_URL: postgresql://weds:weds_dev@db:5432/weds_crm

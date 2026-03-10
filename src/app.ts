@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
 import * as Sentry from '@sentry/node';
@@ -49,14 +50,18 @@ app.use(healthRouter);
 app.use(authRouter);
 app.use('/webhook', webhookRouter);
 
-// Protected routes
-app.get('/', ensureAuthenticated, (_req, res) => {
-  res.send('Weds CRM - Systeme actif');
-});
-
 // API routes (protected via middleware in each router)
 app.use('/api/leads', leadsRouter);
 app.use('/api', activitiesRouter);
+
+// In production, serve the React SPA from client/dist
+if (process.env.NODE_ENV === 'production') {
+  const clientDist = path.join(__dirname, '..', 'client', 'dist');
+  app.use(express.static(clientDist));
+  app.get('*', ensureAuthenticated, (_req, res) => {
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
 
 // Sentry error handler (must be after all routes)
 Sentry.setupExpressErrorHandler(app);

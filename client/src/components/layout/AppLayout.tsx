@@ -20,11 +20,11 @@ export function AppLayout() {
         {/* Mobile top bar */}
         <header className="flex h-14 items-center border-b px-4 md:hidden">
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="mr-2">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Menu</span>
-              </Button>
+            <SheetTrigger
+              render={<Button variant="ghost" size="icon" className="mr-2" />}
+            >
+              <Menu className="h-5 w-5" />
+              <span className="sr-only">Menu</span>
             </SheetTrigger>
             <SheetContent side="left" className="w-60 p-0">
               <SheetTitle className="sr-only">Navigation</SheetTitle>

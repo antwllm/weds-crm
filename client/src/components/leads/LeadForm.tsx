@@ -116,7 +116,7 @@ export function LeadForm() {
 
       <div className="space-y-1.5">
         <label className="text-sm font-medium">Source</label>
-        <Select value={source} onValueChange={setSource}>
+        <Select value={source} onValueChange={(val: string | null) => { if (val != null) setSource(val); }}>
           <SelectTrigger className="w-full">
             <SelectValue />
           </SelectTrigger>

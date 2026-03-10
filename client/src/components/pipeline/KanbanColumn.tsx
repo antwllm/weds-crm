@@ -36,7 +36,7 @@ function SortableLeadCard({ lead }: { lead: Lead }) {
       isDragging={isDragging}
       style={style}
       dragRef={setNodeRef}
-      dragAttributes={attributes}
+      dragAttributes={attributes as unknown as Record<string, unknown>}
       dragListeners={listeners}
     />
   );

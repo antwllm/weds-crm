@@ -7,6 +7,7 @@ import {
   flexRender,
   type ColumnDef,
   type SortingState,
+  type VisibilityState,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import { format, parseISO, isValid } from 'date-fns';
@@ -150,7 +151,7 @@ export function ListView({ leads }: ListViewProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   // Hide email and phone columns on mobile
-  const columnVisibility = useMemo(() => {
+  const columnVisibility = useMemo((): VisibilityState => {
     if (typeof window === 'undefined') return {};
     const isMobile = window.innerWidth < 768;
     return isMobile

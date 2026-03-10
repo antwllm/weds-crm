@@ -76,9 +76,9 @@ export function InlineField({
         <span className="text-sm text-muted-foreground">{label}</span>
         <Select
           value={draft}
-          onValueChange={(val: string) => {
+          onValueChange={(val: string | null) => {
             setEditing(false);
-            if (val !== value) {
+            if (val != null && val !== value) {
               onSave(val);
             }
           }}

@@ -1,13 +1,18 @@
 const BASE_PATH = '/api';
 
 export class ApiError extends Error {
+  status: number;
+  body?: unknown;
+
   constructor(
     message: string,
-    public status: number,
-    public body?: unknown,
+    status: number,
+    body?: unknown,
   ) {
     super(message);
     this.name = 'ApiError';
+    this.status = status;
+    this.body = body;
   }
 }
 
