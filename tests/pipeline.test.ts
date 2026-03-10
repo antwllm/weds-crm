@@ -1,16 +1,35 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { ParsedLead } from '../src/types.js';
 
-// --- Hoisted mocks ---
-const mockInsert = vi.fn();
-const mockValues = vi.fn();
-const mockReturning = vi.fn();
-const mockSelect = vi.fn();
-const mockFrom = vi.fn();
-const mockWhere = vi.fn();
-const mockUpdate = vi.fn();
-const mockSet = vi.fn();
-const mockUpdateWhere = vi.fn();
+// --- Hoisted mocks (available inside vi.mock factories) ---
+const {
+  mockInsert, mockValues, mockReturning,
+  mockSelect, mockFrom, mockWhere,
+  mockUpdate, mockSet, mockUpdateWhere,
+  mockParseMarriagesNetEmail,
+  mockGetMessageContent, mockModifyLabels, mockSearchMessages, mockEnsureLabelsExist,
+  mockGenerateVCardContent,
+  mockUploadVCardAndGetSignedUrl,
+  mockDispatchNotifications,
+} = vi.hoisted(() => ({
+  mockInsert: vi.fn(),
+  mockValues: vi.fn(),
+  mockReturning: vi.fn(),
+  mockSelect: vi.fn(),
+  mockFrom: vi.fn(),
+  mockWhere: vi.fn(),
+  mockUpdate: vi.fn(),
+  mockSet: vi.fn(),
+  mockUpdateWhere: vi.fn(),
+  mockParseMarriagesNetEmail: vi.fn(),
+  mockGetMessageContent: vi.fn(),
+  mockModifyLabels: vi.fn(),
+  mockSearchMessages: vi.fn(),
+  mockEnsureLabelsExist: vi.fn(),
+  mockGenerateVCardContent: vi.fn(),
+  mockUploadVCardAndGetSignedUrl: vi.fn(),
+  mockDispatchNotifications: vi.fn(),
+}));
 
 // Mock db
 vi.mock('../src/db/index.js', () => ({
@@ -54,16 +73,11 @@ vi.mock('../src/logger.js', () => ({
 }));
 
 // Mock parser
-const mockParseMarriagesNetEmail = vi.fn();
 vi.mock('../src/services/parser.js', () => ({
   parseMarriagesNetEmail: mockParseMarriagesNetEmail,
 }));
 
 // Mock gmail service
-const mockGetMessageContent = vi.fn();
-const mockModifyLabels = vi.fn();
-const mockSearchMessages = vi.fn();
-const mockEnsureLabelsExist = vi.fn();
 vi.mock('../src/services/gmail.js', () => ({
   getMessageContent: mockGetMessageContent,
   modifyLabels: mockModifyLabels,
@@ -73,19 +87,16 @@ vi.mock('../src/services/gmail.js', () => ({
 }));
 
 // Mock vcard
-const mockGenerateVCardContent = vi.fn();
 vi.mock('../src/services/vcard.js', () => ({
   generateVCardContent: mockGenerateVCardContent,
 }));
 
 // Mock storage
-const mockUploadVCardAndGetSignedUrl = vi.fn();
 vi.mock('../src/services/storage.js', () => ({
   uploadVCardAndGetSignedUrl: mockUploadVCardAndGetSignedUrl,
 }));
 
 // Mock notifications
-const mockDispatchNotifications = vi.fn();
 vi.mock('../src/services/notifications.js', () => ({
   dispatchNotifications: mockDispatchNotifications,
 }));
@@ -219,7 +230,6 @@ describe('processPendingEmails', () => {
     mockParseMarriagesNetEmail.mockReturnValue(null);
     mockModifyLabels.mockResolvedValue(undefined);
 
-    // Simulate isProcessing = true manually
     // We call processPendingEmails, and while it's running, call it again
     const firstCall = processPendingEmails(mockGmail);
     const secondResult = processPendingEmails(mockGmail);
