@@ -32,9 +32,9 @@
 
 ### Notifications
 
-- [ ] **NOTF-01**: System sends SMS to prospect via Twilio when a new lead is captured
-- [ ] **NOTF-02**: System sends SMS notification to admin (William) via Free Mobile on new lead, including a vCard download link (stored on Google Drive or GCP bucket)
-- [ ] **NOTF-03**: System sends email recap to contact@weds.fr with vCard attachment on new lead
+- [x] **NOTF-01**: System sends SMS to prospect via Twilio when a new lead is captured
+- [x] **NOTF-02**: System sends SMS notification to admin (William) via Free Mobile on new lead, including a vCard download link (stored on Google Drive or GCP bucket)
+- [x] **NOTF-03**: System sends email recap to contact@weds.fr with vCard attachment on new lead
 - [ ] **NOTF-04**: User can send WhatsApp messages to prospects via WhatsApp Business API
 - [ ] **NOTF-05**: User can view WhatsApp Business conversations linked to a lead within the CRM
 
@@ -116,9 +116,9 @@
 | MAIL-06 | Phase 4 | Pending |
 | MAIL-07 | Phase 4 | Pending |
 | MAIL-08 | Phase 4 | Pending |
-| NOTF-01 | Phase 1 | Pending |
-| NOTF-02 | Phase 1 | Pending |
-| NOTF-03 | Phase 1 | Pending |
+| NOTF-01 | Phase 1 | Complete |
+| NOTF-02 | Phase 1 | Complete |
+| NOTF-03 | Phase 1 | Complete |
 | NOTF-04 | Phase 4 | Pending |
 | NOTF-05 | Phase 4 | Pending |
 | PARS-01 | Phase 1 | Pending |
