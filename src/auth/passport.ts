@@ -3,6 +3,10 @@ import { Strategy as GoogleStrategy, type Profile } from 'passport-google-oauth2
 import type { Express } from 'express';
 import { config } from '../config.js';
 import { logger } from '../logger.js';
+import { saveTokens } from '../services/token-store.js';
+import { getGmailClient } from '../services/gmail.js';
+import { setGmailClientInstance } from '../services/gmail-client-holder.js';
+import { startScheduler } from '../pipeline/scheduler.js';
 
 // User shape stored in session
 export interface SessionUser {
@@ -73,6 +77,25 @@ export function configurePassport(app: Express): void {
           accessToken,
           refreshToken,
         };
+
+        // Persist tokens in database for restart recovery
+        saveTokens(email, accessToken, refreshToken).catch((err) => {
+          logger.error('Echec sauvegarde tokens OAuth apres connexion', {
+            error: err instanceof Error ? err.message : String(err),
+          });
+        });
+
+        // Initialize Gmail client and start scheduler
+        try {
+          const gmailClient = getGmailClient(accessToken, refreshToken);
+          setGmailClientInstance(gmailClient);
+          startScheduler(gmailClient);
+          logger.info('Client Gmail initialise et scheduler demarre apres connexion');
+        } catch (err) {
+          logger.error('Echec initialisation Gmail client apres connexion', {
+            error: err instanceof Error ? (err as Error).message : String(err),
+          });
+        }
 
         logger.info('Connexion reussie', { email });
         return done(null, user);

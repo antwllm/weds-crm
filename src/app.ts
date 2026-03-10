@@ -7,12 +7,16 @@ import { configurePassport } from './auth/passport.js';
 import { ensureAuthenticated } from './auth/middleware.js';
 import healthRouter from './routes/health.js';
 import authRouter from './routes/auth.js';
+import webhookRouter from './routes/webhook.js';
 import { config } from './config.js';
 
 const app = express();
 
 // Trust proxy (Cloud Run sits behind a load balancer)
 app.set('trust proxy', 1);
+
+// JSON body parsing (needed for Pub/Sub webhook)
+app.use(express.json());
 
 // Session configuration with PostgreSQL store
 const PgSession = connectPgSimple(session);
@@ -41,6 +45,7 @@ configurePassport(app);
 // Public routes (no auth required)
 app.use(healthRouter);
 app.use(authRouter);
+app.use('/webhook', webhookRouter);
 
 // Protected routes
 app.get('/', ensureAuthenticated, (_req, res) => {

@@ -62,6 +62,17 @@ export const activities = pgTable('activities', {
   createdAt: timestamp('created_at').defaultNow(),
 });
 
+// --- OAuth token persistence (survives Cloud Run restarts) ---
+
+export const oauthTokens = pgTable('oauth_tokens', {
+  id: serial('id').primaryKey(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  accessToken: text('access_token').notNull(),
+  refreshToken: text('refresh_token').notNull(),
+  expiresAt: timestamp('expires_at'),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
 // --- Phase 3: Pipedrive sync tracking ---
 
 export const syncLog = pgTable('sync_log', {
