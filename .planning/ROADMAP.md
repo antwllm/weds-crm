@@ -86,7 +86,16 @@ Plans:
   4. William can select an email template with French variables ({{nom}}, {{date_evenement}}), preview the substituted output, and send it
   5. William can click "Generate draft" on a lead, see an AI-drafted reply pre-filled in the compose window, edit it, and send — and there is no path to send a draft without first reviewing it
   6. William can send a WhatsApp message to a prospect from the lead detail page via WhatsApp Business API, and incoming WhatsApp replies appear in the lead's activity history alongside emails and notes
-**Plans**: TBD
+**Plans:** 7 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Schema migration, env config, Gmail thread service, OpenRouter service, WhatsApp service
+- [ ] 04-02-PLAN.md — Gmail inbox API routes, email-to-lead linking, templates CRUD, AI draft endpoint
+- [ ] 04-03-PLAN.md — WhatsApp API routes (send, history, 24h window) and webhook
+- [ ] 04-04-PLAN.md — Inbox UI: split-pane page, thread list, thread detail, compose reply with templates and AI draft
+- [ ] 04-05-PLAN.md — Settings page: email template editor and AI prompt editor
+- [ ] 04-06-PLAN.md — WhatsApp chat UI, lead detail email/WhatsApp sections, activity timeline extension
+- [ ] 04-07-PLAN.md — Integration wiring, end-to-end verification, visual checkpoint
 
 ## Progress
 
@@ -98,4 +107,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 | 1. Foundation and Automation Core | 0/5 | Not started | - |
 | 2. Lead Management UI | 5/5 | Complete   | 2026-03-10 |
 | 3. Pipedrive Sync | 4/5 | In Progress|  |
-| 4. Gmail Inbox, AI Drafting, and WhatsApp | 0/TBD | Not started | - |
+| 4. Gmail Inbox, AI Drafting, and WhatsApp | 0/7 | Not started | - |
