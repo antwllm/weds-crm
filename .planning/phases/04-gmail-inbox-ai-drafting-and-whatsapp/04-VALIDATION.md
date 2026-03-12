@@ -38,16 +38,15 @@ created: 2026-03-12
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 4-01-01 | 01 | 1 | MAIL-01 | unit | `npx vitest run tests/inbox.test.ts -t "listThreads" -x` | ❌ W0 | ⬜ pending |
-| 4-01-02 | 01 | 1 | MAIL-02 | unit | `npx vitest run tests/inbox.test.ts -t "getLinkedEmails" -x` | ❌ W0 | ⬜ pending |
-| 4-01-03 | 01 | 1 | MAIL-03 | unit | `npx vitest run tests/inbox.test.ts -t "sendReply" -x` | ❌ W0 | ⬜ pending |
-| 4-01-04 | 01 | 1 | MAIL-04 | unit | `npx vitest run tests/inbox.test.ts -t "linkEmail" -x` | ❌ W0 | ⬜ pending |
-| 4-02-01 | 02 | 1 | MAIL-05 | unit | `npx vitest run tests/api/templates.test.ts -x` | ❌ W0 | ⬜ pending |
-| 4-03-01 | 03 | 1 | MAIL-06 | unit | `npx vitest run tests/ai-draft.test.ts -t "generateDraft" -x` | ❌ W0 | ⬜ pending |
-| 4-03-02 | 03 | 1 | MAIL-07 | unit | `npx vitest run tests/ai-draft.test.ts -t "draftPreview" -x` | ❌ W0 | ⬜ pending |
-| 4-03-03 | 03 | 1 | MAIL-08 | unit | `npx vitest run tests/api/ai-config.test.ts -x` | ❌ W0 | ⬜ pending |
-| 4-04-01 | 04 | 2 | NOTF-04 | unit | `npx vitest run tests/whatsapp.test.ts -t "sendMessage" -x` | ❌ W0 | ⬜ pending |
-| 4-04-02 | 04 | 2 | NOTF-05 | unit | `npx vitest run tests/whatsapp.test.ts -t "receiveMessage" -x` | ❌ W0 | ⬜ pending |
+| 4-01-01 | 01 | 1 | MAIL-01 | unit | `npx vitest run tests/gmail-threads.test.ts -t "listThreads" -x` | ❌ W0 | ⬜ pending |
+| 4-01-02 | 01 | 1 | MAIL-03 | unit | `npx vitest run tests/gmail-threads.test.ts -t "sendReply" -x` | ❌ W0 | ⬜ pending |
+| 4-01-03 | 01 | 1 | MAIL-06 | unit | `npx vitest run tests/openrouter.test.ts -t "generateDraft" -x` | ❌ W0 | ⬜ pending |
+| 4-01-04 | 01 | 1 | NOTF-04 | unit | `npx vitest run tests/whatsapp.test.ts -t "sendMessage" -x` | ❌ W0 | ⬜ pending |
+| 4-02-01 | 02 | 2 | MAIL-02 | unit | `npx vitest run tests/api/inbox.test.ts -x` | ❌ W0 | ⬜ pending |
+| 4-02-02 | 02 | 2 | MAIL-05 | unit | `npx vitest run tests/api/templates.test.ts -x` | ❌ W0 | ⬜ pending |
+| 4-02-03 | 02 | 2 | MAIL-08 | unit | `npx vitest run tests/api/ai.test.ts -x` | ❌ W0 | ⬜ pending |
+| 4-03-01 | 03 | 2 | NOTF-04 | unit | `npx vitest run tests/api/whatsapp.test.ts -x` | ❌ W0 | ⬜ pending |
+| 4-03-02 | 03 | 2 | NOTF-05 | unit | `npx vitest run tests/webhook-whatsapp.test.ts -x` | ❌ W0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -55,12 +54,15 @@ created: 2026-03-12
 
 ## Wave 0 Requirements
 
-- [ ] `tests/inbox.test.ts` — stubs for MAIL-01, MAIL-02, MAIL-03, MAIL-04
-- [ ] `tests/api/templates.test.ts` — stubs for MAIL-05
-- [ ] `tests/ai-draft.test.ts` — stubs for MAIL-06, MAIL-07
-- [ ] `tests/api/ai-config.test.ts` — stubs for MAIL-08
-- [ ] `tests/whatsapp.test.ts` — stubs for NOTF-04, NOTF-05
-- [ ] `tests/helpers/fixtures.ts` — extend with email thread and WhatsApp message fixtures
+- [ ] `tests/gmail-threads.test.ts` — stubs for MAIL-01, MAIL-03 (listThreads, getThread, sendReply)
+- [ ] `tests/openrouter.test.ts` — stubs for MAIL-06 (generateDraft, substituteVariables)
+- [ ] `tests/whatsapp.test.ts` — stubs for NOTF-04 (sendWhatsAppMessage, parseIncomingMessage, verifyWebhookSignature)
+- [ ] `tests/api/inbox.test.ts` — stubs for MAIL-02, MAIL-04 (inbox API routes, email-to-lead linking)
+- [ ] `tests/api/templates.test.ts` — stubs for MAIL-05 (template CRUD)
+- [ ] `tests/api/ai.test.ts` — stubs for MAIL-08 (AI prompt config, draft generation endpoint)
+- [ ] `tests/api/whatsapp.test.ts` — stubs for NOTF-04 (WhatsApp API routes)
+- [ ] `tests/webhook-whatsapp.test.ts` — stubs for NOTF-05 (WhatsApp webhook handlers)
+- [ ] `tests/helpers/fixtures.ts` — extend with email thread, OpenRouter, and WhatsApp message fixtures
 
 *Existing infrastructure covers test runner (Vitest) and fixture pattern.*
 
