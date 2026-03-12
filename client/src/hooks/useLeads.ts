@@ -48,7 +48,35 @@ export function useUpdateLead() {
         method: 'PATCH',
         body: JSON.stringify(data),
       }),
-    onSuccess: () => {
+    onMutate: async ({ id, data }) => {
+      // Cancel outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['leads'] });
+
+      // Snapshot previous data for rollback
+      const previousQueries = queryClient.getQueriesData<Lead[]>({
+        queryKey: ['leads'],
+      });
+
+      // Optimistically update all matching lead queries
+      queryClient.setQueriesData<Lead[]>(
+        { queryKey: ['leads'] },
+        (old) =>
+          old?.map((lead) =>
+            lead.id === id ? { ...lead, ...data } as Lead : lead
+          ),
+      );
+
+      return { previousQueries };
+    },
+    onError: (_err, _vars, context) => {
+      // Rollback to snapshot on error
+      if (context?.previousQueries) {
+        for (const [queryKey, data] of context.previousQueries) {
+          queryClient.setQueryData(queryKey, data);
+        }
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
     },
   });

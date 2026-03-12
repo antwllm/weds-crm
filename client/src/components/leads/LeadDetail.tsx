@@ -51,10 +51,15 @@ export function LeadDetail({ lead }: LeadDetailProps) {
   const lastName = nameParts.slice(1).join(' ') || '';
 
   function handleNameSave(part: 'first' | 'last', value: string) {
-    const newFirst = part === 'first' ? value.trim() : firstName;
-    const newLast = part === 'last' ? value.trim() : lastName;
-    const fullName = `${newFirst} ${newLast}`.trim();
-    handleSave('name', fullName);
+    const trimmedValue = value.trim();
+    // Use firstName/lastName derived from lead.name
+    // (now reliable thanks to optimistic update keeping lead.name fresh)
+    const newFirst = part === 'first' ? trimmedValue : firstName;
+    const newLast = part === 'last' ? trimmedValue : lastName;
+    const fullName = [newFirst, newLast].filter(Boolean).join(' ');
+    if (fullName) {
+      handleSave('name', fullName);
+    }
   }
 
   return (
@@ -95,8 +100,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
           label="Date de l'evenement"
           value={lead.eventDate || ''}
           onSave={(v) => handleSave('eventDate', v)}
-          type="text"
-          placeholder="Ex: 15 juin 2026"
+          type="date"
         />
         <InlineField
           label="Budget"
