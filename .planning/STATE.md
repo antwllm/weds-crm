@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-03-PLAN.md
-last_updated: "2026-03-10T19:34:39.322Z"
-last_activity: 2026-03-10 — Completed 03-03 Pipedrive Webhook Pull Sync
+stopped_at: Completed 03-05-PLAN.md
+last_updated: "2026-03-12T14:27:44.255Z"
+last_activity: 2026-03-12 — Completed 03-05 Name Accumulation Bug Fix
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 14
-  completed_plans: 13
+  total_plans: 15
+  completed_plans: 14
   percent: 93
 ---
 
@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 3 of 4 (Pipedrive Sync)
-Plan: 3 of 4 in current phase (completed)
+Plan: 5 of 5 in current phase (completed)
 Status: Phase 3 In Progress
-Last activity: 2026-03-10 — Completed 03-03 Pipedrive Webhook Pull Sync
+Last activity: 2026-03-12 — Completed 03-05 Name Accumulation Bug Fix
 
 Progress: [█████████░] 93%
 
@@ -61,6 +61,7 @@ Progress: [█████████░] 93%
 | Phase 03 P01 | 3min | 2 tasks | 7 files |
 | Phase 03 P02 | 3min | 2 tasks | 3 files |
 | Phase 03 P03 | 3min | 2 tasks | 3 files |
+| Phase 03 P05 | 2min | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -105,6 +106,8 @@ Recent decisions affecting current work:
 - [Phase 03-03]: Deal deleted only adds warning activity and clears pipedriveDealId -- no status change or lead deletion
 - [Phase 03-03]: Deal created performs duplicate detection by email/phone, links existing leads without overwriting CRM values
 - [Phase 03-03]: Basic auth with timingSafeEqual for webhook verification, skippable in dev mode
+- [Phase 03-05]: All lead mutations use optimistic update with rollback (onMutate/onError/onSettled) for consistent cache strategy
+- [Phase 03-05]: handleNameSave uses filter(Boolean).join instead of template literal to avoid trailing spaces
 
 ### Pending Todos
 
@@ -120,6 +123,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-10T19:34:39.320Z
-Stopped at: Completed 03-03-PLAN.md
+Last session: 2026-03-12T14:27:02Z
+Stopped at: Completed 03-05-PLAN.md
 Resume file: None
