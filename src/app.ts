@@ -1,4 +1,5 @@
 import express from 'express';
+import fs from 'fs';
 import path from 'path';
 import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
@@ -11,6 +12,8 @@ import authRouter from './routes/auth.js';
 import webhookRouter from './routes/webhook.js';
 import leadsRouter from './routes/api/leads.js';
 import activitiesRouter from './routes/api/activities.js';
+import inboxRouter from './routes/api/inbox.js';
+import whatsappRouter from './routes/api/whatsapp.js';
 import { config } from './config.js';
 
 const app = express();
@@ -53,12 +56,14 @@ app.use('/webhook', webhookRouter);
 // API routes (protected via middleware in each router)
 app.use('/api/leads', leadsRouter);
 app.use('/api', activitiesRouter);
+app.use('/api', inboxRouter);
+app.use('/api', whatsappRouter);
 
-// In production, serve the React SPA from client/dist
-if (process.env.NODE_ENV === 'production') {
-  const clientDist = path.join(__dirname, '..', 'client', 'dist');
+// Serve the React SPA from client/dist (built by Docker or locally)
+const clientDist = path.join(__dirname, '..', 'client', 'dist');
+if (fs.existsSync(clientDist)) {
   app.use(express.static(clientDist));
-  app.get('*', ensureAuthenticated, (_req, res) => {
+  app.get('{*path}', ensureAuthenticated, (_req, res) => {
     res.sendFile(path.join(clientDist, 'index.html'));
   });
 }
