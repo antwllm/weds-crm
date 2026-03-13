@@ -152,6 +152,140 @@ export async function ensureLabelsExist(
   return labelMap;
 }
 
+// --- Thread operations (Phase 4) ---
+
+export interface ThreadListOptions {
+  maxResults?: number;
+  pageToken?: string;
+  q?: string;
+}
+
+export interface ThreadMessage {
+  id: string;
+  from: string;
+  to: string;
+  subject: string;
+  date: string;
+  messageId: string;
+  inReplyTo?: string;
+  references?: string;
+  snippet: string;
+  body: string;
+}
+
+export interface ThreadDetail {
+  id: string;
+  messages: ThreadMessage[];
+}
+
+/**
+ * List Gmail threads with pagination and optional search query.
+ */
+export async function listThreads(
+  gmail: gmail_v1.Gmail,
+  options: ThreadListOptions,
+): Promise<{ threads: gmail_v1.Schema$Thread[]; nextPageToken?: string }> {
+  const res = await gmail.users.threads.list({
+    userId: 'me',
+    maxResults: options.maxResults,
+    pageToken: options.pageToken,
+    q: options.q,
+  });
+
+  return {
+    threads: res.data.threads || [],
+    nextPageToken: res.data.nextPageToken || undefined,
+  };
+}
+
+/**
+ * Get a full thread with parsed message headers and bodies.
+ */
+export async function getThread(
+  gmail: gmail_v1.Gmail,
+  threadId: string,
+): Promise<ThreadDetail> {
+  const res = await gmail.users.threads.get({
+    userId: 'me',
+    id: threadId,
+    format: 'full',
+  });
+
+  const messages: ThreadMessage[] = (res.data.messages || []).map((msg) => {
+    const headers = msg.payload?.headers || [];
+    const getHeader = (name: string) =>
+      headers.find((h) => h.name?.toLowerCase() === name.toLowerCase())?.value || '';
+
+    // Extract body using same logic as getMessageContent
+    let body = '';
+    const payload = msg.payload;
+    if (payload) {
+      if (!payload.parts && payload.body?.data) {
+        body = Buffer.from(payload.body.data, 'base64url').toString('utf-8');
+      } else if (payload.parts) {
+        body = findPlainPart(payload.parts) || '';
+      }
+    }
+
+    return {
+      id: msg.id || '',
+      from: getHeader('From'),
+      to: getHeader('To'),
+      subject: getHeader('Subject'),
+      date: getHeader('Date'),
+      messageId: getHeader('Message-ID'),
+      inReplyTo: getHeader('In-Reply-To') || undefined,
+      references: getHeader('References') || undefined,
+      snippet: msg.snippet || '',
+      body,
+    };
+  });
+
+  return { id: res.data.id || threadId, messages };
+}
+
+export interface SendReplyParams {
+  threadId: string;
+  to: string;
+  subject: string;
+  body: string;
+  inReplyTo: string;
+  references: string;
+}
+
+/**
+ * Send a reply within a thread with proper RFC 2822 headers.
+ */
+export async function sendReply(
+  gmail: gmail_v1.Gmail,
+  params: SendReplyParams,
+): Promise<void> {
+  const subject = params.subject.startsWith('Re: ')
+    ? params.subject
+    : `Re: ${params.subject}`;
+
+  const messageParts = [
+    `To: ${params.to}`,
+    `Subject: ${subject}`,
+    `In-Reply-To: ${params.inReplyTo}`,
+    `References: ${params.references}`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset="UTF-8"',
+    '',
+    params.body,
+  ];
+
+  const raw = Buffer.from(messageParts.join('\n')).toString('base64url');
+
+  await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: {
+      raw,
+      threadId: params.threadId,
+    },
+  });
+}
+
 /**
  * Send an email with optional attachments using raw MIME construction.
  */
