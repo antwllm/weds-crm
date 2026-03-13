@@ -21,12 +21,12 @@
 
 ### Email / Inbox
 
-- [ ] **MAIL-01**: User can view Gmail inbox within the CRM interface
+- [x] **MAIL-01**: User can view Gmail inbox within the CRM interface
 - [ ] **MAIL-02**: User can read email threads linked to a specific lead
-- [ ] **MAIL-03**: User can reply to emails directly from the CRM
-- [ ] **MAIL-04**: System automatically links incoming emails to existing leads by sender email
+- [x] **MAIL-03**: User can reply to emails directly from the CRM
+- [x] **MAIL-04**: System automatically links incoming emails to existing leads by sender email
 - [ ] **MAIL-05**: User can create and manage reusable email templates with variables ({{nom}}, {{date_evenement}}, etc.)
-- [ ] **MAIL-06**: System generates AI email draft based on lead context (name, event date, message)
+- [x] **MAIL-06**: System generates AI email draft based on lead context (name, event date, message)
 - [ ] **MAIL-07**: User can review, edit, and send AI-generated drafts before they are sent
 - [ ] **MAIL-08**: User can manage the AI prompt template within the app (replaces Google Docs)
 
@@ -35,8 +35,8 @@
 - [x] **NOTF-01**: System sends SMS to prospect via Twilio when a new lead is captured
 - [x] **NOTF-02**: System sends SMS notification to admin (William) via Free Mobile on new lead, including a vCard download link (stored on Google Drive or GCP bucket)
 - [x] **NOTF-03**: System sends email recap to contact@weds.fr with vCard attachment on new lead
-- [ ] **NOTF-04**: User can send WhatsApp messages to prospects via WhatsApp Business API
-- [ ] **NOTF-05**: User can view WhatsApp Business conversations linked to a lead within the CRM
+- [x] **NOTF-04**: User can send WhatsApp messages to prospects via WhatsApp Business API
+- [x] **NOTF-05**: User can view WhatsApp Business conversations linked to a lead within the CRM
 
 ### Parsing & Automation
 
@@ -108,19 +108,19 @@
 | LEAD-09 | Phase 1 | Complete |
 | LEAD-10 | Phase 2 | Complete |
 | LEAD-11 | Phase 1 | Complete |
-| MAIL-01 | Phase 4 | Pending |
+| MAIL-01 | Phase 4 | Complete |
 | MAIL-02 | Phase 4 | Pending |
-| MAIL-03 | Phase 4 | Pending |
-| MAIL-04 | Phase 4 | Pending |
+| MAIL-03 | Phase 4 | Complete |
+| MAIL-04 | Phase 4 | Complete |
 | MAIL-05 | Phase 4 | Pending |
-| MAIL-06 | Phase 4 | Pending |
+| MAIL-06 | Phase 4 | Complete |
 | MAIL-07 | Phase 4 | Pending |
 | MAIL-08 | Phase 4 | Pending |
 | NOTF-01 | Phase 1 | Complete |
 | NOTF-02 | Phase 1 | Complete |
 | NOTF-03 | Phase 1 | Complete |
-| NOTF-04 | Phase 4 | Pending |
-| NOTF-05 | Phase 4 | Pending |
+| NOTF-04 | Phase 4 | Complete |
+| NOTF-05 | Phase 4 | Complete |
 | PARS-01 | Phase 1 | Complete |
 | PARS-02 | Phase 1 | Complete |
 | PARS-03 | Phase 1 | Complete |

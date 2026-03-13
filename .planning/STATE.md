@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 4 context gathered
-last_updated: "2026-03-12T16:24:53.380Z"
-last_activity: 2026-03-12 — Completed 03-05 Name Accumulation Bug Fix
+stopped_at: Completed 04-01 Schema Config and Services
+last_updated: "2026-03-13T14:46:30Z"
+last_activity: 2026-03-13 — Completed 04-01 Schema, Config & Service Layer
 progress:
   total_phases: 4
-  completed_phases: 2
-  total_plans: 15
-  completed_plans: 14
-  percent: 93
+  completed_phases: 3
+  total_plans: 21
+  completed_plans: 15
+  percent: 71
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-10)
 
 **Core value:** Every Mariages.net lead is captured, organized, and actionable from a single interface — no switching between Gmail, Pipedrive, and phone
-**Current focus:** Phase 3 in progress — Pipedrive Sync (bidirectional sync with loop prevention)
+**Current focus:** Phase 4 in progress — Gmail Inbox, AI Drafting & WhatsApp
 
 ## Current Position
 
-Phase: 3 of 4 (Pipedrive Sync)
-Plan: 5 of 5 in current phase (completed)
-Status: Phase 3 In Progress
-Last activity: 2026-03-12 — Completed 03-05 Name Accumulation Bug Fix
+Phase: 4 of 4 (Gmail Inbox, AI Drafting & WhatsApp)
+Plan: 1 of 7 in current phase (completed)
+Status: Phase 4 In Progress
+Last activity: 2026-03-13 — Completed 04-01 Schema, Config & Service Layer
 
-Progress: [█████████░] 93%
+Progress: [███████░░░] 71%
 
 ## Performance Metrics
 
@@ -62,6 +62,7 @@ Progress: [█████████░] 93%
 | Phase 03 P02 | 3min | 2 tasks | 3 files |
 | Phase 03 P03 | 3min | 2 tasks | 3 files |
 | Phase 03 P05 | 2min | 1 tasks | 2 files |
+| Phase 04 P01 | 5min | 3 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -108,6 +109,10 @@ Recent decisions affecting current work:
 - [Phase 03-03]: Basic auth with timingSafeEqual for webhook verification, skippable in dev mode
 - [Phase 03-05]: All lead mutations use optimistic update with rollback (onMutate/onError/onSettled) for consistent cache strategy
 - [Phase 03-05]: handleNameSave uses filter(Boolean).join instead of template literal to avoid trailing spaces
+- [Phase 04-01]: DI pattern for HTTP clients: openrouter.ts and whatsapp.ts accept optional axios instance for testing
+- [Phase 04-01]: WhatsApp media messages return 'Media recu' placeholder (V1 text-only scope)
+- [Phase 04-01]: verifyWebhookSignature uses timingSafeEqual for constant-time comparison
+- [Phase 04-01]: LeadContext interface centralizes lead data for AI prompt assembly
 
 ### Pending Todos
 
@@ -123,6 +128,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-12T16:24:53.371Z
-Stopped at: Phase 4 context gathered
-Resume file: .planning/phases/04-gmail-inbox-ai-drafting-and-whatsapp/04-CONTEXT.md
+Last session: 2026-03-13T14:46:30Z
+Stopped at: Completed 04-01-PLAN.md
+Resume file: .planning/phases/04-gmail-inbox-ai-drafting-and-whatsapp/04-02-PLAN.md
