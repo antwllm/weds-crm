@@ -29,6 +29,8 @@ export const activityTypeEnum = pgEnum('activity_type', [
   'duplicate_inquiry',
   'notification_failed',
   'pipedrive_synced',
+  'whatsapp_sent',
+  'whatsapp_received',
 ]);
 
 // --- Phase 1: Core tables ---
@@ -107,9 +109,33 @@ export const linkedEmails = pgTable('linked_emails', {
     .references(() => leads.id)
     .notNull(),
   gmailMessageId: varchar('gmail_message_id', { length: 255 }).notNull(),
+  gmailThreadId: varchar('gmail_thread_id', { length: 255 }),
   subject: varchar('subject', { length: 500 }),
   snippet: text('snippet'),
   direction: varchar('direction', { length: 10 }), // 'inbound' | 'outbound'
   receivedAt: timestamp('received_at'),
   createdAt: timestamp('created_at').defaultNow(),
+});
+
+// --- Phase 4: WhatsApp messages ---
+
+export const whatsappMessages = pgTable('whatsapp_messages', {
+  id: serial('id').primaryKey(),
+  leadId: integer('lead_id')
+    .references(() => leads.id)
+    .notNull(),
+  waMessageId: varchar('wa_message_id', { length: 255 }),
+  direction: varchar('direction', { length: 10 }).notNull(), // 'inbound' | 'outbound'
+  body: text('body'),
+  status: varchar('status', { length: 20 }), // 'sent' | 'delivered' | 'read' | 'failed'
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// --- Phase 4: AI prompt configuration ---
+
+export const aiPromptConfig = pgTable('ai_prompt_config', {
+  id: serial('id').primaryKey(),
+  promptTemplate: text('prompt_template').notNull(),
+  model: varchar('model', { length: 100 }).default('anthropic/claude-sonnet-4'),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });

@@ -58,6 +58,25 @@ const envSchema = z.object({
   PIPEDRIVE_WEBHOOK_USER: z.string().optional(),
   PIPEDRIVE_WEBHOOK_PASSWORD: z.string().optional(),
 
+  // OpenRouter AI (requis en production, optionnel en dev/test)
+  OPENROUTER_API_KEY: isProduction
+    ? z.string().min(1, 'OPENROUTER_API_KEY est requis en production')
+    : z.string().optional(),
+
+  // WhatsApp Cloud API (requis en production, optionnel en dev/test)
+  WHATSAPP_PHONE_NUMBER_ID: isProduction
+    ? z.string().min(1, 'WHATSAPP_PHONE_NUMBER_ID est requis en production')
+    : z.string().optional(),
+  WHATSAPP_ACCESS_TOKEN: isProduction
+    ? z.string().min(1, 'WHATSAPP_ACCESS_TOKEN est requis en production')
+    : z.string().optional(),
+  WHATSAPP_VERIFY_TOKEN: isProduction
+    ? z.string().min(1, 'WHATSAPP_VERIFY_TOKEN est requis en production')
+    : z.string().optional(),
+  WHATSAPP_APP_SECRET: isProduction
+    ? z.string().min(1, 'WHATSAPP_APP_SECRET est requis en production')
+    : z.string().optional(),
+
   // Gmail Pub/Sub
   GMAIL_PUBSUB_TOPIC: isProduction
     ? z.string().min(1, 'GMAIL_PUBSUB_TOPIC est requis en production')
