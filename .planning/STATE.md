@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-04 Pipedrive Import and Manual Push
-last_updated: "2026-03-14T18:23:14.665Z"
-last_activity: 2026-03-13 — Completed 04-01 Schema, Config & Service Layer
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-03-14T18:42:23.572Z"
+last_activity: 2026-03-14 — Completed 04-03 WhatsApp API Routes & Webhook
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 22
-  completed_plans: 16
-  percent: 71
+  completed_plans: 18
+  percent: 82
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 4 of 4 (Gmail Inbox, AI Drafting & WhatsApp)
-Plan: 1 of 7 in current phase (completed)
+Plan: 3 of 7 in current phase (completed)
 Status: Phase 4 In Progress
-Last activity: 2026-03-13 — Completed 04-01 Schema, Config & Service Layer
+Last activity: 2026-03-14 — Completed 04-03 WhatsApp API Routes & Webhook
 
-Progress: [███████░░░] 71%
+Progress: [████████░░] 82%
 
 ## Performance Metrics
 
@@ -64,6 +64,8 @@ Progress: [███████░░░] 71%
 | Phase 03 P05 | 2min | 1 tasks | 2 files |
 | Phase 04 P01 | 5min | 3 tasks | 11 files |
 | Phase 03 P04 | 5min | 3 tasks | 5 files |
+| Phase 04 P02 | 3min | 2 tasks | 7 files |
+| Phase 04 P03 | 4min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -116,6 +118,13 @@ Recent decisions affecting current work:
 - [Phase 04-01]: LeadContext interface centralizes lead data for AI prompt assembly
 - [Phase 03]: Import preserves original Pipedrive dates (add_time) for notes and activities
 - [Phase 03]: Manual push endpoint is synchronous (not fire-and-forget) to provide immediate UI feedback
+- [Phase 04]: AI draft returned as text only -- no auto-send path, frontend must display in compose window for review
+- [Phase 04]: AI prompt config uses sensible French-language default when no DB config exists
+- [Phase 04]: Template preview substitutes variables from real lead data via substituteVariables
+- [Phase 04]: Raw body captured via express.json verify callback for HMAC signature verification
+- [Phase 04]: Phone matching uses or(eq(+prefix), eq(without-prefix)) for E.164 normalization tolerance
+- [Phase 04]: Free Mobile SMS alert sent directly via axios in WhatsApp webhook handler (best-effort, never throws)
+- [Phase 04]: WhatsApp webhook responds 200 immediately, processes async via setImmediate (same pattern as Gmail/Pipedrive)
 
 ### Pending Todos
 
@@ -131,6 +140,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T12:21:18.670Z
-Stopped at: Completed 03-04 Pipedrive Import and Manual Push
+Last session: 2026-03-14T18:42:23.570Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None

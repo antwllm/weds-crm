@@ -22,13 +22,13 @@
 ### Email / Inbox
 
 - [x] **MAIL-01**: User can view Gmail inbox within the CRM interface
-- [ ] **MAIL-02**: User can read email threads linked to a specific lead
+- [x] **MAIL-02**: User can read email threads linked to a specific lead
 - [x] **MAIL-03**: User can reply to emails directly from the CRM
 - [x] **MAIL-04**: System automatically links incoming emails to existing leads by sender email
-- [ ] **MAIL-05**: User can create and manage reusable email templates with variables ({{nom}}, {{date_evenement}}, etc.)
+- [x] **MAIL-05**: User can create and manage reusable email templates with variables ({{nom}}, {{date_evenement}}, etc.)
 - [x] **MAIL-06**: System generates AI email draft based on lead context (name, event date, message)
 - [ ] **MAIL-07**: User can review, edit, and send AI-generated drafts before they are sent
-- [ ] **MAIL-08**: User can manage the AI prompt template within the app (replaces Google Docs)
+- [x] **MAIL-08**: User can manage the AI prompt template within the app (replaces Google Docs)
 
 ### Notifications
 
@@ -109,13 +109,13 @@
 | LEAD-10 | Phase 2 | Complete |
 | LEAD-11 | Phase 1 | Complete |
 | MAIL-01 | Phase 4 | Complete |
-| MAIL-02 | Phase 4 | Pending |
+| MAIL-02 | Phase 4 | Complete |
 | MAIL-03 | Phase 4 | Complete |
 | MAIL-04 | Phase 4 | Complete |
-| MAIL-05 | Phase 4 | Pending |
+| MAIL-05 | Phase 4 | Complete |
 | MAIL-06 | Phase 4 | Complete |
 | MAIL-07 | Phase 4 | Pending |
-| MAIL-08 | Phase 4 | Pending |
+| MAIL-08 | Phase 4 | Complete |
 | NOTF-01 | Phase 1 | Complete |
 | NOTF-02 | Phase 1 | Complete |
 | NOTF-03 | Phase 1 | Complete |
