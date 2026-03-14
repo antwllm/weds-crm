@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-01 Schema Config and Services
-last_updated: "2026-03-13T14:46:30Z"
+stopped_at: Completed 03-04 Pipedrive Import and Manual Push
+last_updated: "2026-03-14T12:21:18.672Z"
 last_activity: 2026-03-13 — Completed 04-01 Schema, Config & Service Layer
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 21
-  completed_plans: 15
+  total_plans: 22
+  completed_plans: 16
   percent: 71
 ---
 
@@ -63,6 +63,7 @@ Progress: [███████░░░] 71%
 | Phase 03 P03 | 3min | 2 tasks | 3 files |
 | Phase 03 P05 | 2min | 1 tasks | 2 files |
 | Phase 04 P01 | 5min | 3 tasks | 11 files |
+| Phase 03 P04 | 5min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -113,6 +114,8 @@ Recent decisions affecting current work:
 - [Phase 04-01]: WhatsApp media messages return 'Media recu' placeholder (V1 text-only scope)
 - [Phase 04-01]: verifyWebhookSignature uses timingSafeEqual for constant-time comparison
 - [Phase 04-01]: LeadContext interface centralizes lead data for AI prompt assembly
+- [Phase 03]: Import preserves original Pipedrive dates (add_time) for notes and activities
+- [Phase 03]: Manual push endpoint is synchronous (not fire-and-forget) to provide immediate UI feedback
 
 ### Pending Todos
 
@@ -128,6 +131,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-13T14:46:30Z
-Stopped at: Completed 04-01-PLAN.md
-Resume file: .planning/phases/04-gmail-inbox-ai-drafting-and-whatsapp/04-02-PLAN.md
+Last session: 2026-03-14T12:21:18.670Z
+Stopped at: Completed 03-04 Pipedrive Import and Manual Push
+Resume file: None

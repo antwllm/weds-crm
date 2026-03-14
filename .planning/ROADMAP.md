@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [ ] **Phase 1: Foundation and Automation Core** - Infrastructure, auth, Gmail parsing, lead creation, and all notifications running headlessly
 - [x] **Phase 2: Lead Management UI** - Kanban pipeline board, lead list, detail view, status management, notes, and activity history (completed 2026-03-10)
-- [ ] **Phase 3: Pipedrive Sync** - Bidirectional sync with loop prevention and field key resolution — migration safety net
+- [x] **Phase 3: Pipedrive Sync** - Bidirectional sync with loop prevention and field key resolution — migration safety net (completed 2026-03-14)
 - [ ] **Phase 4: Gmail Inbox, AI Drafting, and WhatsApp** - Embedded Gmail inbox, email-to-lead linking, templates, AI draft generation, review workflow, and WhatsApp Business messaging
 
 ## Phase Details
@@ -66,7 +66,7 @@ Plans:
   1. Creating or updating a lead in the CRM creates or updates the corresponding Person and Deal in Pipedrive with all custom fields populated (event date, message body, source, vCard URL)
   2. Changing a lead's status in Pipedrive triggers a webhook that updates the lead's status in the CRM, and the reverse also works — a status change in the CRM updates the Pipedrive deal stage
   3. Rapidly updating the same lead in both systems does not result in an infinite update loop — the second system's webhook is silently discarded within the suppression window
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans complete
 
 Plans:
 - [x] 03-01-PLAN.md — Pipedrive API client, field config, retry utility, schema migration, test fixtures
@@ -106,5 +106,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 |-------|----------------|--------|-----------|
 | 1. Foundation and Automation Core | 0/5 | Not started | - |
 | 2. Lead Management UI | 5/5 | Complete   | 2026-03-10 |
-| 3. Pipedrive Sync | 4/5 | In Progress|  |
+| 3. Pipedrive Sync | 5/5 | Complete   | 2026-03-14 |
 | 4. Gmail Inbox, AI Drafting, and WhatsApp | 0/7 | Not started | - |
