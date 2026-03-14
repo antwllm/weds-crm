@@ -21,7 +21,6 @@ services:
       - "8082:8080"
     volumes:
       - ./gcp-key.json:/app/gcp-key.json:ro
-      - ./client:/app/client:ro
     depends_on:
       db:
         condition: service_healthy
@@ -44,6 +43,14 @@ services:
       GMAIL_PUBSUB_TOPIC: ${GMAIL_PUBSUB_TOPIC:-}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-contact@weds.fr}
       ALLOWED_USER_EMAIL: ${ALLOWED_USER_EMAIL:-contact@weds.fr}
+      PIPEDRIVE_API_TOKEN: ${PIPEDRIVE_API_TOKEN:-}
+      PIPEDRIVE_COMPANY_DOMAIN: ${PIPEDRIVE_COMPANY_DOMAIN:-weds}
+      PIPEDRIVE_FIELD_CONFIG: ${PIPEDRIVE_FIELD_CONFIG:-}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      WHATSAPP_PHONE_NUMBER_ID: ${WHATSAPP_PHONE_NUMBER_ID:-}
+      WHATSAPP_ACCESS_TOKEN: ${WHATSAPP_ACCESS_TOKEN:-}
+      WHATSAPP_VERIFY_TOKEN: ${WHATSAPP_VERIFY_TOKEN:-}
+      WHATSAPP_APP_SECRET: ${WHATSAPP_APP_SECRET:-}
 
 volumes:
   pgdata:
