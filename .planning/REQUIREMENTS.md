@@ -27,7 +27,7 @@
 - [x] **MAIL-04**: System automatically links incoming emails to existing leads by sender email
 - [x] **MAIL-05**: User can create and manage reusable email templates with variables ({{nom}}, {{date_evenement}}, etc.)
 - [x] **MAIL-06**: System generates AI email draft based on lead context (name, event date, message)
-- [ ] **MAIL-07**: User can review, edit, and send AI-generated drafts before they are sent
+- [x] **MAIL-07**: User can review, edit, and send AI-generated drafts before they are sent
 - [x] **MAIL-08**: User can manage the AI prompt template within the app (replaces Google Docs)
 
 ### Notifications
@@ -114,7 +114,7 @@
 | MAIL-04 | Phase 4 | Complete |
 | MAIL-05 | Phase 4 | Complete |
 | MAIL-06 | Phase 4 | Complete |
-| MAIL-07 | Phase 4 | Pending |
+| MAIL-07 | Phase 4 | Complete |
 | MAIL-08 | Phase 4 | Complete |
 | NOTF-01 | Phase 1 | Complete |
 | NOTF-02 | Phase 1 | Complete |
