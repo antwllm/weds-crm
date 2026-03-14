@@ -25,7 +25,7 @@ export default function InboxPage() {
     leadId: number;
   } | null>(null);
 
-  const { data, isLoading } = useThreads(pageToken);
+  const { data, isLoading, error } = useThreads(pageToken);
   const threads = data?.threads ?? [];
   const hasMore = !!data?.nextPageToken;
 
@@ -99,19 +99,25 @@ export default function InboxPage() {
             showMobileDetail ? 'hidden md:block' : 'block'
           }`}
         >
-          <ThreadList
-            threads={threads}
-            selectedId={selectedThreadId}
-            onSelect={(id) => {
-              setSelectedThreadId(id);
-              setStandaloneCompose(null);
-              setInitialDraft(undefined);
-              setDraftLeadId(undefined);
-            }}
-            isLoading={isLoading}
-            onLoadMore={handleLoadMore}
-            hasMore={hasMore}
-          />
+          {error ? (
+            <div className="flex items-center justify-center p-8 text-destructive text-sm">
+              Erreur de chargement. Veuillez vous reconnecter.
+            </div>
+          ) : (
+            <ThreadList
+              threads={threads}
+              selectedId={selectedThreadId}
+              onSelect={(id) => {
+                setSelectedThreadId(id);
+                setStandaloneCompose(null);
+                setInitialDraft(undefined);
+                setDraftLeadId(undefined);
+              }}
+              isLoading={isLoading}
+              onLoadMore={handleLoadMore}
+              hasMore={hasMore}
+            />
+          )}
         </div>
 
         {/* Right: Thread detail or empty state */}

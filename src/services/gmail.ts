@@ -1,5 +1,6 @@
 import { google } from 'googleapis';
 import type { gmail_v1 } from 'googleapis';
+import { config } from '../config.js';
 
 /**
  * Gmail API wrapper: search, read, modify labels, send email, manage labels.
@@ -26,7 +27,11 @@ export function _resetLabelCache(): void {
  * Create an authenticated Gmail client using OAuth2 credentials.
  */
 export function getGmailClient(accessToken: string, refreshToken: string): gmail_v1.Gmail {
-  const oauth2Client = new google.auth.OAuth2();
+  const oauth2Client = new google.auth.OAuth2(
+    config.GOOGLE_CLIENT_ID,
+    config.GOOGLE_CLIENT_SECRET,
+    config.GOOGLE_REDIRECT_URI,
+  );
   oauth2Client.setCredentials({
     access_token: accessToken,
     refresh_token: refreshToken,
