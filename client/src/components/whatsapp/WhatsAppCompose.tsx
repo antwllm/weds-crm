@@ -34,7 +34,7 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
 
   const hasPhone = !!leadPhone;
   const isWindowOpen = windowData?.isOpen ?? false;
-  const canSendMessage = hasPhone && isWindowOpen && message.trim().length > 0;
+  const canSendMessage = hasPhone && message.trim().length > 0;
   const canSendTemplate = hasPhone && !isWindowOpen && !!selectedTemplate?.name;
 
   async function handleSend() {
@@ -119,6 +119,7 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
           <Select
             value={selectedTemplate ? `${selectedTemplate.name}::${selectedTemplate.language}` : undefined}
             onValueChange={(v) => {
+              if (!v) return;
               const [name, language] = v.split('::');
               setSelectedTemplate({ name, language });
             }}
@@ -155,8 +156,8 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
         </div>
       )}
 
-      {/* Free-form input when window is open */}
-      {hasPhone && isWindowOpen && (
+      {/* Free-form input — always shown when phone exists */}
+      {hasPhone && (
         <div className="flex items-center gap-2">
           <Input
             placeholder="Votre message..."
@@ -168,7 +169,7 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
           <Button
             size="sm"
             onClick={handleSend}
-            disabled={!canSendMessage || isSending}
+            disabled={!hasPhone || !message.trim() || isSending}
           >
             {sendWhatsApp.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
