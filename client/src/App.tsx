@@ -6,6 +6,7 @@ import { LeadDetailPage } from '@/pages/LeadDetailPage'
 import { LeadFormPage } from '@/pages/LeadFormPage'
 
 const InboxPage = lazy(() => import('@/pages/InboxPage'))
+const SettingsPage = lazy(() => import('@/pages/SettingsPage'))
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/leads/new" element={<LeadFormPage />} />
         <Route path="/leads/:id" element={<LeadDetailPage />} />
         <Route path="/inbox" element={<Suspense fallback={<div className="p-8 text-muted-foreground">Chargement...</div>}><InboxPage /></Suspense>} />
+        <Route path="/settings" element={<Suspense fallback={<div className="p-8 text-muted-foreground">Chargement...</div>}><SettingsPage /></Suspense>} />
       </Route>
     </Routes>
   );
