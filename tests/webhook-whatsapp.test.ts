@@ -287,7 +287,8 @@ describe('WhatsApp Webhook', () => {
       const res = await request(app)
         .post('/webhook/whatsapp')
         .send(VALID_WA_WEBHOOK_PAYLOAD)
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('X-Hub-Signature-256', 'sha256=dummy');
 
       expect(res.status).toBe(200);
       expect(res.body.status).toBe('ok');
@@ -300,7 +301,8 @@ describe('WhatsApp Webhook', () => {
       const res = await request(app)
         .post('/webhook/whatsapp')
         .send(VALID_WA_WEBHOOK_PAYLOAD)
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('X-Hub-Signature-256', 'sha256=dummy');
 
       expect(res.status).toBe(200);
 
@@ -319,7 +321,8 @@ describe('WhatsApp Webhook', () => {
       const res = await request(app)
         .post('/webhook/whatsapp')
         .send(VALID_WA_WEBHOOK_PAYLOAD)
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('X-Hub-Signature-256', 'sha256=dummy');
 
       expect(res.status).toBe(200);
 
@@ -339,7 +342,8 @@ describe('WhatsApp Webhook', () => {
       const res = await request(app)
         .post('/webhook/whatsapp')
         .send({ entry: [{ changes: [{ value: { statuses: [] } }] }] })
-        .set('Content-Type', 'application/json');
+        .set('Content-Type', 'application/json')
+        .set('X-Hub-Signature-256', 'sha256=dummy');
 
       expect(res.status).toBe(200);
 

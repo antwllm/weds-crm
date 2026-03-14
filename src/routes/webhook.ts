@@ -7,8 +7,8 @@ import { handlePubSubMessage } from '../services/pubsub.js';
 import { processPendingEmails } from '../pipeline/process-email.js';
 import { getGmailClientInstance } from '../services/gmail-client-holder.js';
 import { getDb } from '../db/index.js';
-import { leads } from '../db/schema.js';
-import { eq } from 'drizzle-orm';
+import { leads, whatsappMessages, activities } from '../db/schema.js';
+import { eq, or } from 'drizzle-orm';
 import {
   isWithinSuppressionWindow,
   handleDealUpdate,
@@ -16,7 +16,12 @@ import {
   handleDealDeleted,
   handlePersonUpdate,
 } from '../services/pipedrive/sync-pull.js';
+import {
+  parseIncomingMessage,
+  verifyWebhookSignature,
+} from '../services/whatsapp.js';
 import type { Lead } from '../types.js';
+import axios from 'axios';
 
 const router = Router();
 
@@ -82,8 +87,8 @@ const webhookPayloadSchema = z.object({
     timestamp: z.string(),
     user_id: z.coerce.number(),
   }),
-  data: z.record(z.unknown()),
-  previous: z.record(z.unknown()).optional(),
+  data: z.record(z.string(), z.unknown()),
+  previous: z.record(z.string(), z.unknown()).optional(),
 });
 
 /**
@@ -223,6 +228,134 @@ router.post('/pipedrive', (req, res) => {
       }
     } catch (error) {
       logger.error('Webhook Pipedrive: erreur traitement', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  });
+});
+
+// --- WhatsApp Webhook ---
+
+/**
+ * GET /webhook/whatsapp
+ *
+ * WhatsApp verification handshake. Meta sends a GET request with
+ * hub.mode, hub.verify_token, and hub.challenge to verify the webhook URL.
+ */
+router.get('/whatsapp', (req, res) => {
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode === 'subscribe' && token === config.WHATSAPP_VERIFY_TOKEN) {
+    logger.info('Webhook WhatsApp: verification reussie');
+    res.status(200).send(challenge);
+    return;
+  }
+
+  logger.warn('Webhook WhatsApp: echec verification', { mode, token });
+  res.status(403).json({ error: 'Verification echouee' });
+});
+
+/**
+ * POST /webhook/whatsapp
+ *
+ * Receives incoming WhatsApp messages via Meta webhook.
+ * Verifies HMAC signature if WHATSAPP_APP_SECRET is configured.
+ * Responds 200 immediately, processes asynchronously via setImmediate.
+ * Links incoming messages to leads by phone number, stores in DB,
+ * creates activities, and sends Free Mobile SMS alert.
+ */
+router.post('/whatsapp', (req, res) => {
+  // Verify signature if app secret is configured
+  if (config.WHATSAPP_APP_SECRET) {
+    const signature = req.headers['x-hub-signature-256'] as string | undefined;
+    const rawBody = (req as any).rawBody as Buffer | undefined;
+
+    if (!signature || !rawBody || !verifyWebhookSignature(rawBody, signature, config.WHATSAPP_APP_SECRET)) {
+      logger.warn('Webhook WhatsApp: signature invalide');
+      res.status(403).json({ error: 'Signature invalide' });
+      return;
+    }
+  }
+
+  // Acknowledge immediately
+  res.status(200).json({ status: 'ok' });
+
+  // Process asynchronously
+  setImmediate(async () => {
+    try {
+      const parsed = parseIncomingMessage(req.body);
+
+      if (!parsed) {
+        // Status update or non-message event -- skip
+        return;
+      }
+
+      const { from, text, waMessageId } = parsed;
+      const db = getDb();
+
+      // Find lead by phone number (try with and without + prefix)
+      const normalizedFrom = from.startsWith('+') ? from : `+${from}`;
+      const withoutPlus = from.startsWith('+') ? from.slice(1) : from;
+
+      const leadResults = await db
+        .select()
+        .from(leads)
+        .where(
+          or(
+            eq(leads.phone, normalizedFrom),
+            eq(leads.phone, withoutPlus),
+          ),
+        );
+
+      const lead = leadResults[0] as Lead | undefined;
+
+      if (lead) {
+        // Store inbound message
+        await db.insert(whatsappMessages).values({
+          leadId: lead.id,
+          waMessageId,
+          direction: 'inbound',
+          body: text,
+          status: 'delivered',
+        });
+
+        // Create activity
+        await db.insert(activities).values({
+          leadId: lead.id,
+          type: 'whatsapp_received',
+          content: text,
+        });
+
+        // Send Free Mobile SMS alert (best-effort, never throw)
+        try {
+          const alertMsg = `WhatsApp de ${lead.name}: ${text.slice(0, 100)}`;
+          if (config.FREE_MOBILE_USER && config.FREE_MOBILE_PASS) {
+            await axios.get('https://smsapi.free-mobile.fr/sendmsg', {
+              params: {
+                user: config.FREE_MOBILE_USER,
+                pass: config.FREE_MOBILE_PASS,
+                msg: alertMsg,
+              },
+            });
+          }
+        } catch (smsError) {
+          logger.error('Webhook WhatsApp: echec alerte SMS', {
+            error: smsError instanceof Error ? smsError.message : String(smsError),
+          });
+        }
+
+        logger.info('Webhook WhatsApp: message entrant traite', {
+          leadId: lead.id,
+          from,
+          waMessageId,
+        });
+      } else {
+        logger.warn('Webhook WhatsApp: aucun lead trouve pour ce numero', { from });
+      }
+    } catch (error) {
+      logger.error('Webhook WhatsApp: erreur traitement', {
         error: error instanceof Error ? error.message : String(error),
       });
     }
