@@ -244,10 +244,11 @@ router.post('/leads/:leadId/whatsapp/send-template', ensureAuthenticated, async 
     logger.info('WhatsApp template envoyé', { leadId, waMessageId, templateName });
     res.status(200).json({ status: 'sent', waMessageId });
   } catch (error) {
+    const metaError = (error as any)?.response?.data?.error?.message;
     logger.error('Erreur envoi template WhatsApp', {
-      error: error instanceof Error ? error.message : String(error),
+      error: metaError || (error instanceof Error ? error.message : String(error)),
     });
-    res.status(500).json({ error: 'Erreur envoi template WhatsApp' });
+    res.status(500).json({ error: metaError || 'Erreur envoi template WhatsApp' });
   }
 });
 
