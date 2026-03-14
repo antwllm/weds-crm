@@ -26,7 +26,7 @@ interface WhatsAppComposeProps {
 
 export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
   const [message, setMessage] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<{ name: string; language: string } | null>(null);
   const { data: windowData } = useWhatsAppWindow(leadId);
   const sendWhatsApp = useSendWhatsApp();
   const sendTemplate = useSendWhatsAppTemplate();
@@ -35,7 +35,7 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
   const hasPhone = !!leadPhone;
   const isWindowOpen = windowData?.isOpen ?? false;
   const canSendMessage = hasPhone && isWindowOpen && message.trim().length > 0;
-  const canSendTemplate = hasPhone && !isWindowOpen && !!selectedTemplate;
+  const canSendTemplate = hasPhone && !isWindowOpen && !!selectedTemplate?.name;
 
   async function handleSend() {
     if (!canSendMessage) return;
@@ -56,7 +56,7 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
   async function handleSendTemplate() {
     if (!canSendTemplate || !selectedTemplate) return;
     sendTemplate.mutate(
-      { leadId, templateName: selectedTemplate },
+      { leadId, templateName: selectedTemplate.name, languageCode: selectedTemplate.language },
       {
         onSuccess: () => {
           setSelectedTemplate(null);
@@ -117,8 +117,11 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
       {hasPhone && !isWindowOpen && (
         <div className="flex items-center gap-2">
           <Select
-            value={selectedTemplate}
-            onValueChange={setSelectedTemplate}
+            value={selectedTemplate ? `${selectedTemplate.name}::${selectedTemplate.language}` : undefined}
+            onValueChange={(v) => {
+              const [name, language] = v.split('::');
+              setSelectedTemplate({ name, language });
+            }}
             disabled={templates.length === 0 || isSending}
           >
             <SelectTrigger className="flex-1">
@@ -132,7 +135,7 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
             </SelectTrigger>
             <SelectContent>
               {templates.map((t) => (
-                <SelectItem key={t.name} value={t.name}>
+                <SelectItem key={`${t.name}::${t.language}`} value={`${t.name}::${t.language}`}>
                   {t.name} ({t.language})
                 </SelectItem>
               ))}
