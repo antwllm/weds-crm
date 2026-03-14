@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard } from 'lucide-react'
+import { LayoutDashboard, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
   { to: '/pipeline', label: 'Pipeline', icon: LayoutDashboard },
+  { to: '/inbox', label: 'Boite de reception', icon: Mail },
 ] as const;
 
 interface SidebarProps {

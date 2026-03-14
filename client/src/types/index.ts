@@ -20,6 +20,8 @@ export const ACTIVITY_TYPES = [
   'duplicate_inquiry',
   'notification_failed',
   'pipedrive_synced',
+  'whatsapp_sent',
+  'whatsapp_received',
 ] as const;
 
 export type ActivityType = (typeof ACTIVITY_TYPES)[number];
