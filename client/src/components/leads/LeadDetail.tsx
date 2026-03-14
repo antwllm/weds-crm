@@ -48,7 +48,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
     updateLead.mutate(
       { id: lead.id, data: payload },
       {
-        onSuccess: () => toast.success('Modifications enregistrees'),
+        onSuccess: () => toast.success('Modifications enregistrées'),
         onError: () => toast.error('Erreur lors de la sauvegarde'),
       }
     );
@@ -84,7 +84,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
         },
       });
     } catch {
-      toast.error('Erreur lors de la generation du brouillon');
+      toast.error('Erreur lors de la génération du brouillon');
     } finally {
       setIsGeneratingDraft(false);
     }
@@ -96,11 +96,11 @@ export function LeadDetail({ lead }: LeadDetailProps) {
       <div className="space-y-1">
         <div className="grid grid-cols-2 gap-4">
           <InlineField
-            label="Prenom"
+            label="Prénom"
             value={firstName}
             onSave={(v) => handleNameSave('first', v)}
             type="text"
-            placeholder="Prenom"
+            placeholder="Prénom"
           />
           <InlineField
             label="Nom"
@@ -125,7 +125,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
           placeholder="+33..."
         />
         <InlineField
-          label="Date de l'evenement"
+          label="Date de l'événement"
           value={lead.eventDate || ''}
           onSave={(v) => handleSave('eventDate', v)}
           type="date"
@@ -187,7 +187,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
               ) : (
                 <Sparkles className="h-4 w-4" data-icon="inline-start" />
               )}
-              {isGeneratingDraft ? 'Generation...' : 'Generer un brouillon'}
+              {isGeneratingDraft ? 'Génération...' : 'Générer un brouillon'}
             </Button>
           </div>
           <LeadEmails leadId={lead.id} />
@@ -204,7 +204,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
         {/* Activity timeline */}
         <div>
           <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Historique d'activites
+            Historique d'activités
           </h3>
           <ActivityTimeline activities={activities} />
         </div>

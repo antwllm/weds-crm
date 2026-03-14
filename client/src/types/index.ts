@@ -123,6 +123,9 @@ export interface LinkedEmail {
 
 export interface GmailThread {
   id: string;
+  subject: string;
+  from: string;
+  date: string;
   snippet: string;
   historyId: string;
   matchedLead?: { id: number; name: string; status: string };

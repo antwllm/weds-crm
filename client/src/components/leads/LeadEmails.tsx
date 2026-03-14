@@ -23,7 +23,7 @@ export function LeadEmails({ leadId }: LeadEmailsProps) {
   if (emails.length === 0) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
-        Aucun email lie a ce lead
+        Aucun email lié à ce lead
       </p>
     );
   }

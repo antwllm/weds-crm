@@ -143,17 +143,17 @@ export function TemplateEditor() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium text-muted-foreground">
-            Modeles ({templates.length})
+            Modèles ({templates.length})
           </h3>
           <Button size="sm" variant="outline" onClick={startCreate}>
             <Plus className="size-4" />
-            Nouveau modele
+            Nouveau modèle
           </Button>
         </div>
 
         {templates.length === 0 && !isCreating && (
           <p className="py-8 text-center text-sm text-muted-foreground">
-            Aucun modele. Cliquez sur &quot;Nouveau modele&quot; pour commencer.
+            Aucun modèle. Cliquez sur &quot;Nouveau modèle&quot; pour commencer.
           </p>
         )}
 
@@ -201,10 +201,10 @@ export function TemplateEditor() {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Supprimer le modele</AlertDialogTitle>
+                      <AlertDialogTitle>Supprimer le modèle</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Etes-vous sur de vouloir supprimer &quot;{template.name}
-                        &quot; ? Cette action est irreversible.
+                        Êtes-vous sûr de vouloir supprimer &quot;{template.name}
+                        &quot; ? Cette action est irréversible.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -229,11 +229,11 @@ export function TemplateEditor() {
         {isEditing ? (
           <div className="space-y-4 rounded-lg border p-4">
             <h3 className="font-medium">
-              {isCreating ? 'Nouveau modele' : 'Modifier le modele'}
+              {isCreating ? 'Nouveau modèle' : 'Modifier le modèle'}
             </h3>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Nom du modele</label>
+              <label className="text-sm font-medium">Nom du modèle</label>
               <Input
                 value={form.name}
                 onChange={(e) =>
@@ -284,7 +284,7 @@ export function TemplateEditor() {
                 ))}
               </div>
               <p className="text-xs text-muted-foreground">
-                Cliquez sur une variable pour l&apos;inserer dans le corps du
+                Cliquez sur une variable pour l&apos;insérer dans le corps du
                 message
               </p>
             </div>
@@ -301,7 +301,7 @@ export function TemplateEditor() {
         ) : (
           <div className="flex items-center justify-center rounded-lg border border-dashed py-16">
             <p className="text-sm text-muted-foreground">
-              Selectionnez un modele ou creez-en un nouveau
+              Sélectionnez un modèle ou créez-en un nouveau
             </p>
           </div>
         )}

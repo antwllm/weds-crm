@@ -28,7 +28,7 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
       {
         onSuccess: () => {
           setMessage('');
-          toast.success('Message WhatsApp envoye');
+          toast.success('Message WhatsApp envoyé');
         },
         onError: () => {
           toast.error("Erreur lors de l'envoi du message WhatsApp");
@@ -50,13 +50,13 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
       <div className="flex items-center gap-2 text-xs">
         {!hasPhone ? (
           <span className="text-muted-foreground">
-            Pas de numero de telephone
+            Pas de numéro de téléphone
           </span>
         ) : isWindowOpen ? (
           <>
             <span className="h-2 w-2 rounded-full bg-green-500" />
             <span className="text-green-700 dark:text-green-400">
-              Fenetre ouverte
+              Fenêtre ouverte
               {windowData?.expiresAt && (
                 <>
                   {' '}
@@ -73,7 +73,7 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
           <>
             <span className="h-2 w-2 rounded-full bg-orange-500" />
             <span className="text-orange-700 dark:text-orange-400">
-              Fenetre expiree &mdash; modele requis
+              Fenêtre expirée &mdash; modèle requis
             </span>
           </>
         )}
@@ -82,7 +82,7 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
       {/* Expired window notice */}
       {hasPhone && !isWindowOpen && (
         <p className="text-xs text-muted-foreground">
-          La fenetre de 24h est expiree. Utilisez un modele WhatsApp pour
+          La fenêtre de 24h est expirée. Utilisez un modèle WhatsApp pour
           initier la conversation.
         </p>
       )}
@@ -90,7 +90,7 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
       {/* Input + send */}
       <div className="flex items-center gap-2">
         <Input
-          placeholder={hasPhone ? 'Votre message...' : 'Pas de numero'}
+          placeholder={hasPhone ? 'Votre message...' : 'Pas de numéro'}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}

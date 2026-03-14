@@ -88,7 +88,7 @@ export default function InboxPage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         )}
-        <h2 className="text-lg font-semibold">Boite de reception</h2>
+        <h2 className="text-lg font-semibold">Boîte de réception</h2>
       </div>
 
       {/* Split pane */}
@@ -145,7 +145,7 @@ export default function InboxPage() {
             />
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground">
-              Selectionnez un fil de discussion
+              Sélectionnez un fil de discussion
             </div>
           )}
         </div>

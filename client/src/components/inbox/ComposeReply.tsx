@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Send, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,7 @@ export function ComposeReply({
   );
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
 
+  const navigate = useNavigate();
   const sendReply = useSendReply();
   const { data: templatesData } = useTemplates();
   const templatePreview = useTemplatePreview();
@@ -74,7 +76,7 @@ export function ComposeReply({
       setSubject(preview.subject);
       setBody(preview.body);
     } catch {
-      toast.error('Erreur lors de la previsualisation du modele');
+      toast.error('Erreur lors de la prévisualisation du modèle');
     }
   };
 
@@ -84,13 +86,13 @@ export function ComposeReply({
       const result = await generateDraft.mutateAsync({ leadId });
       setBody(result.draft);
     } catch {
-      toast.error('Erreur lors de la generation du brouillon');
+      toast.error('Erreur lors de la génération du brouillon');
     }
   };
 
   const handleSend = async () => {
     if (!body.trim()) {
-      toast.error('Le message ne peut pas etre vide');
+      toast.error('Le message ne peut pas être vide');
       return;
     }
     if (!to.trim()) {
@@ -119,7 +121,7 @@ export function ComposeReply({
           body,
         });
       }
-      toast.success('Reponse envoyee');
+      toast.success('Réponse envoyée');
       setBody('');
     } catch {
       toast.error("Erreur lors de l'envoi");
@@ -165,13 +167,13 @@ export function ComposeReply({
       {/* Actions bar */}
       <div className="flex items-center gap-2 flex-wrap">
         {/* Template picker */}
-        {templates.length > 0 && (
+        {templates.length > 0 ? (
           <Select
             value={selectedTemplateId}
             onValueChange={handleTemplateSelect}
           >
             <SelectTrigger className="w-48">
-              <SelectValue placeholder="Modele..." />
+              <SelectValue placeholder="Modèle..." />
             </SelectTrigger>
             <SelectContent>
               {templates.map((t) => (
@@ -181,6 +183,14 @@ export function ComposeReply({
               ))}
             </SelectContent>
           </Select>
+        ) : (
+          <button
+            type="button"
+            onClick={() => navigate('/settings')}
+            className="text-xs text-muted-foreground underline hover:text-foreground"
+          >
+            Créer un modèle
+          </button>
         )}
 
         {/* AI draft button */}
@@ -196,7 +206,7 @@ export function ComposeReply({
             ) : (
               <Sparkles className="h-4 w-4 mr-1" />
             )}
-            Generer un brouillon
+            Générer un brouillon
           </Button>
         )}
 

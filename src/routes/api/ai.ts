@@ -14,12 +14,12 @@ const router = Router();
 router.use(ensureAuthenticated);
 
 // --- Default prompt template ---
-const DEFAULT_PROMPT_TEMPLATE = `Tu es un photographe de mariage professionnel base en France. Tu reponds aux demandes de couples qui souhaitent des informations sur tes services. Sois chaleureux, professionnel et personnalise ta reponse en utilisant les informations du lead.`;
+const DEFAULT_PROMPT_TEMPLATE = `Tu es un photographe de mariage professionnel basé en France. Tu réponds aux demandes de couples qui souhaitent des informations sur tes services. Sois chaleureux, professionnel et personnalise ta réponse en utilisant les informations du lead.`;
 
 // --- Validation schemas ---
 
 const updatePromptSchema = z.object({
-  promptTemplate: z.string().min(1, 'Le template est requis'),
+  promptTemplate: z.string().min(1, 'Le modèle est requis'),
   model: z.string().optional(),
 });
 
@@ -46,7 +46,7 @@ router.get('/ai/prompt', async (_req, res) => {
 
     res.json(existing);
   } catch (error) {
-    logger.error('Erreur lors de la recuperation du prompt AI', { error });
+    logger.error('Erreur lors de la récupération du prompt AI', { error });
     res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
@@ -57,7 +57,7 @@ router.put('/ai/prompt', async (req, res) => {
     const parsed = updatePromptSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
-        error: 'Donnees invalides',
+        error: 'Données invalides',
         details: parsed.error.issues,
       });
       return;
@@ -92,7 +92,7 @@ router.put('/ai/prompt', async (req, res) => {
         .returning();
     }
 
-    logger.info('Prompt AI mis a jour');
+    logger.info('Prompt AI mis à jour');
     res.json(result);
   } catch (error) {
     logger.error('Erreur lors de la mise a jour du prompt AI', { error });
@@ -106,7 +106,7 @@ router.post('/ai/generate-draft', async (req, res) => {
     const parsed = generateDraftSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
-        error: 'Donnees invalides',
+        error: 'Données invalides',
         details: parsed.error.issues,
       });
       return;
@@ -136,7 +136,7 @@ router.post('/ai/generate-draft', async (req, res) => {
 
     res.json({ draft });
   } catch (error) {
-    logger.error('Erreur lors de la generation du brouillon AI', { error });
+    logger.error('Erreur lors de la génération du brouillon AI', { error });
     res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });

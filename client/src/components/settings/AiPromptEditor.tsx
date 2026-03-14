@@ -24,13 +24,13 @@ Informations du lead :
 - Email : {{email}}
 - Telephone : {{telephone}}
 
-Historique des echanges :
+Historique des échanges :
 {{historique_emails}}
 
 Notes :
 {{notes}}
 
-Redige une reponse chaleureuse et professionnelle.`;
+Rédige une réponse chaleureuse et professionnelle.`;
 
 export function AiPromptEditor() {
   const { data: config, isLoading } = useAiPrompt();
@@ -77,7 +77,7 @@ export function AiPromptEditor() {
   return (
     <div className="max-w-2xl space-y-6">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Prompt systeme</label>
+        <label className="text-sm font-medium">Prompt système</label>
         <Textarea
           value={promptTemplate}
           onChange={(e) => handlePromptChange(e.target.value)}
@@ -97,27 +97,27 @@ export function AiPromptEditor() {
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          Ces variables seront remplacees par les donnees du lead lors de la
-          generation
+          Ces variables seront remplacées par les données du lead lors de la
+          génération
         </p>
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Modele IA (OpenRouter)</label>
+        <label className="text-sm font-medium">Modèle IA (OpenRouter)</label>
         <Input
           value={model}
           onChange={(e) => handleModelChange(e.target.value)}
           placeholder="anthropic/claude-sonnet-4"
         />
         <p className="text-xs text-muted-foreground">
-          Identifiant du modele sur OpenRouter (ex: anthropic/claude-sonnet-4,
+          Identifiant du modèle sur OpenRouter (ex: anthropic/claude-sonnet-4,
           google/gemini-2.5-pro)
         </p>
       </div>
 
       {config?.updatedAt && (
         <p className="text-xs text-muted-foreground">
-          Derniere mise a jour :{' '}
+          Dernière mise à jour :{' '}
           {new Date(config.updatedAt).toLocaleDateString('fr-FR', {
             day: 'numeric',
             month: 'long',

@@ -43,7 +43,7 @@ router.post('/leads/:leadId/whatsapp/send', ensureAuthenticated, async (req, res
     const lead = leadResults[0];
 
     if (!lead) {
-      res.status(404).json({ error: 'Lead non trouve' });
+      res.status(404).json({ error: 'Lead non trouvé' });
       return;
     }
 
@@ -76,7 +76,7 @@ router.post('/leads/:leadId/whatsapp/send', ensureAuthenticated, async (req, res
       content: message,
     });
 
-    logger.info('WhatsApp message envoye', { leadId, waMessageId });
+    logger.info('WhatsApp message envoyé', { leadId, waMessageId });
     res.status(200).json({ status: 'sent', waMessageId });
   } catch (error) {
     logger.error('Erreur envoi WhatsApp', {
@@ -103,10 +103,10 @@ router.get('/leads/:leadId/whatsapp', ensureAuthenticated, async (req, res) => {
 
     res.status(200).json({ messages });
   } catch (error) {
-    logger.error('Erreur recuperation historique WhatsApp', {
+    logger.error('Erreur récupération historique WhatsApp', {
       error: error instanceof Error ? error.message : String(error),
     });
-    res.status(500).json({ error: 'Erreur recuperation historique' });
+    res.status(500).json({ error: 'Erreur récupération historique' });
   }
 });
 
@@ -145,10 +145,10 @@ router.get('/leads/:leadId/whatsapp/window', ensureAuthenticated, async (req, re
 
     res.status(200).json({ isOpen, expiresAt });
   } catch (error) {
-    logger.error('Erreur verification fenetre WhatsApp', {
+    logger.error('Erreur vérification fenêtre WhatsApp', {
       error: error instanceof Error ? error.message : String(error),
     });
-    res.status(500).json({ error: 'Erreur verification fenetre' });
+    res.status(500).json({ error: 'Erreur vérification fenêtre' });
   }
 });
 

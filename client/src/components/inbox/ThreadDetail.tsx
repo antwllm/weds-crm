@@ -24,6 +24,11 @@ function extractInitial(from: string): string {
   return (name[0] ?? '?').toUpperCase();
 }
 
+function extractEmail(from: string): string {
+  const match = from.match(/<([^>]+)>/);
+  return match ? match[1] : from;
+}
+
 function isSentByMe(from: string): boolean {
   return from.includes('contact@weds.fr') || from.includes('weds.fr');
 }
@@ -117,7 +122,9 @@ export function ThreadDetail({
                 </div>
                 <div className="flex flex-col">
                   <span className="text-sm font-medium">{msg.from.replace(/<.*>/, '').trim()}</span>
-                  <span className="text-xs text-muted-foreground">{dateLabel}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {extractEmail(msg.from)} · {dateLabel}
+                  </span>
                 </div>
               </div>
 

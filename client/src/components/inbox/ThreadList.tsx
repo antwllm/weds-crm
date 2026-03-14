@@ -1,5 +1,5 @@
 import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr } from 'date-fns/locale/fr';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,13 +15,9 @@ interface ThreadListProps {
   hasMore: boolean;
 }
 
-function extractSender(snippet: string): string {
-  // Try to extract a name-like prefix before any separator
-  const parts = snippet.split(/[:\-]/);
-  if (parts.length > 1 && parts[0].trim().length < 40) {
-    return parts[0].trim();
-  }
-  return snippet.slice(0, 30);
+function extractSenderName(from: string): string {
+  const name = from.replace(/<.*>/, '').trim();
+  return name || from;
 }
 
 function getStatusColor(status: string): string {
@@ -57,34 +53,53 @@ export function ThreadList({
 
   return (
     <div className="flex flex-col overflow-y-auto">
-      {threads.map((thread) => (
-        <button
-          key={thread.id}
-          onClick={() => onSelect(thread.id)}
-          className={cn(
-            'flex flex-col gap-1 border-b px-4 py-3 text-left transition-colors hover:bg-muted/50',
-            selectedId === thread.id && 'bg-muted',
-          )}
-        >
-          <div className="flex items-center justify-between gap-2">
-            <span className="truncate text-sm font-medium">
-              {extractSender(thread.snippet)}
-            </span>
-          </div>
+      {threads.map((thread) => {
+        let relativeDate = '';
+        try {
+          relativeDate = formatDistanceToNow(new Date(thread.date), {
+            addSuffix: true,
+            locale: fr,
+          });
+        } catch {
+          relativeDate = thread.date ?? '';
+        }
 
-          <p className="line-clamp-2 text-xs text-muted-foreground">
-            {thread.snippet}
-          </p>
-
-          <div className="flex items-center gap-2">
-            {thread.matchedLead && (
-              <Badge className={cn('text-[10px]', getStatusColor(thread.matchedLead.status))}>
-                {thread.matchedLead.name}
-              </Badge>
+        return (
+          <button
+            key={thread.id}
+            onClick={() => onSelect(thread.id)}
+            className={cn(
+              'flex flex-col gap-1 border-b px-4 py-3 text-left transition-colors hover:bg-muted/50',
+              selectedId === thread.id && 'bg-muted',
             )}
-          </div>
-        </button>
-      ))}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="truncate text-sm font-semibold">
+                {extractSenderName(thread.from)}
+              </span>
+              <span className="shrink-0 text-[11px] text-muted-foreground">
+                {relativeDate}
+              </span>
+            </div>
+
+            <p className="truncate text-sm font-medium text-foreground/80">
+              {thread.subject}
+            </p>
+
+            <p className="line-clamp-1 text-xs text-muted-foreground">
+              {thread.snippet}
+            </p>
+
+            {thread.matchedLead && (
+              <div className="flex items-center gap-2">
+                <Badge className={cn('text-[10px]', getStatusColor(thread.matchedLead.status))}>
+                  {thread.matchedLead.name}
+                </Badge>
+              </div>
+            )}
+          </button>
+        );
+      })}
 
       {hasMore && onLoadMore && (
         <div className="p-3">

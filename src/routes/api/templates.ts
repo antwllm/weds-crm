@@ -43,7 +43,7 @@ router.get('/templates', async (_req, res) => {
 
     res.json(result);
   } catch (error) {
-    logger.error('Erreur lors de la recuperation des templates', { error });
+    logger.error('Erreur lors de la récupération des templates', { error });
     res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
@@ -54,7 +54,7 @@ router.post('/templates', async (req, res) => {
     const parsed = createTemplateSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
-        error: 'Donnees invalides',
+        error: 'Données invalides',
         details: parsed.error.issues,
       });
       return;
@@ -68,7 +68,7 @@ router.post('/templates', async (req, res) => {
       variables: parsed.data.variables,
     }).returning();
 
-    logger.info('Template email cree', { templateId: created.id, name: created.name });
+    logger.info('Template email créé', { templateId: created.id, name: created.name });
     res.status(201).json(created);
   } catch (error) {
     logger.error('Erreur lors de la creation du template', { error });
@@ -88,7 +88,7 @@ router.put('/templates/:id', async (req, res) => {
     const parsed = updateTemplateSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
-        error: 'Donnees invalides',
+        error: 'Données invalides',
         details: parsed.error.issues,
       });
       return;
@@ -102,11 +102,11 @@ router.put('/templates/:id', async (req, res) => {
       .returning();
 
     if (!updated) {
-      res.status(404).json({ error: 'Template non trouve' });
+      res.status(404).json({ error: 'Template non trouvé' });
       return;
     }
 
-    logger.info('Template email mis a jour', { templateId: id });
+    logger.info('Template email mis à jour', { templateId: id });
     res.json(updated);
   } catch (error) {
     logger.error('Erreur lors de la mise a jour du template', { error });
@@ -145,7 +145,7 @@ router.post('/templates/:id/preview', async (req, res) => {
     const parsed = previewSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
-        error: 'Donnees invalides',
+        error: 'Données invalides',
         details: parsed.error.issues,
       });
       return;
@@ -161,7 +161,7 @@ router.post('/templates/:id/preview', async (req, res) => {
       .limit(1);
 
     if (!template) {
-      res.status(404).json({ error: 'Template non trouve' });
+      res.status(404).json({ error: 'Template non trouvé' });
       return;
     }
 

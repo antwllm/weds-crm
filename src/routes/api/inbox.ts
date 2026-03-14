@@ -56,16 +56,55 @@ router.get('/inbox/threads', async (req, res) => {
 
     const result = await listThreads(gmail, { maxResults, pageToken, q });
 
+    function decodeHtmlEntities(str: string): string {
+      return str
+        .replace(/&#39;/g, "'")
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"');
+    }
+
+    const enriched = await Promise.all(
+      result.threads.map(async (t) => {
+        try {
+          const detail = await gmail.users.threads.get({
+            userId: 'me',
+            id: t.id!,
+            format: 'metadata',
+            metadataHeaders: ['Subject', 'From', 'Date'],
+          });
+          const headers: Array<{ name?: string | null; value?: string | null }> =
+            detail.data.messages?.[0]?.payload?.headers ?? [];
+          const getHeader = (name: string) =>
+            headers.find((h) => h.name?.toLowerCase() === name.toLowerCase())?.value ?? '';
+          return {
+            id: t.id,
+            subject: getHeader('Subject'),
+            from: getHeader('From'),
+            date: getHeader('Date'),
+            snippet: decodeHtmlEntities(t.snippet ?? ''),
+            historyId: t.historyId,
+          };
+        } catch {
+          return {
+            id: t.id,
+            subject: '',
+            from: '',
+            date: '',
+            snippet: decodeHtmlEntities(t.snippet ?? ''),
+            historyId: t.historyId,
+          };
+        }
+      }),
+    );
+
     res.json({
-      threads: result.threads.map((t) => ({
-        id: t.id,
-        snippet: t.snippet,
-        historyId: t.historyId,
-      })),
+      threads: enriched,
       nextPageToken: result.nextPageToken,
     });
   } catch (error) {
-    logger.error('Erreur lors de la recuperation des threads', { error });
+    logger.error('Erreur lors de la récupération des threads', { error });
     res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
@@ -122,7 +161,7 @@ router.get('/inbox/threads/:threadId', async (req, res) => {
       linkedLeads,
     });
   } catch (error) {
-    logger.error('Erreur lors de la recuperation du thread', { error });
+    logger.error('Erreur lors de la récupération du thread', { error });
     res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
@@ -139,7 +178,7 @@ router.post('/inbox/threads/:threadId/reply', async (req, res) => {
     const parsed = replySchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
-        error: 'Donnees invalides',
+        error: 'Données invalides',
         details: parsed.error.issues,
       });
       return;
@@ -152,18 +191,6 @@ router.post('/inbox/threads/:threadId/reply', async (req, res) => {
 
     const db = getDb();
 
-    // Record outbound email link
-    const sentMessageId = `sent-${Date.now()}`;
-    await db.insert(linkedEmails).values({
-      leadId: 0, // Placeholder -- will be matched if lead found
-      gmailMessageId: sentMessageId,
-      gmailThreadId: threadId,
-      subject,
-      snippet: body.slice(0, 200),
-      direction: 'outbound',
-      receivedAt: new Date(),
-    });
-
     // Try to match recipient to a lead and create activity
     const recipientEmail = extractEmail(to);
     const matchedLeads = await db
@@ -174,17 +201,38 @@ router.post('/inbox/threads/:threadId/reply', async (req, res) => {
 
     if (matchedLeads.length > 0) {
       const lead = matchedLeads[0];
-      await db.insert(activities).values({
-        leadId: lead.id,
-        type: 'email_sent',
-        content: `Email envoye: ${subject}`,
-        metadata: { threadId, to: recipientEmail },
-      });
+
+      // Record outbound email link only when lead is matched (avoids FK violation)
+      try {
+        const sentMessageId = `sent-${Date.now()}`;
+        await db.insert(linkedEmails).values({
+          leadId: lead.id,
+          gmailMessageId: sentMessageId,
+          gmailThreadId: threadId,
+          subject,
+          snippet: body.slice(0, 200),
+          direction: 'outbound',
+          receivedAt: new Date(),
+        });
+      } catch {
+        // Ignore insert errors — email was already sent successfully
+      }
+
+      try {
+        await db.insert(activities).values({
+          leadId: lead.id,
+          type: 'email_sent',
+          content: `Email envoyé: ${subject}`,
+          metadata: { threadId, to: recipientEmail },
+        });
+      } catch {
+        // Ignore activity insert errors
+      }
     }
 
     res.json({ status: 'sent' });
   } catch (error) {
-    logger.error('Erreur lors de l\'envoi de la reponse', { error });
+    logger.error("Erreur lors de l'envoi de la réponse", { error });
     res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
@@ -207,7 +255,7 @@ router.get('/leads/:leadId/emails', async (req, res) => {
 
     res.json({ emails });
   } catch (error) {
-    logger.error('Erreur lors de la recuperation des emails du lead', { error });
+    logger.error('Erreur lors de la récupération des emails du lead', { error });
     res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
@@ -218,7 +266,7 @@ router.post('/inbox/link-email', async (req, res) => {
     const parsed = linkEmailSchema.safeParse(req.body);
     if (!parsed.success) {
       res.status(400).json({
-        error: 'Donnees invalides',
+        error: 'Données invalides',
         details: parsed.error.issues,
       });
       return;
