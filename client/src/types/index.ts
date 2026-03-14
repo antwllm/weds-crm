@@ -88,3 +88,71 @@ export interface UpdateLeadRequest {
 export interface CreateNoteRequest {
   content: string;
 }
+
+// --- WhatsApp types ---
+
+export interface WhatsAppMessage {
+  id: number;
+  waMessageId: string;
+  direction: 'inbound' | 'outbound';
+  body: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface WhatsAppWindow {
+  isOpen: boolean;
+  expiresAt: string | null;
+}
+
+// --- Linked email type ---
+
+export interface LinkedEmail {
+  id: number;
+  gmailMessageId: string;
+  gmailThreadId: string;
+  subject: string;
+  snippet: string;
+  direction: string;
+  receivedAt: string;
+}
+
+// --- Gmail inbox types ---
+
+export interface GmailThread {
+  id: string;
+  snippet: string;
+  historyId: string;
+  matchedLead?: { id: number; name: string; status: string };
+}
+
+export interface GmailMessage {
+  id: string;
+  from: string;
+  to: string;
+  subject: string;
+  date: string;
+  body: string;
+  messageId: string;
+  inReplyTo?: string;
+  references?: string;
+}
+
+export interface ThreadDetail {
+  messages: GmailMessage[];
+  matchedLead?: { id: number; name: string; status: string };
+}
+
+export interface EmailTemplate {
+  id: number;
+  name: string;
+  subject: string;
+  body: string;
+  variables: string[];
+}
+
+export interface AiPromptConfig {
+  id: number;
+  promptTemplate: string;
+  model: string;
+}
