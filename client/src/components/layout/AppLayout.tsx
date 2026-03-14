@@ -1,18 +1,25 @@
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
-import { Menu } from 'lucide-react'
+import { Menu, PanelLeftClose, PanelLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import { Sidebar } from './Sidebar'
+import { cn } from '@/lib/utils'
 
 export function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex md:w-60 md:flex-col md:border-r">
-        <Sidebar />
+      <aside
+        className={cn(
+          'hidden md:flex md:flex-col md:border-r transition-all duration-200',
+          collapsed ? 'md:w-14' : 'md:w-60',
+        )}
+      >
+        <Sidebar collapsed={collapsed} onToggleCollapse={() => setCollapsed((c) => !c)} />
       </aside>
 
       {/* Main content area */}

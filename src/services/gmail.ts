@@ -254,8 +254,8 @@ export interface SendReplyParams {
   to: string;
   subject: string;
   body: string;
-  inReplyTo: string;
-  references: string;
+  inReplyTo?: string;
+  references?: string;
 }
 
 /**
@@ -272,8 +272,8 @@ export async function sendReply(
   const messageParts = [
     `To: ${params.to}`,
     `Subject: ${subject}`,
-    `In-Reply-To: ${params.inReplyTo}`,
-    `References: ${params.references}`,
+    ...(params.inReplyTo ? [`In-Reply-To: ${params.inReplyTo}`] : []),
+    ...(params.references ? [`References: ${params.references}`] : []),
     'MIME-Version: 1.0',
     'Content-Type: text/plain; charset="UTF-8"',
     '',

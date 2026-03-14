@@ -19,8 +19,8 @@ const replySchema = z.object({
   to: z.string().min(1, 'Le destinataire est requis'),
   subject: z.string().min(1, 'Le sujet est requis'),
   body: z.string().min(1, 'Le corps du message est requis'),
-  inReplyTo: z.string().min(1, 'In-Reply-To est requis'),
-  references: z.string().min(1, 'References est requis'),
+  inReplyTo: z.string().optional(),
+  references: z.string().optional(),
 });
 
 const linkEmailSchema = z.object({
@@ -32,6 +32,15 @@ const linkEmailSchema = z.object({
   direction: z.enum(['inbound', 'outbound']).default('inbound'),
   receivedAt: z.string().optional(),
 });
+
+function decodeHtmlEntities(str: string): string {
+  return str
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"');
+}
 
 /**
  * Extract email address from "Name <email>" format or plain email.
@@ -55,15 +64,6 @@ router.get('/inbox/threads', async (req, res) => {
     const q = (req.query.q as string) || 'in:inbox';
 
     const result = await listThreads(gmail, { maxResults, pageToken, q });
-
-    function decodeHtmlEntities(str: string): string {
-      return str
-        .replace(/&#39;/g, "'")
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"');
-    }
 
     const enriched = await Promise.all(
       result.threads.map(async (t) => {
@@ -253,7 +253,12 @@ router.get('/leads/:leadId/emails', async (req, res) => {
       .where(eq(linkedEmails.leadId, leadId))
       .orderBy(desc(linkedEmails.receivedAt));
 
-    res.json({ emails });
+    const decoded = emails.map((e) => ({
+      ...e,
+      subject: e.subject ? decodeHtmlEntities(e.subject) : e.subject,
+      snippet: e.snippet ? decodeHtmlEntities(e.snippet) : e.snippet,
+    }));
+    res.json({ emails: decoded });
   } catch (error) {
     logger.error('Erreur lors de la récupération des emails du lead', { error });
     res.status(500).json({ error: 'Erreur interne du serveur' });

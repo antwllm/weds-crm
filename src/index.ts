@@ -22,6 +22,14 @@ const port = config.PORT;
 const server = app.listen(port, async () => {
   logger.info('Weds CRM demarre', { port, environment: config.NODE_ENV });
 
+  // Log WhatsApp config status
+  logger.info('WhatsApp config', {
+    phoneNumberId: config.WHATSAPP_PHONE_NUMBER_ID ? 'SET' : 'MISSING',
+    accessToken: config.WHATSAPP_ACCESS_TOKEN ? 'SET' : 'MISSING',
+    verifyToken: config.WHATSAPP_VERIFY_TOKEN ? 'SET' : 'MISSING',
+    appSecret: config.WHATSAPP_APP_SECRET ? 'SET' : 'MISSING',
+  });
+
   // Attempt to restore Gmail client from stored tokens
   await restoreGmailClient();
 });

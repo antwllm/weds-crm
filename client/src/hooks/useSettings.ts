@@ -45,7 +45,10 @@ export interface UpdateAiPromptRequest {
 export function useTemplates() {
   return useQuery<EmailTemplate[]>({
     queryKey: ['templates'],
-    queryFn: () => apiFetch<EmailTemplate[]>('/templates'),
+    queryFn: async () => {
+      const res = await apiFetch<{ templates: EmailTemplate[] }>('/templates');
+      return res.templates;
+    },
   });
 }
 
