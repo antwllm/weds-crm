@@ -14,6 +14,8 @@ import leadsRouter from './routes/api/leads.js';
 import activitiesRouter from './routes/api/activities.js';
 import inboxRouter from './routes/api/inbox.js';
 import whatsappRouter from './routes/api/whatsapp.js';
+import templatesRouter from './routes/api/templates.js';
+import aiRouter from './routes/api/ai.js';
 import { config } from './config.js';
 
 const app = express();
@@ -22,7 +24,12 @@ const app = express();
 app.set('trust proxy', 1);
 
 // JSON body parsing (needed for Pub/Sub webhook)
-app.use(express.json());
+// The verify callback saves raw body for WhatsApp webhook signature verification
+app.use(express.json({
+  verify: (req: any, _res, buf) => {
+    req.rawBody = buf;
+  },
+}));
 
 // Session configuration with PostgreSQL store
 const PgSession = connectPgSimple(session);
@@ -58,6 +65,8 @@ app.use('/api/leads', leadsRouter);
 app.use('/api', activitiesRouter);
 app.use('/api', inboxRouter);
 app.use('/api', whatsappRouter);
+app.use('/api', templatesRouter);
+app.use('/api', aiRouter);
 
 // Serve the React SPA from client/dist (built by Docker or locally)
 const clientDist = path.join(__dirname, '..', 'client', 'dist');

@@ -171,7 +171,7 @@ describe('AI API', () => {
     mockOrderBy.mockResolvedValue([]);
     mockLimit.mockResolvedValue([]);
     mockWhere.mockReturnValue({ orderBy: mockOrderBy, limit: mockLimit, returning: mockReturning });
-    mockFrom.mockReturnValue({ where: mockWhere, orderBy: mockOrderBy });
+    mockFrom.mockReturnValue({ where: mockWhere, orderBy: mockOrderBy, limit: mockLimit });
     mockSelect.mockReturnValue({ from: mockFrom });
 
     // insert -> values -> returning
@@ -283,7 +283,7 @@ describe('AI API without API key', () => {
     mockOrderBy.mockResolvedValue([]);
     mockLimit.mockResolvedValue([]);
     mockWhere.mockReturnValue({ orderBy: mockOrderBy, limit: mockLimit, returning: mockReturning });
-    mockFrom.mockReturnValue({ where: mockWhere, orderBy: mockOrderBy });
+    mockFrom.mockReturnValue({ where: mockWhere, orderBy: mockOrderBy, limit: mockLimit });
     mockSelect.mockReturnValue({ from: mockFrom });
 
     mockReturning.mockResolvedValue([MOCK_PROMPT_CONFIG]);
