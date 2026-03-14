@@ -3,6 +3,7 @@ import { fr } from 'date-fns/locale/fr';
 import {
   Mail,
   MessageSquare,
+  MessageCircle,
   Send,
   ArrowRight,
   StickyNote,
@@ -16,6 +17,7 @@ import type { Activity, ActivityType } from '@/types';
 const ICON_MAP: Record<string, React.ElementType> = {
   Mail,
   MessageSquare,
+  MessageCircle,
   Send,
   ArrowRight,
   StickyNote,

@@ -1,9 +1,16 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Sparkles, Loader2 } from 'lucide-react';
 import { InlineField } from '@/components/leads/InlineField';
 import { ActivityTimeline } from '@/components/leads/ActivityTimeline';
 import { NoteInput } from '@/components/leads/NoteInput';
+import { LeadEmails } from '@/components/leads/LeadEmails';
+import { WhatsAppChat } from '@/components/whatsapp/WhatsAppChat';
+import { Button } from '@/components/ui/button';
 import { useUpdateLead } from '@/hooks/useLeads';
 import { useActivities } from '@/hooks/useActivities';
 import { PIPELINE_STAGES, SOURCE_BADGES } from '@/lib/constants';
+import { apiFetch } from '@/lib/api';
 import { toast } from 'sonner';
 import type { Lead } from '@/types';
 
@@ -14,6 +21,8 @@ interface LeadDetailProps {
 export function LeadDetail({ lead }: LeadDetailProps) {
   const updateLead = useUpdateLead();
   const { data: activities = [] } = useActivities(lead.id);
+  const navigate = useNavigate();
+  const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
 
   const stageOptions = PIPELINE_STAGES.map((s) => ({
     value: s.value,
@@ -52,13 +61,32 @@ export function LeadDetail({ lead }: LeadDetailProps) {
 
   function handleNameSave(part: 'first' | 'last', value: string) {
     const trimmedValue = value.trim();
-    // Use firstName/lastName derived from lead.name
-    // (now reliable thanks to optimistic update keeping lead.name fresh)
     const newFirst = part === 'first' ? trimmedValue : firstName;
     const newLast = part === 'last' ? trimmedValue : lastName;
     const fullName = [newFirst, newLast].filter(Boolean).join(' ');
     if (fullName) {
       handleSave('name', fullName);
+    }
+  }
+
+  async function handleGenerateDraft() {
+    setIsGeneratingDraft(true);
+    try {
+      const res = await apiFetch<{ draft: string }>('/ai/generate-draft', {
+        method: 'POST',
+        body: JSON.stringify({ leadId: lead.id }),
+      });
+      navigate('/inbox', {
+        state: {
+          draft: res.draft,
+          leadId: lead.id,
+          leadEmail: lead.email,
+        },
+      });
+    } catch {
+      toast.error('Erreur lors de la generation du brouillon');
+    } finally {
+      setIsGeneratingDraft(false);
     }
   }
 
@@ -132,19 +160,53 @@ export function LeadDetail({ lead }: LeadDetailProps) {
         />
       </div>
 
-      {/* Right column: Activity timeline + Note input */}
+      {/* Right column: Notes, Emails, WhatsApp, Activity timeline */}
       <div className="space-y-6">
-        <div>
-          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Historique
-          </h3>
-          <ActivityTimeline activities={activities} />
-        </div>
+        {/* Notes */}
         <div>
           <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Notes
           </h3>
           <NoteInput leadId={lead.id} />
+        </div>
+
+        {/* Emails */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              Emails
+            </h3>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleGenerateDraft}
+              disabled={isGeneratingDraft}
+            >
+              {isGeneratingDraft ? (
+                <Loader2 className="h-4 w-4 animate-spin" data-icon="inline-start" />
+              ) : (
+                <Sparkles className="h-4 w-4" data-icon="inline-start" />
+              )}
+              {isGeneratingDraft ? 'Generation...' : 'Generer un brouillon'}
+            </Button>
+          </div>
+          <LeadEmails leadId={lead.id} />
+        </div>
+
+        {/* WhatsApp */}
+        <div>
+          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            WhatsApp
+          </h3>
+          <WhatsAppChat leadId={lead.id} leadPhone={lead.phone} />
+        </div>
+
+        {/* Activity timeline */}
+        <div>
+          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            Historique d'activites
+          </h3>
+          <ActivityTimeline activities={activities} />
         </div>
       </div>
     </div>
