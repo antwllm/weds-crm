@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-06-PLAN.md
-last_updated: "2026-03-14T18:46:45Z"
+stopped_at: Completed 04-04-PLAN.md
+last_updated: "2026-03-14T18:49:03.349Z"
 last_activity: 2026-03-14 — Completed 04-06 Lead Detail WhatsApp & Emails UI
 progress:
   total_phases: 4
@@ -68,6 +68,7 @@ Progress: [█████████░] 95%
 | Phase 04 P03 | 4min | 2 tasks | 5 files |
 | Phase 04 P05 | 3min | 1 tasks | 7 files |
 | Phase 04 P06 | 3min | 2 tasks | 9 files |
+| Phase 04 P04 | 4min | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -133,6 +134,9 @@ Recent decisions affecting current work:
 - [Phase 04]: AI draft button calls POST /api/ai/generate-draft then navigates to /inbox with draft + leadId + leadEmail state
 - [Phase 04]: WhatsApp messages poll every 30s via React Query refetchInterval for near-real-time updates
 - [Phase 04]: Lead detail right column reordered: Notes -> Emails -> WhatsApp -> Historique
+- [Phase 04]: stripHtml via DOMParser for XSS-safe email body rendering instead of raw innerHTML
+- [Phase 04]: Draft-from-lead shows standalone compose when no prior email thread exists for the lead
+- [Phase 04]: Location state cleared after consuming draft to prevent stale drafts on refresh
 
 ### Pending Todos
 
@@ -148,6 +152,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T18:46:45Z
-Stopped at: Completed 04-06-PLAN.md
+Last session: 2026-03-14T18:49:03.347Z
+Stopped at: Completed 04-04-PLAN.md
 Resume file: None
