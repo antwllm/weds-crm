@@ -5,7 +5,7 @@ import { getDb } from '../../db/index.js';
 import { leads, linkedEmails, activities } from '../../db/schema.js';
 import { ensureAuthenticated } from '../../auth/middleware.js';
 import { getGmailClientInstance } from '../../services/gmail-client-holder.js';
-import { listThreads, getThread, sendReply } from '../../services/gmail.js';
+import { listThreads, getThread, sendReply, sendEmail } from '../../services/gmail.js';
 import { logger } from '../../logger.js';
 
 const router = Router();
@@ -187,7 +187,12 @@ router.post('/inbox/threads/:threadId/reply', async (req, res) => {
     const { to, subject, body, inReplyTo, references } = parsed.data;
     const threadId = req.params.threadId;
 
-    await sendReply(gmail, { threadId, to, subject, body, inReplyTo, references });
+    if (threadId === 'new') {
+      // New message (not a reply) — use sendEmail
+      await sendEmail(gmail, to, subject, body);
+    } else {
+      await sendReply(gmail, { threadId, to, subject, body, inReplyTo, references });
+    }
 
     const db = getDb();
 

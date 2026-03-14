@@ -76,6 +76,7 @@ const envSchema = z.object({
   WHATSAPP_APP_SECRET: isProduction
     ? z.string().min(1, 'WHATSAPP_APP_SECRET est requis en production')
     : z.string().optional(),
+  WHATSAPP_BUSINESS_ACCOUNT_ID: z.string().optional(),
 
   // Gmail Pub/Sub
   GMAIL_PUBSUB_TOPIC: isProduction

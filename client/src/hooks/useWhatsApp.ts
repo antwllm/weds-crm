@@ -43,3 +43,49 @@ export function useWhatsAppWindow(leadId: number) {
     enabled: !!leadId,
   });
 }
+
+interface WaTemplate {
+  name: string;
+  status: string;
+  language: string;
+}
+
+export function useWhatsAppTemplates() {
+  return useQuery<WaTemplate[]>({
+    queryKey: ['whatsapp-templates'],
+    queryFn: async () => {
+      const res = await apiFetch<{ templates: WaTemplate[] }>('/whatsapp/templates');
+      return res.templates;
+    },
+  });
+}
+
+export function useSendWhatsAppTemplate() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      leadId,
+      templateName,
+      languageCode,
+    }: {
+      leadId: number;
+      templateName: string;
+      languageCode?: string;
+    }) =>
+      apiFetch<{ status: string; waMessageId: string }>(
+        `/leads/${leadId}/whatsapp/send-template`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ templateName, languageCode }),
+        },
+      ),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['whatsapp-messages', variables.leadId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['whatsapp-window', variables.leadId],
+      });
+    },
+  });
+}

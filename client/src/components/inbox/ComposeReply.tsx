@@ -26,6 +26,7 @@ interface ComposeReplyProps {
   leadId?: number;
   initialDraft?: string;
   initialTo?: string;
+  initialSubject?: string;
 }
 
 export function ComposeReply({
@@ -34,13 +35,15 @@ export function ComposeReply({
   leadId,
   initialDraft,
   initialTo,
+  initialSubject,
 }: ComposeReplyProps) {
   const [body, setBody] = useState(initialDraft ?? '');
   const [to, setTo] = useState(initialTo ?? lastMessage?.from ?? '');
   const [subject, setSubject] = useState(
-    lastMessage?.subject
+    initialSubject ??
+    (lastMessage?.subject
       ? `Re: ${lastMessage.subject.replace(/^Re:\s*/i, '')}`
-      : '',
+      : ''),
   );
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
 

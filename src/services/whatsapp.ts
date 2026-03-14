@@ -40,6 +40,73 @@ export async function sendWhatsAppMessage(
 }
 
 /**
+ * Send a template message via WhatsApp Cloud API.
+ * Used when the 24h conversation window is expired.
+ */
+export async function sendWhatsAppTemplate(
+  phoneNumberId: string,
+  accessToken: string,
+  to: string,
+  templateName: string,
+  languageCode: string = 'fr',
+  httpClient?: { post: AxiosInstance['post'] },
+): Promise<string> {
+  const client = httpClient || axios;
+
+  const response = await client.post(
+    `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`,
+    {
+      messaging_product: 'whatsapp',
+      recipient_type: 'individual',
+      to,
+      type: 'template',
+      template: {
+        name: templateName,
+        language: { code: languageCode },
+      },
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    },
+  );
+
+  return response.data.messages[0].id;
+}
+
+/**
+ * List available message templates from WhatsApp Business.
+ */
+export async function listWhatsAppTemplates(
+  businessAccountId: string,
+  accessToken: string,
+  httpClient?: { get: AxiosInstance['get'] },
+): Promise<Array<{ name: string; status: string; language: string }>> {
+  const client = httpClient || axios;
+
+  const response = await client.get(
+    `https://graph.facebook.com/v21.0/${businessAccountId}/message_templates`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      params: {
+        fields: 'name,status,language',
+        limit: 50,
+      },
+    },
+  );
+
+  return (response.data.data || []).map((t: any) => ({
+    name: t.name,
+    status: t.status,
+    language: t.language,
+  }));
+}
+
+/**
  * Parse an incoming WhatsApp webhook payload.
  * Returns null for non-message events (status updates, etc.).
  * Returns 'Media recu' for non-text message types (V1: text only).

@@ -124,6 +124,7 @@ export default function InboxPage() {
                 leadId={standaloneCompose.leadId}
                 initialDraft={standaloneCompose.draft}
                 initialTo={standaloneCompose.to}
+                initialSubject={standaloneCompose.subject}
               />
             </div>
           ) : selectedThreadId ? (
