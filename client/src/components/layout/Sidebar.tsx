@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
   { to: '/pipeline', label: 'Pipeline', icon: LayoutDashboard },
-  { to: '/inbox', label: 'Boite de reception', icon: Mail },
-  { to: '/settings', label: 'Parametres', icon: Settings },
+  { to: '/inbox', label: 'Boîte de réception', icon: Mail },
+  { to: '/settings', label: 'Paramètres', icon: Settings },
 ] as const;
 
 interface SidebarProps {

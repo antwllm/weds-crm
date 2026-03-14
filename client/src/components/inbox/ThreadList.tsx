@@ -69,7 +69,7 @@ export function ThreadList({
             key={thread.id}
             onClick={() => onSelect(thread.id)}
             className={cn(
-              'flex flex-col gap-1 border-b px-4 py-3 text-left transition-colors hover:bg-muted/50',
+              'flex flex-col gap-1 border-b px-4 py-3 text-left transition-colors hover:bg-muted/50 overflow-hidden',
               selectedId === thread.id && 'bg-muted',
             )}
           >

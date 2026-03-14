@@ -167,29 +167,29 @@ export function ComposeReply({
       {/* Actions bar */}
       <div className="flex items-center gap-2 flex-wrap">
         {/* Template picker */}
-        {templates.length > 0 ? (
-          <Select
-            value={selectedTemplateId}
-            onValueChange={handleTemplateSelect}
-          >
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Modèle..." />
-            </SelectTrigger>
-            <SelectContent>
-              {templates.map((t) => (
-                <SelectItem key={t.id} value={String(t.id)}>
-                  {t.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : (
+        <Select
+          value={selectedTemplateId}
+          onValueChange={handleTemplateSelect}
+          disabled={templates.length === 0}
+        >
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder={templates.length === 0 ? 'Aucun modèle' : 'Modèle...'} />
+          </SelectTrigger>
+          <SelectContent>
+            {templates.map((t) => (
+              <SelectItem key={t.id} value={String(t.id)}>
+                {t.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {templates.length === 0 && (
           <button
             type="button"
             onClick={() => navigate('/settings')}
             className="text-xs text-muted-foreground underline hover:text-foreground"
           >
-            Créer un modèle
+            Créer
           </button>
         )}
 

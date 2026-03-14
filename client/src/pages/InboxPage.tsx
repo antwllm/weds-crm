@@ -50,7 +50,10 @@ export default function InboxPage() {
         setDraftLeadId(draftState.leadId);
       }
     } else {
-      // No linked emails: show standalone compose
+      // No linked emails: set draft so it appears when user selects a thread
+      setInitialDraft(draftState.draft);
+      setDraftLeadId(draftState.leadId);
+      // Also show standalone compose as fallback
       setStandaloneCompose({
         to: draftState.leadEmail ?? '',
         draft: draftState.draft,
@@ -110,8 +113,6 @@ export default function InboxPage() {
               onSelect={(id) => {
                 setSelectedThreadId(id);
                 setStandaloneCompose(null);
-                setInitialDraft(undefined);
-                setDraftLeadId(undefined);
               }}
               isLoading={isLoading}
               onLoadMore={handleLoadMore}
