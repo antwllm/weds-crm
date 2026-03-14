@@ -71,7 +71,7 @@ app.use('/api', aiRouter);
 // Serve the React SPA from client/dist (built by Docker or locally)
 const clientDist = path.join(__dirname, '..', 'client', 'dist');
 if (fs.existsSync(clientDist)) {
-  app.use(express.static(clientDist));
+  app.use(ensureAuthenticated, express.static(clientDist));
   app.get('{*path}', ensureAuthenticated, (_req, res) => {
     res.sendFile(path.join(clientDist, 'index.html'));
   });

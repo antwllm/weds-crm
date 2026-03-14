@@ -193,8 +193,8 @@ describe('Templates API', () => {
         .set('Accept', 'application/json');
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(1);
-      expect(res.body[0]).toHaveProperty('name', 'Premier contact');
+      expect(res.body.templates).toHaveLength(1);
+      expect(res.body.templates[0]).toHaveProperty('name', 'Premier contact');
     });
 
     it('returns empty array when no templates exist', async () => {
@@ -205,7 +205,7 @@ describe('Templates API', () => {
         .set('Accept', 'application/json');
 
       expect(res.status).toBe(200);
-      expect(res.body).toHaveLength(0);
+      expect(res.body.templates).toHaveLength(0);
     });
   });
 
