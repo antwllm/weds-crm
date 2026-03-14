@@ -41,7 +41,7 @@ router.get('/templates', async (_req, res) => {
       .from(emailTemplates)
       .orderBy(desc(emailTemplates.createdAt));
 
-    res.json(result);
+    res.json({ templates: result });
   } catch (error) {
     logger.error('Erreur lors de la récupération des templates', { error });
     res.status(500).json({ error: 'Erreur interne du serveur' });

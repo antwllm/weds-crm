@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ThreadList } from '@/components/inbox/ThreadList';
 import { ThreadDetail } from '@/components/inbox/ThreadDetail';
 import { ComposeReply } from '@/components/inbox/ComposeReply';
-import { useThreads, useLeadEmails } from '@/hooks/useInbox';
+import { useThreads } from '@/hooks/useInbox';
 
 interface DraftFromLeadState {
   draft?: string;
@@ -31,39 +31,24 @@ export default function InboxPage() {
 
   // Draft-from-lead flow: read location.state
   const draftState = location.state as DraftFromLeadState | null;
-  const leadIdForEmails = draftState?.leadId ?? null;
-  const { data: leadEmailsData } = useLeadEmails(leadIdForEmails);
 
   useEffect(() => {
     if (!draftState?.draft || !draftState?.leadId) return;
 
-    const emails = leadEmailsData?.emails;
-    if (emails === undefined) return; // Still loading
+    // Set draft immediately so it appears in any thread the user selects
+    setInitialDraft(draftState.draft);
+    setDraftLeadId(draftState.leadId);
 
-    if (emails.length > 0) {
-      // Find most recent email with a gmailThreadId
-      const withThread = emails.filter((e) => e.gmailThreadId);
-      if (withThread.length > 0) {
-        const mostRecent = withThread[0];
-        setSelectedThreadId(mostRecent.gmailThreadId!);
-        setInitialDraft(draftState.draft);
-        setDraftLeadId(draftState.leadId);
-      }
-    } else {
-      // No linked emails: set draft so it appears when user selects a thread
-      setInitialDraft(draftState.draft);
-      setDraftLeadId(draftState.leadId);
-      // Also show standalone compose as fallback
-      setStandaloneCompose({
-        to: draftState.leadEmail ?? '',
-        draft: draftState.draft,
-        leadId: draftState.leadId,
-      });
-    }
+    // Show standalone compose with lead email as recipient
+    setStandaloneCompose({
+      to: draftState.leadEmail ?? '',
+      draft: draftState.draft,
+      leadId: draftState.leadId,
+    });
 
     // Clear location state to prevent stale drafts on refresh
     window.history.replaceState({}, document.title);
-  }, [draftState?.draft, draftState?.leadId, draftState?.leadEmail, leadEmailsData]);
+  }, [draftState?.draft, draftState?.leadId, draftState?.leadEmail]);
 
   const handleLoadMore = () => {
     if (data?.nextPageToken) {
