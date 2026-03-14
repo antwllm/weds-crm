@@ -172,7 +172,7 @@ export function ComposeReply({
           onValueChange={handleTemplateSelect}
           disabled={templates.length === 0}
         >
-          <SelectTrigger className="w-48">
+          <SelectTrigger className="w-72">
             <SelectValue placeholder={templates.length === 0 ? 'Aucun modèle' : 'Modèle...'} />
           </SelectTrigger>
           <SelectContent>

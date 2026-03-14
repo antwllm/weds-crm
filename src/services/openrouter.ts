@@ -117,7 +117,7 @@ export async function generateDraft(
       model: 'anthropic/claude-sonnet-4',
       messages: [
         { role: 'system', content: fullSystemPrompt },
-        { role: 'user', content: `Genere un brouillon de reponse pour ${leadContext.name}.` },
+        { role: 'user', content: `Rédige uniquement le corps d'un email professionnel de réponse pour ${leadContext.name}. Pas de SMS, pas de titre, pas de markdown. Juste le texte du mail prêt à envoyer. Commence directement par la salutation.` },
       ],
     },
     {

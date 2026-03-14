@@ -82,7 +82,7 @@ export function ThreadList({
               </span>
             </div>
 
-            <p className="truncate text-sm font-medium text-foreground/80 min-w-0">
+            <p className="line-clamp-1 text-sm font-medium text-foreground/80">
               {thread.subject}
             </p>
 

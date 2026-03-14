@@ -11,6 +11,7 @@ interface DraftFromLeadState {
   draft?: string;
   leadId?: number;
   leadEmail?: string;
+  leadName?: string;
 }
 
 export default function InboxPage() {
@@ -23,6 +24,7 @@ export default function InboxPage() {
     to: string;
     draft: string;
     leadId: number;
+    subject?: string;
   } | null>(null);
 
   const { data, isLoading, error } = useThreads(pageToken);
@@ -44,6 +46,7 @@ export default function InboxPage() {
       to: draftState.leadEmail ?? '',
       draft: draftState.draft,
       leadId: draftState.leadId,
+      subject: `Votre demande - weds.fr`,
     });
 
     // Clear location state to prevent stale drafts on refresh
