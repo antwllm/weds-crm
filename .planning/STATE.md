@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 ## Current Position
 
 Phase: 4 of 4 (Gmail Inbox, AI Drafting & WhatsApp)
-Plan: 5 of 7 in current phase (completed)
+Plan: 6 of 7 in current phase (completed)
 Status: Phase 4 In Progress
-Last activity: 2026-03-14 — Completed 04-05 Settings Page with Templates & AI Prompt
+Last activity: 2026-03-14 — Completed 04-06 Lead Detail WhatsApp & Emails UI
 
-Progress: [█████████░] 91%
+Progress: [█████████░] 95%
 
 ## Performance Metrics
 
@@ -67,6 +67,7 @@ Progress: [█████████░] 91%
 | Phase 04 P02 | 3min | 2 tasks | 7 files |
 | Phase 04 P03 | 4min | 2 tasks | 5 files |
 | Phase 04 P05 | 3min | 1 tasks | 7 files |
+| Phase 04 P06 | 3min | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -129,6 +130,9 @@ Recent decisions affecting current work:
 - [Phase 04]: Variable chip insertion uses cursor position tracking via textarea ref for precise placement
 - [Phase 04]: Template form uses inline editing panel (right side on desktop) rather than modal dialogs
 - [Phase 04]: SettingsPage lazy-loaded via React.lazy consistent with InboxPage pattern
+- [Phase 04]: AI draft button calls POST /api/ai/generate-draft then navigates to /inbox with draft + leadId + leadEmail state
+- [Phase 04]: WhatsApp messages poll every 30s via React Query refetchInterval for near-real-time updates
+- [Phase 04]: Lead detail right column reordered: Notes -> Emails -> WhatsApp -> Historique
 
 ### Pending Todos
 
@@ -144,6 +148,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-14T18:47:47.437Z
-Stopped at: Completed 04-05-PLAN.md
+Last session: 2026-03-14T18:46:45Z
+Stopped at: Completed 04-06-PLAN.md
 Resume file: None
