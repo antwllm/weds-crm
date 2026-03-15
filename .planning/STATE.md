@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: "Completed quick-5: Add lead archiving and bulk actions"
-last_updated: "2026-03-15T13:54:00.000Z"
-last_activity: 2026-03-15 - Completed quick task 5: Add lead archiving and bulk actions in list view
+stopped_at: "Completed quick-7: Replace plain textarea with TipTap WYSIWYG email composer"
+last_updated: "2026-03-15T14:25:00.000Z"
+last_activity: 2026-03-15 - Completed quick task 7: TipTap WYSIWYG email composer replacing plain textarea
 progress:
   total_phases: 0
   completed_phases: 0
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 Phase: 4 of 4 (Gmail Inbox, AI Drafting & WhatsApp)
 Plan: 7 of 7 in current phase (completed)
 Status: v1.0 Milestone Complete
-Last activity: 2026-03-15 - Completed quick task 5: Add lead archiving and bulk actions in list view
+Last activity: 2026-03-15 - Completed quick task 7: TipTap WYSIWYG email composer replacing plain textarea
 
 Progress: [██████████] 100%
 
@@ -141,6 +141,7 @@ Recent decisions affecting current work:
 - [Phase 04]: Location state cleared after consuming draft to prevent stale drafts on refresh
 - [Phase 04-07]: All Phase 4 integration wiring completed in prior sessions; verification-only plan confirmed all features working
 - [Phase 04]: Input kept visible but disabled when window expired (not hidden) so user understands the constraint
+- [Quick-7]: TipTap editor uses imperative ref (forwardRef + useImperativeHandle) for template/AI/variable insertion to avoid controlled-component cursor issues
 
 ### Pending Todos
 
@@ -155,6 +156,7 @@ Recent decisions affecting current work:
 | 4 | Add column sorting by creation/event date with database-persisted preferences | 2026-03-15 | 6c26b09 | [4-add-column-sorting-by-creation-event-dat](./quick/4-add-column-sorting-by-creation-event-dat/) |
 | 5 | Add lead archiving and bulk actions in list view | 2026-03-15 | 6cd656d | [5-add-lead-archiving-bulk-actions-in-list-](./quick/5-add-lead-archiving-bulk-actions-in-list-/) |
 | 6 | Show email compose form when no linked emails | 2026-03-15 | 399f2f9 | [6-show-email-compose-form-even-when-lead-h](./quick/6-show-email-compose-form-even-when-lead-h/) |
+| 7 | Replace plain textarea with TipTap WYSIWYG email composer | 2026-03-15 | be7f7fc | [7-replace-plain-textarea-email-composer-wi](./quick/7-replace-plain-textarea-email-composer-wi/) |
 
 ### Blockers/Concerns
 
@@ -166,6 +168,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-15T14:00:00.000Z
-Stopped at: Completed quick-5: Add lead archiving and bulk actions in list view
+Last session: 2026-03-15T14:25:00.000Z
+Stopped at: Completed quick-7: Replace plain textarea with TipTap WYSIWYG email composer (checkpoint pending)
 Resume file: None
