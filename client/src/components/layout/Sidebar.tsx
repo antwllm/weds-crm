@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Mail, Settings, PanelLeftClose, PanelLeft } from 'lucide-react'
+import { LayoutDashboard, Mail, Settings, PanelLeftClose, PanelLeft, LogOut } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -60,6 +60,22 @@ export function Sidebar({ onNavigate, collapsed, onToggleCollapse }: SidebarProp
           </NavLink>
         ))}
       </nav>
+
+      {/* Logout */}
+      <div className="border-t p-2">
+        <Button
+          variant="ghost"
+          className={cn(
+            'w-full gap-2 text-muted-foreground hover:text-destructive',
+            collapsed ? 'justify-center px-2' : 'justify-start',
+          )}
+          title={collapsed ? 'Déconnexion' : undefined}
+          onClick={() => { window.location.href = '/auth/logout'; }}
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          {!collapsed && 'Déconnexion'}
+        </Button>
+      </div>
     </div>
   );
 }
