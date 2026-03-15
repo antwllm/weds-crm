@@ -1,6 +1,14 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Trash2, Loader2, RefreshCw, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,8 +21,9 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { LeadDetail } from '@/components/leads/LeadDetail';
-import { useLeads, useDeleteLead } from '@/hooks/useLeads';
+import { useLeads, useDeleteLead, useUpdateLead } from '@/hooks/useLeads';
 import { syncLeadToPipedrive } from '@/lib/api';
+import { PIPELINE_STAGES } from '@/lib/constants';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -26,10 +35,25 @@ export function LeadDetailPage() {
 
   const { data: leads, isLoading } = useLeads();
   const deleteLead = useDeleteLead();
+  const updateLead = useUpdateLead();
   const queryClient = useQueryClient();
   const [isSyncing, setIsSyncing] = useState(false);
 
   const lead = leads?.find((l) => l.id === leadId);
+
+  function handleStatusChange(newStatus: string | null) {
+    if (!newStatus || !lead) return;
+    updateLead.mutate(
+      { id: leadId, data: { status: newStatus } },
+      {
+        onSuccess: () => {
+          toast.success('Statut mis a jour');
+          queryClient.invalidateQueries({ queryKey: ['leads'] });
+        },
+        onError: () => toast.error('Erreur lors de la mise a jour du statut'),
+      }
+    );
+  }
 
   async function handleSync() {
     setIsSyncing(true);
@@ -91,6 +115,31 @@ export function LeadDetailPage() {
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <h1 className="text-xl font-bold">{lead.name}</h1>
+          <Select value={lead.status || 'nouveau'} onValueChange={handleStatusChange}>
+            <SelectTrigger className="border-none shadow-none p-0 h-auto focus:ring-0">
+              <SelectValue>
+                {(() => {
+                  const stage = PIPELINE_STAGES.find((s) => s.value === (lead.status || 'nouveau'));
+                  return stage ? (
+                    <Badge variant="secondary" className={`text-xs ${stage.color}`}>
+                      {stage.label}
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary" className="text-xs">{lead.status}</Badge>
+                  );
+                })()}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {PIPELINE_STAGES.map((stage) => (
+                <SelectItem key={stage.value} value={stage.value}>
+                  <Badge variant="secondary" className={`text-xs ${stage.color}`}>
+                    {stage.label}
+                  </Badge>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex items-center gap-2">
