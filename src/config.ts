@@ -23,16 +23,10 @@ const envSchema = z.object({
   // Session
   SESSION_SECRET: z.string().min(1, 'SESSION_SECRET est requis'),
 
-  // Twilio SMS (requis en production, optionnel en dev/test)
-  TWILIO_ACCOUNT_SID: isProduction
-    ? z.string().min(1, 'TWILIO_ACCOUNT_SID est requis en production')
-    : z.string().optional(),
-  TWILIO_AUTH_TOKEN: isProduction
-    ? z.string().min(1, 'TWILIO_AUTH_TOKEN est requis en production')
-    : z.string().optional(),
-  TWILIO_PHONE_NUMBER: isProduction
-    ? z.string().min(1, 'TWILIO_PHONE_NUMBER est requis en production')
-    : z.string().optional(),
+  // Twilio SMS (optionnel — remplacé par WhatsApp)
+  TWILIO_ACCOUNT_SID: z.string().optional(),
+  TWILIO_AUTH_TOKEN: z.string().optional(),
+  TWILIO_PHONE_NUMBER: z.string().optional(),
 
   // Free Mobile SMS (requis en production, optionnel en dev/test)
   FREE_MOBILE_USER: isProduction
