@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { eq, and, gte, lte, desc } from 'drizzle-orm';
 import { getDb } from '../../db/index.js';
-import { leads, activities } from '../../db/schema.js';
+import { leads, activities, userPreferences } from '../../db/schema.js';
 import { ensureAuthenticated } from '../../auth/middleware.js';
 import { logger } from '../../logger.js';
 import { syncLeadToPipedrive } from '../../services/pipedrive/sync-push.js';
@@ -67,6 +67,89 @@ router.get('/', async (req, res) => {
     res.json(result);
   } catch (error) {
     logger.error('Erreur lors de la recuperation des leads', { error });
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+// --- GET /api/leads/preferences ---
+router.get('/preferences', async (req, res) => {
+  try {
+    const db = getDb();
+    const email = (req.user as any)?.email || process.env.ALLOWED_USER_EMAIL || '';
+
+    const [prefs] = await db
+      .select()
+      .from(userPreferences)
+      .where(eq(userPreferences.userEmail, email))
+      .limit(1);
+
+    if (!prefs) {
+      res.json({ filters: {}, sortBy: 'createdAt', sortDirection: 'desc' });
+      return;
+    }
+
+    res.json({
+      filters: prefs.filters ?? {},
+      sortBy: prefs.sortBy ?? 'createdAt',
+      sortDirection: prefs.sortDirection ?? 'desc',
+    });
+  } catch (error) {
+    logger.error('Erreur lors de la recuperation des preferences', { error });
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+// --- PUT /api/leads/preferences ---
+const preferencesSchema = z.object({
+  filters: z
+    .object({
+      status: z.string().optional(),
+      source: z.string().optional(),
+      dateFrom: z.string().optional(),
+      dateTo: z.string().optional(),
+    })
+    .optional(),
+  sortBy: z.enum(['createdAt', 'eventDate']),
+  sortDirection: z.enum(['asc', 'desc']),
+});
+
+router.put('/preferences', async (req, res) => {
+  try {
+    const parsed = preferencesSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({
+        error: 'Donnees invalides',
+        details: parsed.error.issues,
+      });
+      return;
+    }
+
+    const db = getDb();
+    const email = (req.user as any)?.email || process.env.ALLOWED_USER_EMAIL || '';
+    const { filters, sortBy, sortDirection } = parsed.data;
+
+    await db
+      .insert(userPreferences)
+      .values({
+        userEmail: email,
+        filters: filters ?? {},
+        sortBy,
+        sortDirection,
+        updatedAt: new Date(),
+      })
+      .onConflictDoUpdate({
+        target: userPreferences.userEmail,
+        set: {
+          filters: filters ?? {},
+          sortBy,
+          sortDirection,
+          updatedAt: new Date(),
+        },
+      });
+
+    res.json({ filters: filters ?? {}, sortBy, sortDirection });
+  } catch (error) {
+    logger.error('Erreur lors de la sauvegarde des preferences', { error });
     res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });

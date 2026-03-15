@@ -139,3 +139,14 @@ export const aiPromptConfig = pgTable('ai_prompt_config', {
   model: varchar('model', { length: 100 }).default('anthropic/claude-sonnet-4'),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
+
+// --- User preferences (filter/sort persistence) ---
+
+export const userPreferences = pgTable('user_preferences', {
+  id: serial('id').primaryKey(),
+  userEmail: varchar('user_email', { length: 255 }).notNull().unique(),
+  filters: jsonb('filters'), // {status?, source?, dateFrom?, dateTo?}
+  sortBy: varchar('sort_by', { length: 20 }).default('createdAt'),
+  sortDirection: varchar('sort_direction', { length: 4 }).default('desc'),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});

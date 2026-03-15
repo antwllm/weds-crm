@@ -65,6 +65,14 @@ export interface LeadFilters {
   source?: string;
   dateFrom?: string;
   dateTo?: string;
+  sortBy?: 'createdAt' | 'eventDate';
+  sortDirection?: 'asc' | 'desc';
+}
+
+export interface UserPreferences {
+  filters: LeadFilters;
+  sortBy: 'createdAt' | 'eventDate';
+  sortDirection: 'asc' | 'desc';
 }
 
 export interface CreateLeadRequest {
