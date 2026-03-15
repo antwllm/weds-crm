@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-10)
 Phase: 4 of 4 (Gmail Inbox, AI Drafting & WhatsApp)
 Plan: 6 of 7 in current phase (completed)
 Status: Phase 4 In Progress
-Last activity: 2026-03-14 — Completed 04-06 Lead Detail WhatsApp & Emails UI
+Last activity: 2026-03-15 - Completed quick task 1: Execute all 8 pending todos
 
 Progress: [█████████░] 95%
 
@@ -141,6 +141,12 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 None yet.
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 1 | Execute all 8 pending todos: fix firstname bug, fix accents, add euro to budget, color-code statuses, remove source column, collapse activity history, condense lead info, reorganize lead detail layout | 2026-03-15 | d142dfa | [1-execute-all-8-pending-todos-fix-firstnam](./quick/1-execute-all-8-pending-todos-fix-firstnam/) |
 
 ### Blockers/Concerns
 
