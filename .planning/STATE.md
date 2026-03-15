@@ -140,7 +140,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+5 pending — /gsd:check-todos to review
 
 ### Quick Tasks Completed
 
