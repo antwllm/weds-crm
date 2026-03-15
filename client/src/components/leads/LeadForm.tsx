@@ -125,7 +125,7 @@ export function LeadForm() {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Telephone</label>
+        <label className="text-sm font-medium">T\u00e9l\u00e9phone</label>
         <Input
           type="tel"
           value={phone}
@@ -135,11 +135,11 @@ export function LeadForm() {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Date de l'evenement</label>
+        <label className="text-sm font-medium">Date de l'\u00e9v\u00e9nement</label>
         <Input
+          type="date"
           value={eventDate}
           onChange={(e) => setEventDate(e.target.value)}
-          placeholder="Ex: 15 juin 2026"
         />
       </div>
 

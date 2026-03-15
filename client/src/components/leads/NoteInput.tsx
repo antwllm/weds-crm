@@ -19,7 +19,7 @@ export function NoteInput({ leadId }: NoteInputProps) {
       {
         onSuccess: () => {
           setContent('');
-          toast.success('Note ajoutee');
+          toast.success('Note ajout\u00e9e');
         },
         onError: () => {
           toast.error("Erreur lors de l'ajout de la note");

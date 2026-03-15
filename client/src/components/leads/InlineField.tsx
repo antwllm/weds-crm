@@ -17,6 +17,8 @@ interface InlineFieldProps {
   type?: 'text' | 'email' | 'tel' | 'date' | 'number' | 'textarea' | 'select';
   placeholder?: string;
   options?: Array<{ value: string; label: string }>;
+  displayValue?: string;
+  renderValue?: (value: string) => React.ReactNode;
 }
 
 export function InlineField({
@@ -26,13 +28,19 @@ export function InlineField({
   type = 'text',
   placeholder = '',
   options = [],
+  displayValue,
+  renderValue,
 }: InlineFieldProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+  const editingRef = useRef(false);
 
   useEffect(() => {
-    setDraft(value);
+    // Don't reset draft while user is actively editing (avoids stale closure overwrites)
+    if (!editingRef.current) {
+      setDraft(value);
+    }
   }, [value]);
 
   useEffect(() => {
@@ -43,6 +51,7 @@ export function InlineField({
 
   function handleSave() {
     setEditing(false);
+    editingRef.current = false;
     const trimmed = draft.trim();
     if (trimmed !== value) {
       if (type === 'number') {
@@ -57,6 +66,7 @@ export function InlineField({
   function handleCancel() {
     setDraft(value);
     setEditing(false);
+    editingRef.current = false;
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -140,11 +150,13 @@ export function InlineField({
         'cursor-pointer rounded-md px-2 py-1.5 transition-colors hover:bg-muted',
         'space-y-0.5'
       )}
-      onClick={() => setEditing(true)}
+      onClick={() => { setEditing(true); editingRef.current = true; }}
     >
       <span className="text-sm text-muted-foreground">{label}</span>
       <div className="text-sm font-medium">
-        {displayLabel || value || <span className="text-muted-foreground">--</span>}
+        {renderValue
+          ? renderValue(value)
+          : displayValue || displayLabel || value || <span className="text-muted-foreground">--</span>}
       </div>
     </div>
   );

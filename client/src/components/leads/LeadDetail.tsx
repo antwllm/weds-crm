@@ -7,12 +7,20 @@ import { NoteInput } from '@/components/leads/NoteInput';
 import { LeadEmails } from '@/components/leads/LeadEmails';
 import { WhatsAppChat } from '@/components/whatsapp/WhatsAppChat';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useUpdateLead } from '@/hooks/useLeads';
 import { useActivities } from '@/hooks/useActivities';
 import { PIPELINE_STAGES, SOURCE_BADGES } from '@/lib/constants';
 import { apiFetch } from '@/lib/api';
 import { toast } from 'sonner';
 import type { Lead } from '@/types';
+
+const budgetFormatter = new Intl.NumberFormat('fr-FR', {
+  style: 'currency',
+  currency: 'EUR',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
 
 interface LeadDetailProps {
   lead: Lead;
@@ -61,8 +69,12 @@ export function LeadDetail({ lead }: LeadDetailProps) {
 
   function handleNameSave(part: 'first' | 'last', value: string) {
     const trimmedValue = value.trim();
-    const newFirst = part === 'first' ? trimmedValue : firstName;
-    const newLast = part === 'last' ? trimmedValue : lastName;
+    // Re-read current name at save time to avoid stale closure
+    const currentParts = (lead.name || '').split(' ');
+    const currentFirst = currentParts[0] || '';
+    const currentLast = currentParts.slice(1).join(' ') || '';
+    const newFirst = part === 'first' ? trimmedValue : currentFirst;
+    const newLast = part === 'last' ? trimmedValue : currentLast;
     const fullName = [newFirst, newLast].filter(Boolean).join(' ');
     if (fullName) {
       handleSave('name', fullName);
@@ -118,14 +130,14 @@ export function LeadDetail({ lead }: LeadDetailProps) {
           placeholder="email@exemple.fr"
         />
         <InlineField
-          label="Telephone"
+          label="T\u00e9l\u00e9phone"
           value={lead.phone || ''}
           onSave={(v) => handleSave('phone', v)}
           type="tel"
           placeholder="+33..."
         />
         <InlineField
-          label="Date de l'événement"
+          label="Date de l'\u00e9v\u00e9nement"
           value={lead.eventDate || ''}
           onSave={(v) => handleSave('eventDate', v)}
           type="date"
@@ -136,6 +148,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
           onSave={(v) => handleSave('budget', v)}
           type="number"
           placeholder="0"
+          displayValue={lead.budget != null ? budgetFormatter.format(lead.budget) : undefined}
         />
         <InlineField
           label="Source"
@@ -150,6 +163,15 @@ export function LeadDetail({ lead }: LeadDetailProps) {
           onSave={(v) => handleSave('status', v)}
           type="select"
           options={stageOptions}
+          renderValue={(v) => {
+            const stage = PIPELINE_STAGES.find((s) => s.value === v);
+            if (!stage) return v;
+            return (
+              <Badge variant="secondary" className={`text-xs ${stage.color}`}>
+                {stage.label}
+              </Badge>
+            );
+          }}
         />
         <InlineField
           label="Message"

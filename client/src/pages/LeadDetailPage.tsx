@@ -35,10 +35,10 @@ export function LeadDetailPage() {
     setIsSyncing(true);
     try {
       await syncLeadToPipedrive(leadId);
-      toast.success('Synchronisation Pipedrive reussie');
+      toast.success('Synchronisation Pipedrive r\u00e9ussie');
       queryClient.invalidateQueries({ queryKey: ['leads'] });
     } catch {
-      toast.error('Echec de la synchronisation Pipedrive');
+      toast.error('\u00c9chec de la synchronisation Pipedrive');
     } finally {
       setIsSyncing(false);
     }
@@ -47,7 +47,7 @@ export function LeadDetailPage() {
   function handleDelete() {
     deleteLead.mutate(leadId, {
       onSuccess: () => {
-        toast.success('Lead supprime');
+        toast.success('Lead supprim\u00e9');
         navigate('/pipeline');
       },
       onError: () => {
@@ -127,8 +127,8 @@ export function LeadDetailPage() {
             <AlertDialogHeader>
               <AlertDialogTitle>Supprimer ce lead ?</AlertDialogTitle>
               <AlertDialogDescription>
-                Cette action est irreversible. Toutes les activites et notes
-                associees seront egalement supprimees.
+                Cette action est irr\u00e9versible. Toutes les activit\u00e9s et notes
+                associ\u00e9es seront \u00e9galement supprim\u00e9es.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

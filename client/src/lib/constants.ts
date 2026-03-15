@@ -45,6 +45,6 @@ export const ACTIVITY_TYPE_LABELS: Record<ActivityType, ActivityTypeInfo> = {
   duplicate_inquiry: { label: 'Demande en double', color: 'text-yellow-600', icon: 'Copy' },
   notification_failed: { label: 'Notification \u00e9chou\u00e9e', color: 'text-red-600', icon: 'AlertTriangle' },
   pipedrive_synced: { label: 'Sync Pipedrive', color: 'text-purple-600', icon: 'RefreshCw' },
-  whatsapp_sent: { label: 'WhatsApp envoye', color: 'text-green-600', icon: 'MessageCircle' },
-  whatsapp_received: { label: 'WhatsApp recu', color: 'text-teal-600', icon: 'MessageCircle' },
+  whatsapp_sent: { label: 'WhatsApp envoy\u00e9', color: 'text-green-600', icon: 'MessageCircle' },
+  whatsapp_received: { label: 'WhatsApp re\u00e7u', color: 'text-teal-600', icon: 'MessageCircle' },
 };

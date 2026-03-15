@@ -46,7 +46,7 @@ export function ActivityTimeline({ activities }: ActivityTimelineProps) {
   if (!activities.length) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
-        Aucune activite
+        Aucune activit\u00e9
       </p>
     );
   }
