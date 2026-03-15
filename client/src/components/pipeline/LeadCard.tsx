@@ -3,7 +3,6 @@ import { format, parseISO, isValid } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Calendar, Banknote } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { SourceBadge } from '@/components/leads/SourceBadge';
 import type { Lead } from '@/types';
 
 interface LeadCardProps {
@@ -67,7 +66,6 @@ export function LeadCard({
           <span className="text-sm font-medium leading-tight truncate">
             {lead.name}
           </span>
-          {lead.source && <SourceBadge source={lead.source} />}
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground">
           {formattedDate && (

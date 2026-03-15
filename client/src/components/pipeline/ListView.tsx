@@ -14,7 +14,6 @@ import { format, parseISO, isValid } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { ArrowUpDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { SourceBadge } from '@/components/leads/SourceBadge';
 import { PIPELINE_STAGES } from '@/lib/constants';
 import type { Lead } from '@/types';
 
@@ -99,14 +98,6 @@ const columns: ColumnDef<Lead>[] = [
     cell: ({ row }) => {
       const budget = row.getValue('budget') as number | null;
       return budget != null ? budgetFormatter.format(budget) : '-';
-    },
-  },
-  {
-    accessorKey: 'source',
-    header: 'Source',
-    cell: ({ row }) => {
-      const source = row.getValue('source') as string | null;
-      return source ? <SourceBadge source={source} /> : '-';
     },
   },
   {

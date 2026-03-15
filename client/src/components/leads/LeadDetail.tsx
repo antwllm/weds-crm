@@ -8,6 +8,7 @@ import { LeadEmails } from '@/components/leads/LeadEmails';
 import { WhatsAppChat } from '@/components/whatsapp/WhatsAppChat';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useUpdateLead } from '@/hooks/useLeads';
 import { useActivities } from '@/hooks/useActivities';
 import { PIPELINE_STAGES, SOURCE_BADGES } from '@/lib/constants';
@@ -103,16 +104,16 @@ export function LeadDetail({ lead }: LeadDetailProps) {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-2">
-      {/* Left column: Editable fields */}
-      <div className="space-y-1">
-        <div className="grid grid-cols-2 gap-4">
+    <div className="flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-6">
+      {/* Left sidebar: Condensed fields + Activity timeline */}
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-0">
           <InlineField
-            label="Prénom"
+            label="Pr\u00e9nom"
             value={firstName}
             onSave={(v) => handleNameSave('first', v)}
             type="text"
-            placeholder="Prénom"
+            placeholder="Pr\u00e9nom"
           />
           <InlineField
             label="Nom"
@@ -121,58 +122,58 @@ export function LeadDetail({ lead }: LeadDetailProps) {
             type="text"
             placeholder="Nom"
           />
+          <InlineField
+            label="Email"
+            value={lead.email || ''}
+            onSave={(v) => handleSave('email', v)}
+            type="email"
+            placeholder="email@exemple.fr"
+          />
+          <InlineField
+            label="T\u00e9l\u00e9phone"
+            value={lead.phone || ''}
+            onSave={(v) => handleSave('phone', v)}
+            type="tel"
+            placeholder="+33..."
+          />
+          <InlineField
+            label="Date de l'\u00e9v\u00e9nement"
+            value={lead.eventDate || ''}
+            onSave={(v) => handleSave('eventDate', v)}
+            type="date"
+          />
+          <InlineField
+            label="Budget"
+            value={lead.budget != null ? String(lead.budget) : ''}
+            onSave={(v) => handleSave('budget', v)}
+            type="number"
+            placeholder="0"
+            displayValue={lead.budget != null ? budgetFormatter.format(lead.budget) : undefined}
+          />
+          <InlineField
+            label="Source"
+            value={lead.source || ''}
+            onSave={(v) => handleSave('source', v)}
+            type="select"
+            options={sourceOptions}
+          />
+          <InlineField
+            label="Statut"
+            value={lead.status || 'nouveau'}
+            onSave={(v) => handleSave('status', v)}
+            type="select"
+            options={stageOptions}
+            renderValue={(v) => {
+              const stage = PIPELINE_STAGES.find((s) => s.value === v);
+              if (!stage) return v;
+              return (
+                <Badge variant="secondary" className={`text-xs ${stage.color}`}>
+                  {stage.label}
+                </Badge>
+              );
+            }}
+          />
         </div>
-        <InlineField
-          label="Email"
-          value={lead.email || ''}
-          onSave={(v) => handleSave('email', v)}
-          type="email"
-          placeholder="email@exemple.fr"
-        />
-        <InlineField
-          label="T\u00e9l\u00e9phone"
-          value={lead.phone || ''}
-          onSave={(v) => handleSave('phone', v)}
-          type="tel"
-          placeholder="+33..."
-        />
-        <InlineField
-          label="Date de l'\u00e9v\u00e9nement"
-          value={lead.eventDate || ''}
-          onSave={(v) => handleSave('eventDate', v)}
-          type="date"
-        />
-        <InlineField
-          label="Budget"
-          value={lead.budget != null ? String(lead.budget) : ''}
-          onSave={(v) => handleSave('budget', v)}
-          type="number"
-          placeholder="0"
-          displayValue={lead.budget != null ? budgetFormatter.format(lead.budget) : undefined}
-        />
-        <InlineField
-          label="Source"
-          value={lead.source || ''}
-          onSave={(v) => handleSave('source', v)}
-          type="select"
-          options={sourceOptions}
-        />
-        <InlineField
-          label="Statut"
-          value={lead.status || 'nouveau'}
-          onSave={(v) => handleSave('status', v)}
-          type="select"
-          options={stageOptions}
-          renderValue={(v) => {
-            const stage = PIPELINE_STAGES.find((s) => s.value === v);
-            if (!stage) return v;
-            return (
-              <Badge variant="secondary" className={`text-xs ${stage.color}`}>
-                {stage.label}
-              </Badge>
-            );
-          }}
-        />
         <InlineField
           label="Message"
           value={lead.message || ''}
@@ -180,24 +181,30 @@ export function LeadDetail({ lead }: LeadDetailProps) {
           type="textarea"
           placeholder="Message du lead..."
         />
+
+        {/* Activity timeline */}
+        <div>
+          <h3 className="mb-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+            Historique
+          </h3>
+          <ActivityTimeline activities={activities} />
+        </div>
       </div>
 
-      {/* Right column: Notes, Emails, WhatsApp, Activity timeline */}
-      <div className="space-y-6">
-        {/* Notes */}
-        <div>
-          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Notes
-          </h3>
-          <NoteInput leadId={lead.id} />
-        </div>
+      {/* Right content area: Tabbed interface */}
+      <Tabs defaultValue="notes">
+        <TabsList>
+          <TabsTrigger value="notes">Notes</TabsTrigger>
+          <TabsTrigger value="emails">Emails</TabsTrigger>
+          <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
+        </TabsList>
 
-        {/* Emails */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-              Emails
-            </h3>
+        <TabsContent value="notes" className="mt-4">
+          <NoteInput leadId={lead.id} />
+        </TabsContent>
+
+        <TabsContent value="emails" className="mt-4">
+          <div className="mb-3">
             <Button
               variant="outline"
               size="sm"
@@ -209,28 +216,16 @@ export function LeadDetail({ lead }: LeadDetailProps) {
               ) : (
                 <Sparkles className="h-4 w-4" data-icon="inline-start" />
               )}
-              {isGeneratingDraft ? 'Génération...' : 'Générer un brouillon'}
+              {isGeneratingDraft ? 'G\u00e9n\u00e9ration...' : 'G\u00e9n\u00e9rer un brouillon'}
             </Button>
           </div>
           <LeadEmails leadId={lead.id} />
-        </div>
+        </TabsContent>
 
-        {/* WhatsApp */}
-        <div>
-          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            WhatsApp
-          </h3>
+        <TabsContent value="whatsapp" className="mt-4">
           <WhatsAppChat leadId={lead.id} leadPhone={lead.phone} />
-        </div>
-
-        {/* Activity timeline */}
-        <div>
-          <h3 className="mb-3 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-            Historique d'activités
-          </h3>
-          <ActivityTimeline activities={activities} />
-        </div>
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

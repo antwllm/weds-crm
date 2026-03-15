@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import {
@@ -43,6 +44,8 @@ interface ActivityTimelineProps {
 }
 
 export function ActivityTimeline({ activities }: ActivityTimelineProps) {
+  const [expanded, setExpanded] = useState(false);
+
   if (!activities.length) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
@@ -51,12 +54,14 @@ export function ActivityTimeline({ activities }: ActivityTimelineProps) {
     );
   }
 
+  const visibleActivities = expanded ? activities : activities.slice(0, 3);
+
   return (
     <div className="relative space-y-0">
       {/* Vertical connecting line */}
       <div className="absolute left-3.5 top-2 bottom-2 w-px bg-border" />
 
-      {activities.map((activity) => {
+      {visibleActivities.map((activity) => {
         const typeInfo = ACTIVITY_TYPE_LABELS[activity.type as ActivityType];
         const IconComponent = typeInfo ? ICON_MAP[typeInfo.icon] : Mail;
         const colorClass = typeInfo?.color || 'text-gray-500';
@@ -95,6 +100,23 @@ export function ActivityTimeline({ activities }: ActivityTimelineProps) {
           </div>
         );
       })}
+
+      {activities.length > 3 && !expanded && (
+        <button
+          className="mt-2 text-xs text-primary hover:underline"
+          onClick={() => setExpanded(true)}
+        >
+          Voir les {activities.length - 3} activit\u00e9s pr\u00e9c\u00e9dentes
+        </button>
+      )}
+      {activities.length > 3 && expanded && (
+        <button
+          className="mt-2 text-xs text-muted-foreground hover:underline"
+          onClick={() => setExpanded(false)}
+        >
+          R\u00e9duire
+        </button>
+      )}
     </div>
   );
 }
