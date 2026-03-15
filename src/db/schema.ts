@@ -7,6 +7,7 @@ import {
   integer,
   jsonb,
   pgEnum,
+  boolean,
 } from 'drizzle-orm/pg-core';
 
 // --- Enums ---
@@ -49,6 +50,7 @@ export const leads = pgTable('leads', {
   gmailMessageId: varchar('gmail_message_id', { length: 255 }),
   pipedrivePersonId: integer('pipedrive_person_id'), // Phase 3
   pipedriveDealId: integer('pipedrive_deal_id'), // Phase 3
+  archived: boolean('archived').default(false),
   lastSyncOrigin: varchar('last_sync_origin', { length: 10 }), // 'crm' | 'pipedrive' | null
   lastSyncAt: timestamp('last_sync_at'), // When last sync occurred (loop prevention)
   createdAt: timestamp('created_at').defaultNow(),

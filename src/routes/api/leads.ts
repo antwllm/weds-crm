@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { eq, and, gte, lte, desc } from 'drizzle-orm';
+import { eq, and, gte, lte, desc, inArray } from 'drizzle-orm';
 import { getDb } from '../../db/index.js';
 import { leads, activities, userPreferences } from '../../db/schema.js';
 import { ensureAuthenticated } from '../../auth/middleware.js';
@@ -33,15 +33,21 @@ const updateLeadSchema = z.object({
   budget: z.number().int().nullable().optional(),
   source: z.string().optional(),
   status: z.enum(['nouveau', 'contacte', 'rdv', 'devis_envoye', 'signe', 'perdu']).optional(),
+  archived: z.boolean().optional(),
 });
 
 // --- GET /api/leads ---
 router.get('/', async (req, res) => {
   try {
-    const { status, source, dateFrom, dateTo } = req.query;
+    const { status, source, dateFrom, dateTo, includeArchived } = req.query;
     const db = getDb();
 
     const conditions: any[] = [];
+
+    // Hide archived leads by default unless explicitly requested
+    if (includeArchived !== 'true') {
+      conditions.push(eq(leads.archived, false));
+    }
 
     if (status && typeof status === 'string') {
       conditions.push(eq(leads.status, status as any));
@@ -329,6 +335,114 @@ router.post('/:id/sync-pipedrive', async (req, res) => {
       error: error instanceof Error ? error.message : String(error),
     });
     res.status(500).json({ error: 'Echec de synchronisation Pipedrive' });
+  }
+});
+
+// --- POST /api/leads/bulk-archive ---
+const bulkArchiveSchema = z.object({
+  ids: z.array(z.number().int()).min(1, 'Au moins un ID requis'),
+  archived: z.boolean(),
+});
+
+router.post('/bulk-archive', async (req, res) => {
+  try {
+    const parsed = bulkArchiveSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Donnees invalides', details: parsed.error.issues });
+      return;
+    }
+
+    const db = getDb();
+    const { ids, archived } = parsed.data;
+
+    const result = await db
+      .update(leads)
+      .set({ archived, updatedAt: new Date() })
+      .where(inArray(leads.id, ids));
+
+    logger.info(archived ? 'Leads archives en masse' : 'Leads desarchives en masse', { ids });
+    res.json({ updated: ids.length });
+  } catch (error) {
+    logger.error('Erreur lors de l\'archivage en masse', { error });
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+// --- POST /api/leads/bulk-delete ---
+const bulkDeleteSchema = z.object({
+  ids: z.array(z.number().int()).min(1, 'Au moins un ID requis'),
+});
+
+router.post('/bulk-delete', async (req, res) => {
+  try {
+    const parsed = bulkDeleteSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Donnees invalides', details: parsed.error.issues });
+      return;
+    }
+
+    const db = getDb();
+    const { ids } = parsed.data;
+
+    // Delete activities first (foreign key constraint)
+    await db.delete(activities).where(inArray(activities.leadId, ids));
+    // Delete leads
+    await db.delete(leads).where(inArray(leads.id, ids));
+
+    logger.info('Leads supprimes en masse', { ids });
+    res.json({ deleted: ids.length });
+  } catch (error) {
+    logger.error('Erreur lors de la suppression en masse', { error });
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+// --- POST /api/leads/bulk-status ---
+const bulkStatusSchema = z.object({
+  ids: z.array(z.number().int()).min(1, 'Au moins un ID requis'),
+  status: z.enum(['nouveau', 'contacte', 'rdv', 'devis_envoye', 'signe', 'perdu']),
+});
+
+router.post('/bulk-status', async (req, res) => {
+  try {
+    const parsed = bulkStatusSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: 'Donnees invalides', details: parsed.error.issues });
+      return;
+    }
+
+    const db = getDb();
+    const { ids, status } = parsed.data;
+
+    // Get existing statuses for activity logging
+    const existingLeads = await db
+      .select({ id: leads.id, status: leads.status })
+      .from(leads)
+      .where(inArray(leads.id, ids));
+
+    // Update all leads
+    await db
+      .update(leads)
+      .set({ status, updatedAt: new Date() })
+      .where(inArray(leads.id, ids));
+
+    // Create status_change activity for each lead
+    const activityValues = existingLeads.map((lead) => ({
+      leadId: lead.id,
+      type: 'status_change' as const,
+      content: `Statut change de ${lead.status} a ${status} (en masse)`,
+      metadata: { from: lead.status, to: status },
+    }));
+
+    if (activityValues.length > 0) {
+      await db.insert(activities).values(activityValues);
+    }
+
+    logger.info('Statut modifie en masse', { ids, status });
+    res.json({ updated: existingLeads.length });
+  } catch (error) {
+    logger.error('Erreur lors du changement de statut en masse', { error });
+    res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
 

@@ -42,6 +42,7 @@ export interface Lead {
   gmailMessageId: string | null;
   pipedrivePersonId: number | null;
   pipedriveDealId: number | null;
+  archived: boolean;
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -67,6 +68,7 @@ export interface LeadFilters {
   dateTo?: string;
   sortBy?: 'createdAt' | 'eventDate';
   sortDirection?: 'asc' | 'desc';
+  includeArchived?: string;
 }
 
 export interface UserPreferences {
