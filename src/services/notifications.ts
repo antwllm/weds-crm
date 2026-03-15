@@ -42,11 +42,9 @@ export async function dispatchNotifications(
     },
   ];
 
-  // Skip WhatsApp if not configured or no phone
-  const whatsappEnabled = !!(config.WHATSAPP_PHONE_NUMBER_ID && config.WHATSAPP_ACCESS_TOKEN && lead.phone);
-  if (!whatsappEnabled) {
-    logger.info('WhatsApp non configure ou pas de telephone -- message prospect desactive');
-  }
+  // WhatsApp desactive temporairement
+  const whatsappEnabled = false;
+  logger.info('WhatsApp desactive temporairement -- message prospect non envoye');
 
   // Fire notifications independently
   const results = await Promise.allSettled([
