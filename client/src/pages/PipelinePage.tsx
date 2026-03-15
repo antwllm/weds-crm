@@ -18,8 +18,15 @@ export function PipelinePage() {
   const [sortBy, setSortBy] = useState<'createdAt' | 'eventDate'>('createdAt');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [prefsLoaded, setPrefsLoaded] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
 
-  const { data: leads = [], isLoading } = useLeads(filters);
+  // Merge includeArchived into filters when in list view and toggle is on
+  const effectiveFilters: LeadFilters = {
+    ...filters,
+    ...(view === 'list' && showArchived ? { includeArchived: 'true' } : {}),
+  };
+
+  const { data: leads = [], isLoading } = useLeads(effectiveFilters);
   const { data: savedPrefs } = useUserPreferences();
   const savePrefs = useSavePreferences();
   const navigate = useNavigate();
@@ -96,6 +103,7 @@ export function PipelinePage() {
         sortBy={sortBy}
         sortDirection={sortDirection}
         onSortChange={handleSortChange}
+        {...(view === 'list' ? { showArchived, onShowArchivedChange: setShowArchived } : {})}
       />
 
       {/* Content */}
@@ -106,7 +114,7 @@ export function PipelinePage() {
       ) : view === 'board' ? (
         <KanbanBoard leads={leads} sortBy={sortBy} sortDirection={sortDirection} />
       ) : (
-        <ListView leads={leads} />
+        <ListView leads={leads} showArchived={showArchived} />
       )}
     </div>
   );

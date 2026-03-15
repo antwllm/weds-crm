@@ -1,5 +1,5 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Trash2, Loader2, RefreshCw, Upload } from 'lucide-react';
+import { ArrowLeft, Trash2, Loader2, RefreshCw, Upload, Archive, ArchiveRestore } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -66,6 +66,21 @@ export function LeadDetailPage() {
     } finally {
       setIsSyncing(false);
     }
+  }
+
+  function handleArchiveToggle() {
+    if (!lead) return;
+    const newArchived = !lead.archived;
+    updateLead.mutate(
+      { id: leadId, data: { archived: newArchived } as any },
+      {
+        onSuccess: () => {
+          toast.success(newArchived ? 'Lead archive' : 'Lead desarchive');
+          queryClient.invalidateQueries({ queryKey: ['leads'] });
+        },
+        onError: () => toast.error('Erreur lors de l\'archivage'),
+      }
+    );
   }
 
   function handleDelete() {
@@ -143,6 +158,19 @@ export function LeadDetailPage() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleArchiveToggle}
+          >
+            {lead.archived ? (
+              <ArchiveRestore className="h-4 w-4" data-icon="inline-start" />
+            ) : (
+              <Archive className="h-4 w-4" data-icon="inline-start" />
+            )}
+            {lead.archived ? 'Desarchiver' : 'Archiver'}
+          </Button>
+
           <Button
             variant="outline"
             size="sm"

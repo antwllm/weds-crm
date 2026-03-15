@@ -16,6 +16,8 @@ interface FilterBarProps {
   sortBy: 'createdAt' | 'eventDate';
   sortDirection: 'asc' | 'desc';
   onSortChange: (sortBy: 'createdAt' | 'eventDate', sortDirection: 'asc' | 'desc') => void;
+  showArchived?: boolean;
+  onShowArchivedChange?: (show: boolean) => void;
 }
 
 const sourceOptions = Object.entries(SOURCE_BADGES).map(([value, { label }]) => ({
@@ -23,7 +25,7 @@ const sourceOptions = Object.entries(SOURCE_BADGES).map(([value, { label }]) => 
   label,
 }));
 
-export function FilterBar({ filters, onFiltersChange, sortBy, sortDirection, onSortChange }: FilterBarProps) {
+export function FilterBar({ filters, onFiltersChange, sortBy, sortDirection, onSortChange, showArchived, onShowArchivedChange }: FilterBarProps) {
   const update = (patch: Partial<LeadFilters>) => {
     onFiltersChange({ ...filters, ...patch });
   };
@@ -115,6 +117,19 @@ export function FilterBar({ filters, onFiltersChange, sortBy, sortDirection, onS
           )}
         </Button>
       </div>
+
+      {/* Archived toggle (list view only) */}
+      {showArchived !== undefined && onShowArchivedChange && (
+        <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+          <input
+            type="checkbox"
+            checked={showArchived}
+            onChange={(e) => onShowArchivedChange(e.target.checked)}
+            className="h-4 w-4 rounded border-input accent-primary"
+          />
+          Afficher les archives
+        </label>
+      )}
     </div>
   );
 }

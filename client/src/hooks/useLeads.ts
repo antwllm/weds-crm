@@ -15,6 +15,7 @@ function buildLeadsQueryParams(filters?: LeadFilters): string {
   if (filters.source) params.set('source', filters.source);
   if (filters.dateFrom) params.set('dateFrom', filters.dateFrom);
   if (filters.dateTo) params.set('dateTo', filters.dateTo);
+  if (filters.includeArchived) params.set('includeArchived', filters.includeArchived);
   const qs = params.toString();
   return qs ? `?${qs}` : '';
 }
@@ -134,6 +135,57 @@ export function useDeleteLead() {
       apiFetch<void>(`/leads/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
+    },
+  });
+}
+
+export function useBulkArchive() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { ids: number[]; archived: boolean }) =>
+      apiFetch<{ updated: number }>('/leads/bulk-archive', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+    },
+    onError: () => {
+      toast.error('Erreur lors de l\'archivage en masse');
+    },
+  });
+}
+
+export function useBulkDelete() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { ids: number[] }) =>
+      apiFetch<{ deleted: number }>('/leads/bulk-delete', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+    },
+    onError: () => {
+      toast.error('Erreur lors de la suppression en masse');
+    },
+  });
+}
+
+export function useBulkStatus() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { ids: number[]; status: string }) =>
+      apiFetch<{ updated: number }>('/leads/bulk-status', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads'] });
+    },
+    onError: () => {
+      toast.error('Erreur lors du changement de statut en masse');
     },
   });
 }
