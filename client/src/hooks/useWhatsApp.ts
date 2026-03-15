@@ -48,6 +48,7 @@ interface WaTemplate {
   name: string;
   status: string;
   language: string;
+  bodyText: string | null;
 }
 
 export function useWhatsAppTemplates() {

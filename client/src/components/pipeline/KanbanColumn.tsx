@@ -1,3 +1,4 @@
+import { Component, type ReactNode } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -9,6 +10,15 @@ import { Badge } from '@/components/ui/badge';
 import { LeadCard } from './LeadCard';
 import type { Lead } from '@/types';
 import type { PipelineStage } from '@/lib/constants';
+
+class CardErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  render() {
+    if (this.state.hasError) return <div className="rounded-lg border p-2 text-xs text-destructive">Erreur d'affichage</div>;
+    return this.props.children;
+  }
+}
 
 interface KanbanColumnProps {
   stage: PipelineStage;
@@ -72,7 +82,9 @@ export function KanbanColumn({ stage, leads }: KanbanColumnProps) {
             </p>
           ) : (
             leads.map((lead) => (
-              <SortableLeadCard key={lead.id} lead={lead} />
+              <CardErrorBoundary key={lead.id}>
+                <SortableLeadCard lead={lead} />
+              </CardErrorBoundary>
             ))
           )}
         </SortableContext>

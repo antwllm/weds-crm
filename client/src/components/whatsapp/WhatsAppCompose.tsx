@@ -26,7 +26,7 @@ interface WhatsAppComposeProps {
 
 export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
   const [message, setMessage] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState<{ name: string; language: string } | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<{ name: string; language: string; bodyText: string | null } | null>(null);
   const { data: windowData } = useWhatsAppWindow(leadId);
   const sendWhatsApp = useSendWhatsApp();
   const sendTemplate = useSendWhatsAppTemplate();
@@ -113,46 +113,56 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
         )}
       </div>
 
-      {/* Template selector when window is expired */}
-      {hasPhone && !isWindowOpen && (
-        <div className="flex items-center gap-2">
-          <Select
-            value={selectedTemplate ? `${selectedTemplate.name}::${selectedTemplate.language}` : undefined}
-            onValueChange={(v) => {
-              if (!v) return;
-              const [name, language] = v.split('::');
-              setSelectedTemplate({ name, language });
-            }}
-            disabled={templates.length === 0 || isSending}
-          >
-            <SelectTrigger className="flex-1">
-              <SelectValue
-                placeholder={
-                  templates.length === 0
-                    ? 'Aucun modèle disponible'
-                    : 'Sélectionner un modèle...'
-                }
-              />
-            </SelectTrigger>
-            <SelectContent>
-              {templates.map((t) => (
-                <SelectItem key={`${t.name}::${t.language}`} value={`${t.name}::${t.language}`}>
-                  {t.name} ({t.language})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            size="sm"
-            onClick={handleSendTemplate}
-            disabled={!canSendTemplate || isSending}
-          >
-            {sendTemplate.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-          </Button>
+      {/* Template selector — always visible when phone exists */}
+      {hasPhone && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Select
+              value={selectedTemplate ? `${selectedTemplate.name}::${selectedTemplate.language}` : undefined}
+              onValueChange={(v) => {
+                if (!v) return;
+                const [name, language] = v.split('::');
+                const tpl = templates.find((t) => t.name === name && t.language === language);
+                setSelectedTemplate({ name, language, bodyText: tpl?.bodyText ?? null });
+              }}
+              disabled={templates.length === 0 || isSending}
+            >
+              <SelectTrigger className="flex-1">
+                <SelectValue
+                  placeholder={
+                    templates.length === 0
+                      ? 'Aucun modèle disponible'
+                      : 'Envoyer un modèle...'
+                  }
+                />
+              </SelectTrigger>
+              <SelectContent>
+                {templates.map((t) => (
+                  <SelectItem key={`${t.name}::${t.language}`} value={`${t.name}::${t.language}`}>
+                    {t.name.replace(/_/g, ' ')}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              onClick={handleSendTemplate}
+              disabled={!selectedTemplate || isSending}
+            >
+              {sendTemplate.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+
+          {/* Template preview */}
+          {selectedTemplate?.bodyText && (
+            <div className="rounded-md bg-muted/50 border p-3 text-sm text-muted-foreground whitespace-pre-line">
+              {selectedTemplate.bodyText}
+            </div>
+          )}
         </div>
       )}
 

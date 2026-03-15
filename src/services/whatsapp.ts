@@ -83,7 +83,7 @@ export async function listWhatsAppTemplates(
   businessAccountId: string,
   accessToken: string,
   httpClient?: { get: AxiosInstance['get'] },
-): Promise<Array<{ name: string; status: string; language: string }>> {
+): Promise<Array<{ name: string; status: string; language: string; bodyText: string | null }>> {
   const client = httpClient || axios;
 
   const response = await client.get(
@@ -93,17 +93,21 @@ export async function listWhatsAppTemplates(
         Authorization: `Bearer ${accessToken}`,
       },
       params: {
-        fields: 'name,status,language',
+        fields: 'name,status,language,components',
         limit: 50,
       },
     },
   );
 
-  return (response.data.data || []).map((t: any) => ({
-    name: t.name,
-    status: t.status,
-    language: t.language,
-  }));
+  return (response.data.data || []).map((t: any) => {
+    const bodyComponent = (t.components || []).find((c: any) => c.type === 'BODY');
+    return {
+      name: t.name,
+      status: t.status,
+      language: t.language,
+      bodyText: bodyComponent?.text || null,
+    };
+  });
 }
 
 /**

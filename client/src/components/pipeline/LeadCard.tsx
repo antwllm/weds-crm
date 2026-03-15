@@ -25,6 +25,15 @@ const budgetFormatter = new Intl.NumberFormat('fr-FR', {
 function formatEventDate(eventDate: string | null): string | null {
   if (!eventDate) return null;
   try {
+    // Handle DD/MM/YYYY format from Pipedrive
+    const ddmmyyyy = eventDate.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (ddmmyyyy) {
+      const [, day, month, year] = ddmmyyyy;
+      const date = new Date(Number(year), Number(month) - 1, Number(day));
+      if (isValid(date)) return format(date, 'd MMM yyyy', { locale: fr });
+      return eventDate;
+    }
+    // Handle ISO format YYYY-MM-DD
     const date = parseISO(eventDate);
     if (!isValid(date)) return eventDate;
     return format(date, 'd MMM yyyy', { locale: fr });
@@ -53,10 +62,10 @@ export function LeadCard({
     <Card
       ref={dragRef}
       size="sm"
-      className={`cursor-pointer transition-shadow hover:shadow-md ${
+      className={`shrink-0 cursor-pointer transition-shadow hover:shadow-md ${
         isDragging ? 'opacity-50 shadow-lg' : ''
       }`}
-      style={style}
+      style={{ ...style, flexShrink: 0 }}
       onClick={handleClick}
       {...dragAttributes}
       {...dragListeners}
@@ -64,7 +73,7 @@ export function LeadCard({
       <CardContent className="space-y-1.5 p-2.5">
         <div className="flex items-start justify-between gap-2">
           <span className="text-sm font-medium leading-tight truncate">
-            {lead.name}
+            {lead.name || 'Sans nom'}
           </span>
         </div>
         <div className="flex items-center gap-3 text-xs text-muted-foreground">

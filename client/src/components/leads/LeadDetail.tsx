@@ -117,20 +117,24 @@ export function LeadDetail({ lead }: LeadDetailProps) {
             type="text"
             placeholder="Nom"
           />
-          <InlineField
-            label="Email"
-            value={lead.email || ''}
-            onSave={(v) => handleSave('email', v)}
-            type="email"
-            placeholder="email@exemple.fr"
-          />
-          <InlineField
-            label="Téléphone"
-            value={lead.phone || ''}
-            onSave={(v) => handleSave('phone', v)}
-            type="tel"
-            placeholder="+33..."
-          />
+          <div className="col-span-2">
+            <InlineField
+              label="Email"
+              value={lead.email || ''}
+              onSave={(v) => handleSave('email', v)}
+              type="email"
+              placeholder="email@exemple.fr"
+            />
+          </div>
+          <div className="col-span-2">
+            <InlineField
+              label="Téléphone"
+              value={lead.phone || ''}
+              onSave={(v) => handleSave('phone', v)}
+              type="tel"
+              placeholder="+33..."
+            />
+          </div>
           <InlineField
             label="Date de l'événement"
             value={lead.eventDate || ''}
