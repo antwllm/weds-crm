@@ -7,11 +7,11 @@ import { NoteInput } from '@/components/leads/NoteInput';
 import { LeadEmails } from '@/components/leads/LeadEmails';
 import { WhatsAppChat } from '@/components/whatsapp/WhatsAppChat';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useUpdateLead } from '@/hooks/useLeads';
 import { useActivities } from '@/hooks/useActivities';
-import { PIPELINE_STAGES, SOURCE_BADGES } from '@/lib/constants';
+import { SOURCE_BADGES } from '@/lib/constants';
 import { apiFetch } from '@/lib/api';
 import { toast } from 'sonner';
 import type { Lead } from '@/types';
@@ -32,11 +32,6 @@ export function LeadDetail({ lead }: LeadDetailProps) {
   const { data: activities = [] } = useActivities(lead.id);
   const navigate = useNavigate();
   const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
-
-  const stageOptions = PIPELINE_STAGES.map((s) => ({
-    value: s.value,
-    label: s.label,
-  }));
 
   const sourceOptions = [
     ...Object.entries(SOURCE_BADGES).map(([value, info]) => ({
@@ -142,14 +137,12 @@ export function LeadDetail({ lead }: LeadDetailProps) {
             onSave={(v) => handleSave('eventDate', v)}
             type="date"
           />
-          <InlineField
-            label="Budget"
-            value={lead.budget != null ? String(lead.budget) : ''}
-            onSave={(v) => handleSave('budget', v)}
-            type="number"
-            placeholder="0"
-            displayValue={lead.budget != null ? budgetFormatter.format(lead.budget) : undefined}
-          />
+          <div className="cursor-default rounded-md px-2 py-1.5 space-y-0.5">
+            <span className="text-sm text-muted-foreground">Date de création</span>
+            <div className="text-sm font-medium">
+              {lead.createdAt ? new Date(lead.createdAt).toLocaleDateString('fr-FR') : '-'}
+            </div>
+          </div>
           <InlineField
             label="Source"
             value={lead.source || ''}
@@ -158,20 +151,12 @@ export function LeadDetail({ lead }: LeadDetailProps) {
             options={sourceOptions}
           />
           <InlineField
-            label="Statut"
-            value={lead.status || 'nouveau'}
-            onSave={(v) => handleSave('status', v)}
-            type="select"
-            options={stageOptions}
-            renderValue={(v) => {
-              const stage = PIPELINE_STAGES.find((s) => s.value === v);
-              if (!stage) return v;
-              return (
-                <Badge variant="secondary" className={`text-xs ${stage.color}`}>
-                  {stage.label}
-                </Badge>
-              );
-            }}
+            label="Budget"
+            value={lead.budget != null ? String(lead.budget) : ''}
+            onSave={(v) => handleSave('budget', v)}
+            type="number"
+            placeholder="0"
+            displayValue={lead.budget != null ? budgetFormatter.format(lead.budget) : undefined}
           />
         </div>
         <InlineField
