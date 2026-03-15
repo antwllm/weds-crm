@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: completed
 stopped_at: "Completed quick-3: Reorganize lead detail layout"
-last_updated: "2026-03-15T13:30:02.859Z"
-last_activity: 2026-03-15 - Completed 04-07 Integration Verification - Phase 4 complete
+last_updated: "2026-03-15T14:00:00.000Z"
+last_activity: 2026-03-15 - Completed quick task 4: Add column sorting by creation/event date
 progress:
   total_phases: 0
   completed_phases: 0
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 Phase: 4 of 4 (Gmail Inbox, AI Drafting & WhatsApp)
 Plan: 7 of 7 in current phase (completed)
 Status: v1.0 Milestone Complete
-Last activity: 2026-03-15 - Completed quick task 3: Reorganize lead detail layout
+Last activity: 2026-03-15 - Completed quick task 4: Add column sorting by creation/event date
 
 Progress: [██████████] 100%
 
@@ -152,6 +152,7 @@ Recent decisions affecting current work:
 |---|-------------|------|--------|-----------|
 | 1 | Execute all 8 pending todos: fix firstname bug, fix accents, add euro to budget, color-code statuses, remove source column, collapse activity history, condense lead info, reorganize lead detail layout | 2026-03-15 | d142dfa | [1-execute-all-8-pending-todos-fix-firstnam](./quick/1-execute-all-8-pending-todos-fix-firstnam/) |
 | 3 | Reorganize lead detail layout: status in header, creation date, reorder fields | 2026-03-15 | 6d15430 | [3-reorganize-lead-detail-layout-status-nex](./quick/3-reorganize-lead-detail-layout-status-nex/) |
+| 4 | Add column sorting by creation/event date with database-persisted preferences | 2026-03-15 | 6c26b09 | [4-add-column-sorting-by-creation-event-dat](./quick/4-add-column-sorting-by-creation-event-dat/) |
 
 ### Blockers/Concerns
 
@@ -163,6 +164,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-15T13:30:02.849Z
-Stopped at: Completed quick-3: Reorganize lead detail layout
+Last session: 2026-03-15T14:00:00.000Z
+Stopped at: Completed quick-4: Add column sorting by creation/event date
 Resume file: None
