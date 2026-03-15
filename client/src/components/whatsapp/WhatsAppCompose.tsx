@@ -34,7 +34,7 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
 
   const hasPhone = !!leadPhone;
   const isWindowOpen = windowData?.isOpen ?? false;
-  const canSendMessage = hasPhone && message.trim().length > 0;
+  const canSendMessage = hasPhone && isWindowOpen && message.trim().length > 0;
   const canSendTemplate = hasPhone && !isWindowOpen && !!selectedTemplate?.name;
 
   async function handleSend() {
@@ -156,20 +156,20 @@ export function WhatsAppCompose({ leadId, leadPhone }: WhatsAppComposeProps) {
         </div>
       )}
 
-      {/* Free-form input — always shown when phone exists */}
+      {/* Free-form input — disabled when 24h window expired */}
       {hasPhone && (
         <div className="flex items-center gap-2">
           <Input
-            placeholder="Votre message..."
+            placeholder={isWindowOpen ? 'Votre message...' : 'Fenêtre expirée — utilisez un modèle'}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            disabled={isSending}
+            disabled={isSending || !isWindowOpen}
           />
           <Button
             size="sm"
             onClick={handleSend}
-            disabled={!hasPhone || !message.trim() || isSending}
+            disabled={!canSendMessage || isSending}
           >
             {sendWhatsApp.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
