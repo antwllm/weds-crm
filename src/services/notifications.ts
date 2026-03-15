@@ -1,8 +1,9 @@
 import * as Sentry from '@sentry/node';
 import { config } from '../config.js';
 import { logger } from '../logger.js';
-import { sendTwilioSMS, sendFreeMobileSMS } from './sms.js';
+import { sendFreeMobileSMS } from './sms.js';
 import { sendEmail } from './gmail.js';
+import { sendWhatsAppTemplate } from './whatsapp.js';
 import { alertNotificationFailure } from './alerts.js';
 import type { Lead, NotificationResult } from '../types.js';
 import type { gmail_v1 } from 'googleapis';
@@ -18,7 +19,7 @@ export async function dispatchNotifications(
   vCardContent: string,
   gmailClient: gmail_v1.Gmail
 ): Promise<NotificationResult[]> {
-  const channels = ['twilio_sms', 'free_mobile_sms', 'email_recap'] as const;
+  const channels = ['whatsapp_prospect', 'free_mobile_sms', 'email_recap'] as const;
 
   // Email recap content
   const emailSubject = `Nouveau lead Mariages.net - ${lead.name}`;
@@ -41,17 +42,33 @@ export async function dispatchNotifications(
     },
   ];
 
-  // Skip Twilio if not configured
-  const twilioEnabled = !!(config.TWILIO_ACCOUNT_SID && config.TWILIO_AUTH_TOKEN && config.TWILIO_PHONE_NUMBER);
-  if (!twilioEnabled) {
-    logger.info('Twilio non configure -- SMS prospect desactive');
+  // Skip WhatsApp if not configured or no phone
+  const whatsappEnabled = !!(config.WHATSAPP_PHONE_NUMBER_ID && config.WHATSAPP_ACCESS_TOKEN && lead.phone);
+  if (!whatsappEnabled) {
+    logger.info('WhatsApp non configure ou pas de telephone -- message prospect desactive');
   }
 
-  // Fire notifications independently (skip Twilio if not configured)
+  // Fire notifications independently
   const results = await Promise.allSettled([
-    twilioEnabled
-      ? sendTwilioSMS(lead.name, lead.eventDate ?? '', lead.phone ?? '')
-      : Promise.resolve({ channel: 'twilio_sms' as const, success: true, error: undefined } as NotificationResult),
+    whatsappEnabled
+      ? sendWhatsAppTemplate(
+          config.WHATSAPP_PHONE_NUMBER_ID!,
+          config.WHATSAPP_ACCESS_TOKEN!,
+          lead.phone!.replace(/^\+/, ''),
+          'demande_dinformations_complmentaires',
+          'fr',
+        ).then((waMessageId) => ({
+          channel: 'whatsapp_prospect' as const,
+          success: true,
+          error: undefined,
+          waMessageId,
+        } as NotificationResult))
+        .catch((err) => ({
+          channel: 'whatsapp_prospect' as const,
+          success: false,
+          error: err instanceof Error ? err.message : String(err),
+        } as NotificationResult))
+      : Promise.resolve({ channel: 'whatsapp_prospect' as const, success: true, error: undefined } as NotificationResult),
     sendFreeMobileSMS(
       {
         name: lead.name,
