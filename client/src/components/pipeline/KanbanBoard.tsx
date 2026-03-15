@@ -19,9 +19,11 @@ import type { Lead } from '@/types';
 
 interface KanbanBoardProps {
   leads: Lead[];
+  sortBy: 'createdAt' | 'eventDate';
+  sortDirection: 'asc' | 'desc';
 }
 
-export function KanbanBoard({ leads }: KanbanBoardProps) {
+export function KanbanBoard({ leads, sortBy, sortDirection }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<number | null>(null);
   const updateStatus = useUpdateLeadStatus();
 
@@ -34,7 +36,7 @@ export function KanbanBoard({ leads }: KanbanBoardProps) {
     }),
   );
 
-  // Group leads by status
+  // Group leads by status, then sort each group
   const leadsByStage = useMemo(() => {
     const map: Record<string, Lead[]> = {};
     for (const stage of PIPELINE_STAGES) {
@@ -49,8 +51,25 @@ export function KanbanBoard({ leads }: KanbanBoardProps) {
         map['nouveau'].push(lead);
       }
     }
+
+    // Sort each group by the selected field and direction
+    for (const key of Object.keys(map)) {
+      map[key].sort((a, b) => {
+        const aVal = sortBy === 'eventDate' ? a.eventDate : a.createdAt;
+        const bVal = sortBy === 'eventDate' ? b.eventDate : b.createdAt;
+
+        // Null values go to end regardless of direction
+        if (aVal == null && bVal == null) return 0;
+        if (aVal == null) return 1;
+        if (bVal == null) return -1;
+
+        const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+        return sortDirection === 'asc' ? cmp : -cmp;
+      });
+    }
+
     return map;
-  }, [leads]);
+  }, [leads, sortBy, sortDirection]);
 
   const activeLead = useMemo(
     () => (activeId != null ? leads.find((l) => l.id === activeId) : undefined),

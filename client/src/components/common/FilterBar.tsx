@@ -1,3 +1,4 @@
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -5,12 +6,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { PIPELINE_STAGES, SOURCE_BADGES } from '@/lib/constants';
 import type { LeadFilters } from '@/types';
 
 interface FilterBarProps {
   filters: LeadFilters;
   onFiltersChange: (filters: LeadFilters) => void;
+  sortBy: 'createdAt' | 'eventDate';
+  sortDirection: 'asc' | 'desc';
+  onSortChange: (sortBy: 'createdAt' | 'eventDate', sortDirection: 'asc' | 'desc') => void;
 }
 
 const sourceOptions = Object.entries(SOURCE_BADGES).map(([value, { label }]) => ({
@@ -18,7 +23,7 @@ const sourceOptions = Object.entries(SOURCE_BADGES).map(([value, { label }]) => 
   label,
 }));
 
-export function FilterBar({ filters, onFiltersChange }: FilterBarProps) {
+export function FilterBar({ filters, onFiltersChange, sortBy, sortDirection, onSortChange }: FilterBarProps) {
   const update = (patch: Partial<LeadFilters>) => {
     onFiltersChange({ ...filters, ...patch });
   };
@@ -79,6 +84,36 @@ export function FilterBar({ filters, onFiltersChange }: FilterBarProps) {
           onChange={(e) => update({ dateTo: e.target.value || undefined })}
           className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
+      </div>
+
+      {/* Sort controls */}
+      <div className="flex items-center gap-2">
+        <label className="text-sm text-muted-foreground">Trier par</label>
+        <Select
+          value={sortBy}
+          onValueChange={(value) => onSortChange(value as 'createdAt' | 'eventDate', sortDirection)}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="createdAt">Date de creation</SelectItem>
+            <SelectItem value="eventDate">Date evenement</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button
+          variant="outline"
+          size="icon"
+          className="size-8"
+          onClick={() => onSortChange(sortBy, sortDirection === 'asc' ? 'desc' : 'asc')}
+          title={sortDirection === 'asc' ? 'Croissant' : 'Decroissant'}
+        >
+          {sortDirection === 'asc' ? (
+            <ArrowUp className="size-4" />
+          ) : (
+            <ArrowDown className="size-4" />
+          )}
+        </Button>
       </div>
     </div>
   );
