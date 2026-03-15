@@ -63,18 +63,27 @@ async function handleCreate(lead: Lead): Promise<void> {
   }
 
   // 3. Create deal with custom fields
-  const dealTitle = `${lead.name} (${lead.eventDate || 'date inconnue'})`;
+  let formattedDate = lead.eventDate || 'date inconnue';
+  // Convert YYYY-MM-DD to DD/MM/YYYY for deal title
+  if (lead.eventDate && /^\d{4}-\d{2}-\d{2}$/.test(lead.eventDate)) {
+    const [y, m, d] = lead.eventDate.split('-');
+    formattedDate = `${d}/${m}/${y}`;
+  }
+  const dealTitle = `${lead.name} (${formattedDate})`;
+
+  const createStageId = statusToStageId(lead.status ?? 'nouveau');
 
   const dealResponse = await withRetry(
     () => pipedriveApi.post('/deals', {
       title: dealTitle,
       person_id: personId,
-      stage_id: statusToStageId(lead.status ?? 'nouveau'),
+      ...(createStageId !== null ? { stage_id: createStageId } : { status: 'lost' }),
       pipeline_id: cfg.pipelineId,
+      value: lead.budget || undefined,
       [cfg.fields.eventDate]: lead.eventDate || undefined,
       [cfg.fields.message]: lead.message || undefined,
       [cfg.fields.source]: lead.source || undefined,
-      [cfg.fields.vcardUrl]: lead.vCardUrl || undefined,
+      ...(cfg.fields.vcardUrl ? { [cfg.fields.vcardUrl]: lead.vCardUrl || undefined } : {}),
     }),
     lead.id,
     'push'
@@ -123,18 +132,45 @@ async function handleUpdate(lead: Lead): Promise<void> {
   const cfg = loadFieldConfig();
   const db = getDb();
 
-  // 1. Update deal with stage and custom fields
-  await withRetry(
-    () => pipedriveApi.put(`/deals/${lead.pipedriveDealId}`, {
-      stage_id: statusToStageId(lead.status ?? 'nouveau'),
-      [cfg.fields.eventDate]: lead.eventDate || undefined,
-      [cfg.fields.message]: lead.message || undefined,
-      [cfg.fields.source]: lead.source || undefined,
-      [cfg.fields.vcardUrl]: lead.vCardUrl || undefined,
-    }),
-    lead.id,
-    'push'
-  );
+  // 1. Update deal with stage, custom fields, and budget
+  const stageId = statusToStageId(lead.status ?? 'nouveau');
+  let formattedDate = lead.eventDate || 'date inconnue';
+  if (lead.eventDate && /^\d{4}-\d{2}-\d{2}$/.test(lead.eventDate)) {
+    const [y, m, d] = lead.eventDate.split('-');
+    formattedDate = `${d}/${m}/${y}`;
+  }
+  const dealTitle = `${lead.name} (${formattedDate})`;
+
+  const commonFields = {
+    title: dealTitle,
+    value: lead.budget || undefined,
+    [cfg.fields.eventDate]: lead.eventDate || undefined,
+    [cfg.fields.message]: lead.message || undefined,
+    [cfg.fields.source]: lead.source || undefined,
+    ...(cfg.fields.vcardUrl ? { [cfg.fields.vcardUrl]: lead.vCardUrl || undefined } : {}),
+  };
+
+  if (stageId === null) {
+    await withRetry(
+      () => pipedriveApi.put(`/deals/${lead.pipedriveDealId}`, {
+        ...commonFields,
+        status: 'lost',
+        lost_reason: 'Marqué perdu dans le CRM',
+      }),
+      lead.id,
+      'push'
+    );
+  } else {
+    await withRetry(
+      () => pipedriveApi.put(`/deals/${lead.pipedriveDealId}`, {
+        ...commonFields,
+        stage_id: stageId,
+        status: 'open',
+      }),
+      lead.id,
+      'push'
+    );
+  }
 
   // 2. Update person if needed and linked
   if (lead.pipedrivePersonId) {

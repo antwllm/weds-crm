@@ -54,7 +54,7 @@ export async function importAllDeals(): Promise<ImportResult> {
     start += limit;
   }
 
-  logger.info('Import Pipedrive: termine', result);
+  logger.info('Import Pipedrive: termine', result as unknown as Record<string, unknown>);
   return result;
 }
 

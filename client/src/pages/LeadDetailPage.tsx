@@ -35,10 +35,10 @@ export function LeadDetailPage() {
     setIsSyncing(true);
     try {
       await syncLeadToPipedrive(leadId);
-      toast.success('Synchronisation Pipedrive r\u00e9ussie');
+      toast.success('Synchronisation Pipedrive réussie');
       queryClient.invalidateQueries({ queryKey: ['leads'] });
     } catch {
-      toast.error('\u00c9chec de la synchronisation Pipedrive');
+      toast.error('Échec de la synchronisation Pipedrive');
     } finally {
       setIsSyncing(false);
     }
@@ -47,7 +47,7 @@ export function LeadDetailPage() {
   function handleDelete() {
     deleteLead.mutate(leadId, {
       onSuccess: () => {
-        toast.success('Lead supprim\u00e9');
+        toast.success('Lead supprimé');
         navigate('/pipeline');
       },
       onError: () => {
@@ -80,9 +80,9 @@ export function LeadDetailPage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="flex h-full flex-col overflow-hidden">
       {/* Header */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="shrink-0 px-6 pt-6 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link
             to="/pipeline"
@@ -127,8 +127,8 @@ export function LeadDetailPage() {
             <AlertDialogHeader>
               <AlertDialogTitle>Supprimer ce lead ?</AlertDialogTitle>
               <AlertDialogDescription>
-                Cette action est irr\u00e9versible. Toutes les activit\u00e9s et notes
-                associ\u00e9es seront \u00e9galement supprim\u00e9es.
+                Cette action est irréversible. Toutes les activités et notes
+                associées seront également supprimées.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -147,7 +147,9 @@ export function LeadDetailPage() {
       </div>
 
       {/* Lead detail content */}
-      <LeadDetail lead={lead} />
+      <div className="flex-1 min-h-0 px-6 pb-6">
+        <LeadDetail lead={lead} />
+      </div>
     </div>
   );
 }

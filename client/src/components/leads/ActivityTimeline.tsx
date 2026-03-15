@@ -49,12 +49,17 @@ export function ActivityTimeline({ activities }: ActivityTimelineProps) {
   if (!activities.length) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
-        Aucune activit\u00e9
+        Aucune activité
       </p>
     );
   }
 
-  const visibleActivities = expanded ? activities : activities.slice(0, 3);
+  // Sort by most recent first
+  const sorted = [...activities].sort(
+    (a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime(),
+  );
+
+  const visibleActivities = expanded ? sorted : sorted.slice(0, 3);
 
   return (
     <div className="relative space-y-0">
@@ -101,20 +106,20 @@ export function ActivityTimeline({ activities }: ActivityTimelineProps) {
         );
       })}
 
-      {activities.length > 3 && !expanded && (
+      {sorted.length > 3 && !expanded && (
         <button
           className="mt-2 text-xs text-primary hover:underline"
           onClick={() => setExpanded(true)}
         >
-          Voir les {activities.length - 3} activit\u00e9s pr\u00e9c\u00e9dentes
+          Voir les {sorted.length - 3} activités plus anciennes
         </button>
       )}
-      {activities.length > 3 && expanded && (
+      {sorted.length > 3 && expanded && (
         <button
           className="mt-2 text-xs text-muted-foreground hover:underline"
           onClick={() => setExpanded(false)}
         >
-          R\u00e9duire
+          Réduire
         </button>
       )}
     </div>

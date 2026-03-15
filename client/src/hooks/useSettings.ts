@@ -95,10 +95,10 @@ export function useDeleteTemplate() {
       apiFetch<void>(`/templates/${id}`, { method: 'DELETE' }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['templates'] });
-      toast.success('Mod\u00e8le supprim\u00e9');
+      toast.success('Modèle supprimé');
     },
     onError: () => {
-      toast.error('Erreur lors de la suppression du mod\u00e8le');
+      toast.error('Erreur lors de la suppression du modèle');
     },
   });
 }

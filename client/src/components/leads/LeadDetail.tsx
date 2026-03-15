@@ -104,16 +104,16 @@ export function LeadDetail({ lead }: LeadDetailProps) {
   }
 
   return (
-    <div className="flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-6">
+    <div className="flex flex-col lg:grid lg:grid-cols-[320px_minmax(0,1fr)] gap-6 h-full min-h-0 overflow-hidden">
       {/* Left sidebar: Condensed fields + Activity timeline */}
-      <div className="space-y-4">
+      <div className="space-y-4 overflow-y-auto">
         <div className="grid grid-cols-2 gap-x-4 gap-y-0">
           <InlineField
-            label="Pr\u00e9nom"
+            label="Prénom"
             value={firstName}
             onSave={(v) => handleNameSave('first', v)}
             type="text"
-            placeholder="Pr\u00e9nom"
+            placeholder="Prénom"
           />
           <InlineField
             label="Nom"
@@ -130,14 +130,14 @@ export function LeadDetail({ lead }: LeadDetailProps) {
             placeholder="email@exemple.fr"
           />
           <InlineField
-            label="T\u00e9l\u00e9phone"
+            label="Téléphone"
             value={lead.phone || ''}
             onSave={(v) => handleSave('phone', v)}
             type="tel"
             placeholder="+33..."
           />
           <InlineField
-            label="Date de l'\u00e9v\u00e9nement"
+            label="Date de l'événement"
             value={lead.eventDate || ''}
             onSave={(v) => handleSave('eventDate', v)}
             type="date"
@@ -192,18 +192,18 @@ export function LeadDetail({ lead }: LeadDetailProps) {
       </div>
 
       {/* Right content area: Tabbed interface */}
-      <Tabs defaultValue="notes">
-        <TabsList>
+      <Tabs defaultValue="notes" className="flex flex-col min-h-0 min-w-0 overflow-hidden">
+        <TabsList className="shrink-0">
           <TabsTrigger value="notes">Notes</TabsTrigger>
           <TabsTrigger value="emails">Emails</TabsTrigger>
           <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="notes" className="mt-4">
+        <TabsContent value="notes" className="mt-4 flex-1 min-h-0 overflow-y-auto">
           <NoteInput leadId={lead.id} />
         </TabsContent>
 
-        <TabsContent value="emails" className="mt-4">
+        <TabsContent value="emails" className="mt-4 flex-1 min-h-0 min-w-0 overflow-y-auto">
           <div className="mb-3">
             <Button
               variant="outline"
@@ -216,13 +216,13 @@ export function LeadDetail({ lead }: LeadDetailProps) {
               ) : (
                 <Sparkles className="h-4 w-4" data-icon="inline-start" />
               )}
-              {isGeneratingDraft ? 'G\u00e9n\u00e9ration...' : 'G\u00e9n\u00e9rer un brouillon'}
+              {isGeneratingDraft ? 'Génération...' : 'Générer un brouillon'}
             </Button>
           </div>
           <LeadEmails leadId={lead.id} />
         </TabsContent>
 
-        <TabsContent value="whatsapp" className="mt-4">
+        <TabsContent value="whatsapp" className="mt-4 flex-1 min-h-0 overflow-y-auto">
           <WhatsAppChat leadId={lead.id} leadPhone={lead.phone} />
         </TabsContent>
       </Tabs>

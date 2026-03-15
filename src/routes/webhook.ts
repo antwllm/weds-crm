@@ -295,17 +295,25 @@ router.post('/whatsapp', (req, res) => {
       const { from, text, waMessageId } = parsed;
       const db = getDb();
 
-      // Find lead by phone number (try with and without + prefix)
-      const normalizedFrom = from.startsWith('+') ? from : `+${from}`;
+      // Find lead by phone number — try all common formats:
+      // Meta sends E.164 without +, e.g. "33651157842"
+      // Lead phone may be stored as "+33651157842", "33651157842", or "0651157842"
+      const withPlus = from.startsWith('+') ? from : `+${from}`;
       const withoutPlus = from.startsWith('+') ? from.slice(1) : from;
+      // Convert E.164 to French domestic: +33651... → 0651...
+      const domestic = withPlus.startsWith('+33')
+        ? '0' + withPlus.slice(3)
+        : null;
+
+      const phoneVariants = [withPlus, withoutPlus];
+      if (domestic) phoneVariants.push(domestic);
 
       const leadResults = await db
         .select()
         .from(leads)
         .where(
           or(
-            eq(leads.phone, normalizedFrom),
-            eq(leads.phone, withoutPlus),
+            ...phoneVariants.map((p) => eq(leads.phone, p)),
           ),
         );
 

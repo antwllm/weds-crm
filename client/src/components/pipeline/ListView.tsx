@@ -67,7 +67,7 @@ const columns: ColumnDef<Lead>[] = [
   },
   {
     accessorKey: 'phone',
-    header: 'T\u00e9l\u00e9phone',
+    header: 'Téléphone',
     cell: ({ row }) => row.getValue('phone') ?? '-',
     meta: { hideOnMobile: true },
   },
@@ -78,7 +78,7 @@ const columns: ColumnDef<Lead>[] = [
         className="flex items-center gap-1"
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
       >
-        Date \u00e9v\u00e9nement
+        Date événement
         <ArrowUpDown className="size-3" />
       </button>
     ),
@@ -129,7 +129,7 @@ const columns: ColumnDef<Lead>[] = [
         className="flex items-center gap-1"
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
       >
-        Date cr\u00e9ation
+        Date création
         <ArrowUpDown className="size-3" />
       </button>
     ),

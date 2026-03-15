@@ -61,8 +61,9 @@ export function loadFieldConfig(): PipedriveFieldConfig {
   return _cachedConfig;
 }
 
-/** Map a CRM lead status to the corresponding Pipedrive stage ID */
-export function statusToStageId(status: string): number {
+/** Map a CRM lead status to the corresponding Pipedrive stage ID (null for 'perdu' — handled separately as lost deal) */
+export function statusToStageId(status: string): number | null {
+  if (status === 'perdu') return null;
   const cfg = loadFieldConfig();
   const stageId = cfg.stages[status as keyof PipedriveFieldConfig['stages']];
   if (stageId === undefined) {

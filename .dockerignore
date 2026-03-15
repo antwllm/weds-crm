@@ -6,3 +6,4 @@ tests
 .git
 .gitignore
 *.md
+gcp-key.json

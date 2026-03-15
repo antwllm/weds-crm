@@ -125,7 +125,7 @@ export function LeadForm() {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">T\u00e9l\u00e9phone</label>
+        <label className="text-sm font-medium">Téléphone</label>
         <Input
           type="tel"
           value={phone}
@@ -135,7 +135,7 @@ export function LeadForm() {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Date de l'\u00e9v\u00e9nement</label>
+        <label className="text-sm font-medium">Date de l'événement</label>
         <Input
           type="date"
           value={eventDate}

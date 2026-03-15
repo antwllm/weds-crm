@@ -41,9 +41,17 @@ export async function dispatchNotifications(
     },
   ];
 
-  // Fire all 3 notifications independently
+  // Skip Twilio if not configured
+  const twilioEnabled = !!(config.TWILIO_ACCOUNT_SID && config.TWILIO_AUTH_TOKEN && config.TWILIO_PHONE_NUMBER);
+  if (!twilioEnabled) {
+    logger.info('Twilio non configure -- SMS prospect desactive');
+  }
+
+  // Fire notifications independently (skip Twilio if not configured)
   const results = await Promise.allSettled([
-    sendTwilioSMS(lead.name, lead.eventDate ?? '', lead.phone ?? ''),
+    twilioEnabled
+      ? sendTwilioSMS(lead.name, lead.eventDate ?? '', lead.phone ?? '')
+      : Promise.resolve({ channel: 'twilio_sms' as const, success: true, error: undefined } as NotificationResult),
     sendFreeMobileSMS(
       {
         name: lead.name,
