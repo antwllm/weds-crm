@@ -127,3 +127,9 @@
     @apply font-sans;
     }
 }
+
+/* TipTap editor styles */
+.ProseMirror p { margin: 0.25em 0; }
+.ProseMirror ul, .ProseMirror ol { padding-left: 1.5em; }
+.ProseMirror blockquote { border-left: 3px solid #e5e7eb; padding-left: 1em; color: #6b7280; }
+.ProseMirror a { color: #2563eb; text-decoration: underline; }
