@@ -266,108 +266,152 @@ router.get('/whatsapp', (req, res) => {
  * Links incoming messages to leads by phone number, stores in DB,
  * creates activities, and sends Free Mobile SMS alert.
  */
-router.post('/whatsapp', (req, res) => {
+router.post('/whatsapp', async (req, res) => {
   // Verify signature if app secret is configured
   if (config.WHATSAPP_APP_SECRET) {
     const signature = req.headers['x-hub-signature-256'] as string | undefined;
     const rawBody = (req as any).rawBody as Buffer | undefined;
 
-    if (!signature || !rawBody || !verifyWebhookSignature(rawBody, signature, config.WHATSAPP_APP_SECRET)) {
-      logger.warn('Webhook WhatsApp: signature invalide');
-      res.status(403).json({ error: 'Signature invalide' });
+    if (!signature) {
+      logger.warn('Webhook WhatsApp: header x-hub-signature-256 manquant');
+      res.status(403).json({
+        error: 'Header x-hub-signature-256 manquant',
+        detail: 'Le webhook WhatsApp requiert un header x-hub-signature-256 contenant le HMAC-SHA256 du body brut, signe avec le App Secret Meta.',
+      });
+      return;
+    }
+
+    if (!rawBody) {
+      logger.warn('Webhook WhatsApp: rawBody non disponible');
+      res.status(400).json({
+        error: 'Body brut non disponible',
+        detail: 'Le serveur n\'a pas pu lire le body brut pour verifier la signature. Assurez-vous d\'envoyer un body JSON valide.',
+      });
+      return;
+    }
+
+    if (!verifyWebhookSignature(rawBody, signature, config.WHATSAPP_APP_SECRET)) {
+      logger.warn('Webhook WhatsApp: signature invalide', {
+        receivedSignature: signature.slice(0, 20) + '...',
+      });
+      res.status(403).json({
+        error: 'Signature invalide',
+        detail: `Le HMAC-SHA256 du body ne correspond pas au App Secret configure. Verifiez que WHATSAPP_APP_SECRET correspond bien au "App Secret" de votre application Meta (ID: ${config.WHATSAPP_APP_SECRET ? '***' + config.WHATSAPP_APP_SECRET.slice(-4) : 'non configure'}). Le header recu commence par: ${signature.slice(0, 15)}...`,
+      });
       return;
     }
   }
 
-  // Acknowledge immediately
-  res.status(200).json({ status: 'ok' });
+  // Validate payload structure
+  if (!req.body || req.body.object !== 'whatsapp_business_account') {
+    res.status(400).json({
+      error: 'Payload invalide',
+      detail: 'Le body doit etre un JSON avec "object": "whatsapp_business_account". Format attendu: { "object": "whatsapp_business_account", "entry": [{ "changes": [{ "value": { "messages": [...] }, "field": "messages" }] }] }',
+      received_object: req.body?.object ?? null,
+    });
+    return;
+  }
 
-  // Process asynchronously
-  setImmediate(async () => {
-    try {
-      const parsed = parseIncomingMessage(req.body);
+  try {
+    const parsed = parseIncomingMessage(req.body);
 
-      if (!parsed) {
-        // Status update or non-message event -- skip
-        return;
-      }
+    if (!parsed) {
+      // Status update or non-message event -- acknowledge silently
+      res.status(200).json({ status: 'ok', detail: 'Evenement non-message ignore (status update ou autre)' });
+      return;
+    }
 
-      const { from, text, waMessageId } = parsed;
-      const db = getDb();
+    const { from, text, waMessageId } = parsed;
+    const db = getDb();
 
-      // Find lead by phone number — try all common formats:
-      // Meta sends E.164 without +, e.g. "33651157842"
-      // Lead phone may be stored as "+33651157842", "33651157842", or "0651157842"
-      const withPlus = from.startsWith('+') ? from : `+${from}`;
-      const withoutPlus = from.startsWith('+') ? from.slice(1) : from;
-      // Convert E.164 to French domestic: +33651... → 0651...
-      const domestic = withPlus.startsWith('+33')
-        ? '0' + withPlus.slice(3)
-        : null;
+    // Find lead by phone number — try all common formats:
+    // Meta sends E.164 without +, e.g. "33651157842"
+    // Lead phone may be stored as "+33651157842", "33651157842", or "0651157842"
+    const withPlus = from.startsWith('+') ? from : `+${from}`;
+    const withoutPlus = from.startsWith('+') ? from.slice(1) : from;
+    // Convert E.164 to French domestic: +33651... → 0651...
+    const domestic = withPlus.startsWith('+33')
+      ? '0' + withPlus.slice(3)
+      : null;
 
-      const phoneVariants = [withPlus, withoutPlus];
-      if (domestic) phoneVariants.push(domestic);
+    const phoneVariants = [withPlus, withoutPlus];
+    if (domestic) phoneVariants.push(domestic);
 
-      const leadResults = await db
-        .select()
-        .from(leads)
-        .where(
-          or(
-            ...phoneVariants.map((p) => eq(leads.phone, p)),
-          ),
-        );
+    const leadResults = await db
+      .select()
+      .from(leads)
+      .where(
+        or(
+          ...phoneVariants.map((p) => eq(leads.phone, p)),
+        ),
+      );
 
-      const lead = leadResults[0] as Lead | undefined;
+    const lead = leadResults[0] as Lead | undefined;
 
-      if (lead) {
-        // Store inbound message
-        await db.insert(whatsappMessages).values({
-          leadId: lead.id,
-          waMessageId,
-          direction: 'inbound',
-          body: text,
-          status: 'delivered',
-        });
+    if (lead) {
+      // Store inbound message
+      await db.insert(whatsappMessages).values({
+        leadId: lead.id,
+        waMessageId,
+        direction: 'inbound',
+        body: text,
+        status: 'delivered',
+      });
 
-        // Create activity
-        await db.insert(activities).values({
-          leadId: lead.id,
-          type: 'whatsapp_received',
-          content: text,
-        });
+      // Create activity
+      await db.insert(activities).values({
+        leadId: lead.id,
+        type: 'whatsapp_received',
+        content: text,
+      });
 
-        // Send Free Mobile SMS alert (best-effort, never throw)
-        try {
-          const alertMsg = `WhatsApp de ${lead.name}: ${text.slice(0, 100)}`;
-          if (config.FREE_MOBILE_USER && config.FREE_MOBILE_PASS) {
-            await axios.get('https://smsapi.free-mobile.fr/sendmsg', {
-              params: {
-                user: config.FREE_MOBILE_USER,
-                pass: config.FREE_MOBILE_PASS,
-                msg: alertMsg,
-              },
-            });
-          }
-        } catch (smsError) {
-          logger.error('Webhook WhatsApp: echec alerte SMS', {
-            error: smsError instanceof Error ? smsError.message : String(smsError),
+      // Send Free Mobile SMS alert (best-effort, never throw)
+      try {
+        const alertMsg = `WhatsApp de ${lead.name}: ${text.slice(0, 100)}`;
+        if (config.FREE_MOBILE_USER && config.FREE_MOBILE_PASS) {
+          await axios.get('https://smsapi.free-mobile.fr/sendmsg', {
+            params: {
+              user: config.FREE_MOBILE_USER,
+              pass: config.FREE_MOBILE_PASS,
+              msg: alertMsg,
+            },
           });
         }
-
-        logger.info('Webhook WhatsApp: message entrant traite', {
-          leadId: lead.id,
-          from,
-          waMessageId,
+      } catch (smsError) {
+        logger.error('Webhook WhatsApp: echec alerte SMS', {
+          error: smsError instanceof Error ? smsError.message : String(smsError),
         });
-      } else {
-        logger.warn('Webhook WhatsApp: aucun lead trouve pour ce numero', { from });
       }
-    } catch (error) {
-      logger.error('Webhook WhatsApp: erreur traitement', {
-        error: error instanceof Error ? error.message : String(error),
+
+      logger.info('Webhook WhatsApp: message entrant traite', {
+        leadId: lead.id,
+        from,
+        waMessageId,
+      });
+
+      res.status(200).json({
+        status: 'ok',
+        leadId: lead.id,
+        leadName: lead.name,
+        waMessageId,
+      });
+    } else {
+      logger.warn('Webhook WhatsApp: aucun lead trouve pour ce numero', { from, phoneVariants });
+      res.status(200).json({
+        status: 'ok',
+        warning: `Aucun lead trouve pour le numero ${from}`,
+        phoneVariants,
       });
     }
-  });
+  } catch (error) {
+    logger.error('Webhook WhatsApp: erreur traitement', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    res.status(500).json({
+      error: 'Erreur interne lors du traitement',
+      detail: error instanceof Error ? error.message : String(error),
+    });
+  }
 });
 
 export default router;

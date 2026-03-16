@@ -49,9 +49,24 @@ export async function sendWhatsAppTemplate(
   to: string,
   templateName: string,
   languageCode: string = 'fr',
+  parameters?: Array<{ type: string; text: string }>,
   httpClient?: { post: AxiosInstance['post'] },
 ): Promise<string> {
   const client = httpClient || axios;
+
+  const template: any = {
+    name: templateName,
+    language: { code: languageCode },
+  };
+
+  if (parameters && parameters.length > 0) {
+    template.components = [
+      {
+        type: 'body',
+        parameters,
+      },
+    ];
+  }
 
   const response = await client.post(
     `https://graph.facebook.com/v21.0/${phoneNumberId}/messages`,
@@ -60,10 +75,7 @@ export async function sendWhatsAppTemplate(
       recipient_type: 'individual',
       to,
       type: 'template',
-      template: {
-        name: templateName,
-        language: { code: languageCode },
-      },
+      template,
     },
     {
       headers: {

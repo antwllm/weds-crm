@@ -219,12 +219,46 @@ router.post('/leads/:leadId/whatsapp/send-template', ensureAuthenticated, async 
       return;
     }
 
+    // Build template parameters matching the template's expected named params
+    // Templates use named params like {{name}}, {{email}} — we map them to lead fields
+    const paramValues: Record<string, string> = {
+      name: lead.name || '',
+      email: lead.email || '',
+      date_evenement: lead.eventDate || '',
+    };
+
+    // Fetch template definition to know exact param count and order
+    let templateParams: Array<{ type: string; text: string }> | undefined;
+    try {
+      if (config.WHATSAPP_BUSINESS_ACCOUNT_ID) {
+        const { listWhatsAppTemplates } = await import('../../services/whatsapp.js');
+        const templates = await listWhatsAppTemplates(
+          config.WHATSAPP_BUSINESS_ACCOUNT_ID,
+          config.WHATSAPP_ACCESS_TOKEN,
+        );
+        const tpl = templates.find((t) => t.name === templateName);
+        if (tpl?.bodyText) {
+          // Extract {{param}} placeholders in order
+          const matches = [...tpl.bodyText.matchAll(/\{\{(\w+)\}\}/g)];
+          if (matches.length > 0) {
+            templateParams = matches.map((m) => ({
+              type: 'text',
+              text: paramValues[m[1]] || m[1],
+            }));
+          }
+        }
+      }
+    } catch (e) {
+      logger.warn('Impossible de recuperer les parametres du template, envoi sans params');
+    }
+
     const waMessageId = await sendWhatsAppTemplate(
       config.WHATSAPP_PHONE_NUMBER_ID,
       config.WHATSAPP_ACCESS_TOKEN,
       lead.phone,
       templateName,
       languageCode,
+      templateParams,
     );
 
     await db.insert(whatsappMessages).values({
