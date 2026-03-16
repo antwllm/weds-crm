@@ -1,10 +1,13 @@
 import * as Sentry from '@sentry/node';
+import { eq } from 'drizzle-orm';
 import { config } from '../config.js';
 import { logger } from '../logger.js';
 import { sendFreeMobileSMS } from './sms.js';
 import { sendEmail } from './gmail.js';
 import { sendWhatsAppTemplate } from './whatsapp.js';
 import { alertNotificationFailure } from './alerts.js';
+import { getDb } from '../db/index.js';
+import { notificationSettings } from '../db/schema.js';
 import type { Lead, NotificationResult } from '../types.js';
 import type { gmail_v1 } from 'googleapis';
 
@@ -20,6 +23,34 @@ export async function dispatchNotifications(
   gmailClient: gmail_v1.Gmail
 ): Promise<NotificationResult[]> {
   const channels = ['whatsapp_prospect', 'free_mobile_sms', 'email_recap'] as const;
+
+  // Query notification toggle settings
+  let enabledMap = new Map<string, boolean>();
+  try {
+    const db = getDb();
+    const settings = await db.select().from(notificationSettings);
+    for (const s of settings) {
+      enabledMap.set(s.channel, s.enabled);
+    }
+  } catch (err) {
+    // If query fails, default to all enabled (fail-open)
+    logger.warn('Impossible de lire les parametres de notification, tout actif par defaut', { error: err });
+  }
+
+  // Check per-channel toggles
+  if (enabledMap.get('whatsapp_prospect') === false) {
+    logger.info('Notification desactivee par parametre', { channel: 'whatsapp_prospect' });
+  }
+  if (enabledMap.get('free_mobile_new_contact') === false) {
+    logger.info('Notification desactivee par parametre', { channel: 'free_mobile_new_contact' });
+  }
+  if (enabledMap.get('email_recap_new_contact') === false) {
+    logger.info('Notification desactivee par parametre', { channel: 'email_recap_new_contact' });
+  }
+
+  const isWhatsappEnabled = enabledMap.get('whatsapp_prospect') !== false;
+  const isSmsEnabled = enabledMap.get('free_mobile_new_contact') !== false;
+  const isEmailRecapEnabled = enabledMap.get('email_recap_new_contact') !== false;
 
   // Email recap content
   const emailSubject = `Nouveau lead Mariages.net - ${lead.name}`;
@@ -43,12 +74,14 @@ export async function dispatchNotifications(
   ];
 
   // WhatsApp desactive temporairement
-  const whatsappEnabled = false;
-  logger.info('WhatsApp desactive temporairement -- message prospect non envoye');
+  const whatsappHardDisabled = true;
+  if (whatsappHardDisabled) {
+    logger.info('WhatsApp desactive temporairement -- message prospect non envoye');
+  }
 
-  // Fire notifications independently
+  // Fire notifications independently (skip channels disabled by toggle)
   const results = await Promise.allSettled([
-    whatsappEnabled
+    (!whatsappHardDisabled && isWhatsappEnabled)
       ? sendWhatsAppTemplate(
           config.WHATSAPP_PHONE_NUMBER_ID!,
           config.WHATSAPP_ACCESS_TOKEN!,
@@ -67,17 +100,21 @@ export async function dispatchNotifications(
           error: err instanceof Error ? err.message : String(err),
         } as NotificationResult))
       : Promise.resolve({ channel: 'whatsapp_prospect' as const, success: true, error: undefined } as NotificationResult),
-    sendFreeMobileSMS(
-      {
-        name: lead.name,
-        phone: lead.phone ?? '',
-        email: lead.email ?? '',
-        eventDate: lead.eventDate ?? '',
-        message: lead.message ?? '',
-      },
-      vCardUrl
-    ),
-    sendEmail(gmailClient, config.ADMIN_EMAIL, emailSubject, emailBody, attachments),
+    isSmsEnabled
+      ? sendFreeMobileSMS(
+          {
+            name: lead.name,
+            phone: lead.phone ?? '',
+            email: lead.email ?? '',
+            eventDate: lead.eventDate ?? '',
+            message: lead.message ?? '',
+          },
+          vCardUrl
+        )
+      : Promise.resolve({ channel: 'free_mobile_sms' as const, success: true, error: undefined } as NotificationResult),
+    isEmailRecapEnabled
+      ? sendEmail(gmailClient, config.ADMIN_EMAIL, emailSubject, emailBody, attachments)
+      : Promise.resolve(undefined),
   ]);
 
   const notificationResults: NotificationResult[] = [];

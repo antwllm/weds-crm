@@ -99,6 +99,9 @@ export const emailTemplates = pgTable('email_templates', {
   subject: varchar('subject', { length: 500 }),
   body: text('body'),
   variables: jsonb('variables'), // ['nom', 'date_evenement', ...]
+  isDefault: boolean('is_default').default(false),
+  contentType: varchar('content_type', { length: 10 }).default('text'), // 'text' | 'html'
+  attachments: jsonb('attachments'), // [{filename, path, mimeType}]
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
@@ -139,6 +142,16 @@ export const aiPromptConfig = pgTable('ai_prompt_config', {
   id: serial('id').primaryKey(),
   promptTemplate: text('prompt_template').notNull(),
   model: varchar('model', { length: 100 }).default('anthropic/claude-sonnet-4'),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// --- Notification settings (per-channel toggles) ---
+
+export const notificationSettings = pgTable('notification_settings', {
+  id: serial('id').primaryKey(),
+  channel: varchar('channel', { length: 50 }).notNull().unique(),
+  enabled: boolean('enabled').default(true).notNull(),
+  label: varchar('label', { length: 255 }).notNull(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
