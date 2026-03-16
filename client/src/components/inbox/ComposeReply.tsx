@@ -26,7 +26,7 @@ import {
   useGenerateDraft,
 } from '@/hooks/useInbox';
 import { TipTapEditor, type TipTapEditorHandle } from './TipTapEditor';
-import type { GmailMessage } from '@/types';
+import type { GmailMessage, TemplateAttachment } from '@/types';
 
 const DEFAULT_SIGNATURE =
   '<p></p><p></p><p>--</p><p>William Kant</p><p>Directeur Photographique</p><p>WEDS</p><p>contact@weds.fr</p>';
@@ -92,6 +92,7 @@ export function ComposeReply({
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [variableKey, setVariableKey] = useState<string>('');
   const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
+  const [templateAttachments, setTemplateAttachments] = useState<TemplateAttachment[]>([]);
   const editorRef = useRef<TipTapEditorHandle>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -122,8 +123,24 @@ export function ComposeReply({
     if (!value) return;
     setSelectedTemplateId(value);
     const templateId = parseInt(value, 10);
+    const template = templatesData?.templates.find((t) => t.id === templateId);
+    const newAttachments = (template?.attachments as TemplateAttachment[]) || [];
+
+    // Confirm before replacing existing attachments
+    const hasExisting = templateAttachments.length > 0 || attachments.length > 0;
+    let replaceAttachments = true;
+    if (hasExisting) {
+      replaceAttachments = window.confirm(
+        'Changer de modele remplacera les pieces jointes actuelles. Continuer ?',
+      );
+    }
+
+    if (replaceAttachments) {
+      setTemplateAttachments(newAttachments);
+      setAttachments([]);
+    }
+
     if (!leadId) {
-      const template = templatesData?.templates.find((t) => t.id === templateId);
       if (template) {
         setSubject(template.subject);
         setBody(template.body);
@@ -210,6 +227,8 @@ export function ComposeReply({
       return;
     }
 
+    const tplId = selectedTemplateId ? parseInt(selectedTemplateId, 10) : undefined;
+
     try {
       if (threadId) {
         await sendReply.mutateAsync({
@@ -221,6 +240,7 @@ export function ComposeReply({
           references: lastMessage
             ? `${lastMessage.references ?? ''} ${lastMessage.messageId}`.trim()
             : undefined,
+          templateId: tplId,
         });
       } else {
         await sendReply.mutateAsync({
@@ -228,12 +248,14 @@ export function ComposeReply({
           to,
           subject,
           body,
+          templateId: tplId,
         });
       }
       toast.success('Reponse envoyee');
       setBody('');
       editorRef.current?.setContent('');
       setAttachments([]);
+      setTemplateAttachments([]);
     } catch {
       toast.error("Erreur lors de l'envoi");
     }
@@ -246,6 +268,7 @@ export function ComposeReply({
     setTo('');
     setSelectedTemplateId(null);
     setAttachments([]);
+    setTemplateAttachments([]);
   };
 
   const templates = templatesData?.templates ?? [];
@@ -373,8 +396,25 @@ export function ComposeReply({
       />
 
       {/* Attachments list */}
-      {attachments.length > 0 && (
+      {(templateAttachments.length > 0 || attachments.length > 0) && (
         <div className="px-4 py-2 border-t border-border/50 flex flex-wrap gap-2">
+          {templateAttachments.map((att, i) => (
+            <div
+              key={`tpl-${att.gcsPath}`}
+              className="flex items-center gap-1.5 rounded-md bg-muted px-2.5 py-1 text-xs"
+            >
+              <Paperclip className="h-3 w-3 shrink-0 text-muted-foreground" />
+              <span className="truncate max-w-40">{att.filename}</span>
+              <span className="text-muted-foreground">({formatFileSize(att.size)})</span>
+              <button
+                type="button"
+                onClick={() => setTemplateAttachments((prev) => prev.filter((_, idx) => idx !== i))}
+                className="ml-0.5 rounded hover:bg-destructive/10 p-0.5"
+              >
+                <X className="h-3 w-3 text-muted-foreground hover:text-destructive" />
+              </button>
+            </div>
+          ))}
           {attachments.map((att, i) => (
             <div
               key={`${att.name}-${i}`}

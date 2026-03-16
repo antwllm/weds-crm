@@ -44,6 +44,7 @@ interface SendReplyParams {
   body: string;
   inReplyTo?: string;
   references?: string;
+  templateId?: number;
 }
 
 export function useSendReply() {

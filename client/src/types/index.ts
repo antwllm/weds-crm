@@ -158,12 +158,21 @@ export interface ThreadDetail {
   matchedLead?: { id: number; name: string; status: string };
 }
 
+export interface TemplateAttachment {
+  filename: string;
+  gcsPath: string;
+  url: string;
+  mimeType: string;
+  size: number;
+}
+
 export interface EmailTemplate {
   id: number;
   name: string;
   subject: string;
   body: string;
   variables: string[];
+  attachments?: TemplateAttachment[] | null;
 }
 
 export interface AiPromptConfig {
