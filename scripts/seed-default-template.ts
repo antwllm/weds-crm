@@ -1,6 +1,9 @@
 /**
  * Seed the default initial contact email template with brochure attachment.
  * Run: npx tsx scripts/seed-default-template.ts
+ *
+ * NOTE: Migrate brochure to GCS with:
+ *   gsutil cp assets/Brochure_Weds.pdf gs://weds-crm-assets/attachments/Brochure_Weds.pdf
  */
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
@@ -129,8 +132,10 @@ async function main() {
         attachments: [
           {
             filename: 'Brochure_Weds.pdf',
-            path: 'assets/Brochure_Weds.pdf',
+            gcsPath: 'attachments/Brochure_Weds.pdf',
+            url: 'https://storage.googleapis.com/weds-crm-assets/attachments/Brochure_Weds.pdf',
             mimeType: 'application/pdf',
+            size: 0, // Will be actual size after GCS migration
           },
         ],
         updatedAt: new Date(),
@@ -151,8 +156,10 @@ async function main() {
         attachments: [
           {
             filename: 'Brochure_Weds.pdf',
-            path: 'assets/Brochure_Weds.pdf',
+            gcsPath: 'attachments/Brochure_Weds.pdf',
+            url: 'https://storage.googleapis.com/weds-crm-assets/attachments/Brochure_Weds.pdf',
             mimeType: 'application/pdf',
+            size: 0, // Will be actual size after GCS migration
           },
         ],
       })

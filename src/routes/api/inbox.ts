@@ -3,11 +3,13 @@ import { z } from 'zod';
 import { eq, desc } from 'drizzle-orm';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { Storage } from '@google-cloud/storage';
 import { getDb } from '../../db/index.js';
 import { leads, linkedEmails, activities, emailTemplates } from '../../db/schema.js';
 import { ensureAuthenticated } from '../../auth/middleware.js';
 import { getGmailClientInstance } from '../../services/gmail-client-holder.js';
 import { listThreads, getThread, sendReply, sendEmail } from '../../services/gmail.js';
+import { config } from '../../config.js';
 import { logger } from '../../logger.js';
 
 const router = Router();
@@ -202,14 +204,24 @@ router.post('/inbox/threads/:threadId/reply', async (req, res) => {
         .limit(1);
 
       if (template?.attachments) {
-        const attachmentDefs = template.attachments as { filename: string; path: string; mimeType: string }[];
+        const gcsStorage = new Storage();
+        const bucketName = config.GCS_ASSETS_BUCKET;
+        const attachmentDefs = template.attachments as { filename: string; gcsPath?: string; path?: string; mimeType: string; size?: number }[];
+
         for (const att of attachmentDefs) {
           try {
-            const filePath = resolve(process.cwd(), att.path);
-            const content = readFileSync(filePath);
-            fileAttachments.push({ filename: att.filename, content, mimeType: att.mimeType });
+            if (att.gcsPath && bucketName) {
+              // New GCS-based attachments
+              const [content] = await gcsStorage.bucket(bucketName).file(att.gcsPath).download();
+              fileAttachments.push({ filename: att.filename, content, mimeType: att.mimeType });
+            } else if (att.path) {
+              // Legacy fallback: local filesystem (for transition period)
+              const filePath = resolve(process.cwd(), att.path);
+              const content = readFileSync(filePath);
+              fileAttachments.push({ filename: att.filename, content, mimeType: att.mimeType });
+            }
           } catch (err) {
-            logger.warn('Piece jointe introuvable', { path: att.path, error: err });
+            logger.warn('Piece jointe introuvable', { gcsPath: att.gcsPath, path: att.path, error: err });
           }
         }
       }
