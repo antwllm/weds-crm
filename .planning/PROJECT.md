@@ -30,22 +30,28 @@ Every Mariages.net lead is captured, organized, and actionable from a single int
 
 ### Active
 
-- [ ] HTML email rendering with proper formatting (sanitized)
-- [ ] Show all emails (sent + archived), not just inbox
-- [ ] Manual email-to-lead linking from inbox
-- [ ] AI draft UX: stay on lead view and refresh after send
-- [ ] Follow-up reminders when lead not replied in 48h
-- [ ] Full-text search across leads and emails
-- [ ] Multi-source lead capture (Zankyou, web form)
+See: `.planning/REQUIREMENTS.md` for v1.1 requirements
 
 ### Out of Scope
 
 - Multi-user / team management — single user only
 - Mobile native app — web responsive is sufficient
-- Other lead sources beyond Mariages.net — V1 is single-source
 - Real-time chat with prospects
 - Invoicing / billing features
 - Calendar / booking integration
+- Auto-send AI WhatsApp without human review on first activation — safety net required
+
+## Current Milestone: v1.1 Templates & Agent IA WhatsApp
+
+**Goal:** Transformer le CRM en outil de communication intelligent — editeur de templates professionnel avec images/PJ et agent IA WhatsApp autonome avec observabilite Langfuse.
+
+**Target features:**
+- Editeur HTML avance avec coloration syntaxique et formatage Prettier
+- Images inline via upload GCS dans les templates et le composeur
+- Gestion des pieces jointes dans les modeles (upload, pre-remplissage)
+- Agent IA WhatsApp : auto-reponse aux prospects avec handoff humain
+- Observabilite IA via Langfuse (traces, decisions, calibration)
+- Historique des decisions IA visible dans l'UI (action + reason)
 
 ## Context
 
@@ -77,6 +83,9 @@ Every Mariages.net lead is captured, organized, and actionable from a single int
 | GCP deployment | Existing infrastructure, Cloud Run fits containerized Node.js apps | ✓ Good — Docker Compose local + Cloud Run prod |
 | AI drafts require mandatory review | Legal/quality risk of auto-sending AI content to prospects | ✓ Good — no auto-send path exists |
 | WhatsApp 24h window enforcement | Meta API constraint — free-form messages blocked after 24h | ✓ Good — UI disables input, template-only fallback |
+| Agent IA WhatsApp = reply or pass_to_human | Garder le controle sur les sujets sensibles (tarifs, dispo dates) | — Pending |
+| Pass-to-human = per-conversation, not permanent | Le lead qui renvoie un message relance l'agent automatiquement | — Pending |
+| Langfuse pour l'observabilite IA | Calibrer l'agent, tracer les decisions, mesurer la qualite | — Pending |
 
 ---
-*Last updated: 2026-03-15 after v1.0 milestone*
+*Last updated: 2026-03-16 after v1.1 milestone start*

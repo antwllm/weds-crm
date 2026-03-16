@@ -1,36 +1,36 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: completed
-stopped_at: "Completed quick-2: Add granular notification toggles and activity log"
-last_updated: "2026-03-16T00:00:00.000Z"
-last_activity: 2026-03-16 - Completed quick task 2: Notification toggles and activity log in Settings
+milestone: v1.1
+milestone_name: Templates & Agent IA WhatsApp
+status: defining_requirements
+stopped_at: null
+last_updated: "2026-03-16T20:00:00.000Z"
+last_activity: 2026-03-16 — Milestone v1.1 started
 progress:
   total_phases: 0
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
-  percent: 100
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-15)
+See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** Every Mariages.net lead is captured, organized, and actionable from a single interface — no switching between Gmail, Pipedrive, and phone
-**Current focus:** v1.0 shipped — planning next milestone
+**Current focus:** v1.1 — Templates avances & Agent IA WhatsApp
 
 ## Current Position
 
-Phase: 4 of 4 (Gmail Inbox, AI Drafting & WhatsApp)
-Plan: 7 of 7 in current phase (completed)
-Status: v1.0 Milestone Complete
-Last activity: 2026-03-16 - Completed quick task 9: WYSIWYG editor improvements
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-16 — Milestone v1.1 started
 
-Progress: [██████████] 100%
+Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
