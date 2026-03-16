@@ -40,6 +40,9 @@ const envSchema = z.object({
   GCS_BUCKET_NAME: isProduction
     ? z.string().min(1, 'GCS_BUCKET_NAME est requis en production')
     : z.string().optional(),
+  GCS_ASSETS_BUCKET: isProduction
+    ? z.string().min(1, 'GCS_ASSETS_BUCKET est requis en production')
+    : z.string().optional(),
 
   // Sentry (toujours optionnel)
   SENTRY_DSN: z.string().optional(),

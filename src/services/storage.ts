@@ -1,4 +1,5 @@
 import { Storage } from '@google-cloud/storage';
+import { v4 as uuidv4 } from 'uuid';
 import { config } from '../config.js';
 
 const storage = new Storage();
@@ -48,4 +49,33 @@ export async function uploadVCardAndGetSignedUrl(
   });
 
   return signedUrl;
+}
+
+/**
+ * Upload an asset (image or attachment) to GCS and return a permanent public URL.
+ * Files are stored in gs://weds-crm-assets/uploads/<uuid>.<ext>
+ */
+export async function uploadAsset(
+  buffer: Buffer,
+  originalName: string,
+  mimeType: string,
+): Promise<{ url: string; gcsPath: string }> {
+  const bucketName = config.GCS_ASSETS_BUCKET;
+  if (!bucketName) {
+    throw new Error('GCS_ASSETS_BUCKET non configure');
+  }
+
+  const ext = originalName.split('.').pop() || 'bin';
+  const gcsPath = `uploads/${uuidv4()}.${ext}`;
+
+  const bucket = storage.bucket(bucketName);
+  const file = bucket.file(gcsPath);
+
+  await file.save(buffer, {
+    contentType: mimeType,
+    metadata: { originalName },
+  });
+
+  const url = `https://storage.googleapis.com/${bucketName}/${gcsPath}`;
+  return { url, gcsPath };
 }
