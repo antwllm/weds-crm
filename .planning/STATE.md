@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 Phase: 4 of 4 (Gmail Inbox, AI Drafting & WhatsApp)
 Plan: 7 of 7 in current phase (completed)
 Status: v1.0 Milestone Complete
-Last activity: 2026-03-16 - Completed quick task 8: Replace template editor textarea with TipTap WYSIWYG editor
+Last activity: 2026-03-16 - Completed quick task 9: WYSIWYG editor improvements
 
 Progress: [██████████] 100%
 
@@ -161,6 +161,7 @@ Recent decisions affecting current work:
 | 7 | Replace plain textarea with TipTap WYSIWYG email composer | 2026-03-15 | be7f7fc | [7-replace-plain-textarea-email-composer-wi](./quick/7-replace-plain-textarea-email-composer-wi/) |
 | 2 | Add granular notification toggles and activity log in Settings | 2026-03-16 | f778615 | [2-add-granular-notification-toggles-in-set](./quick/2-add-granular-notification-toggles-in-set/) |
 | 8 | Replace template editor textarea with TipTap WYSIWYG editor | 2026-03-16 | 84008e7 | [8-replace-template-editor-textarea-with-ti](./quick/8-replace-template-editor-textarea-with-ti/) |
+| 9 | WYSIWYG editor improvements: undo/redo, lists, attachments, HTML toggle, composer sizing, default recipient | 2026-03-16 | cd22553 | [9-wysiwyg-editor-improvements-undo-redo-li](./quick/9-wysiwyg-editor-improvements-undo-redo-li/) |
 
 ### Blockers/Concerns
 
