@@ -3,7 +3,10 @@ import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Underline from '@tiptap/extension-underline';
 import Placeholder from '@tiptap/extension-placeholder';
-import { forwardRef, useState, useEffect, useImperativeHandle } from 'react';
+import Image from '@tiptap/extension-image';
+import { Extension } from '@tiptap/core';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { forwardRef, useState, useEffect, useImperativeHandle, useRef, useMemo } from 'react';
 import {
   Bold,
   Italic,
@@ -20,10 +23,13 @@ import {
   Redo2,
   Code2,
   AlignLeft,
+  ImagePlus,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CodeMirrorEditor } from '@/components/editor/CodeMirrorEditor';
 import { html_beautify } from 'js-beautify';
+import { useUpload } from '@/hooks/useUpload';
+import { toast } from 'sonner';
 
 const BEAUTIFY_OPTIONS = {
   indent_size: 2,
@@ -51,6 +57,63 @@ export const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
   function TipTapEditor({ content, onUpdate, placeholder, className, defaultHeight = '300px' }, ref) {
     const [htmlMode, setHtmlMode] = useState(false);
     const [htmlSource, setHtmlSource] = useState('');
+    const { upload, uploading } = useUpload();
+
+    // Stable ref for the upload function so TipTap extensions can access it
+    const uploadRef = useRef<(file: File) => Promise<void>>();
+
+    const uploadAndInsertImage = async (file: File, editorInstance: ReturnType<typeof useEditor>) => {
+      if (!file.type.startsWith('image/')) return;
+      try {
+        const result = await upload(file);
+        editorInstance?.chain().focus().setImage({ src: result.url }).run();
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Erreur lors de l'upload de l'image");
+      }
+    };
+
+    // Create the image upload handler extension with stable ref
+    const ImageUploadHandler = useMemo(
+      () =>
+        Extension.create({
+          name: 'imageUploadHandler',
+          addProseMirrorPlugins() {
+            return [
+              new Plugin({
+                key: new PluginKey('imageUploadHandler'),
+                props: {
+                  handlePaste(_view, event) {
+                    const items = event.clipboardData?.items;
+                    if (!items) return false;
+                    for (const item of items) {
+                      if (item.type.startsWith('image/')) {
+                        event.preventDefault();
+                        const file = item.getAsFile();
+                        if (file) uploadRef.current?.(file);
+                        return true;
+                      }
+                    }
+                    return false;
+                  },
+                  handleDrop(_view, event) {
+                    const files = event.dataTransfer?.files;
+                    if (!files || files.length === 0) return false;
+                    for (const file of files) {
+                      if (file.type.startsWith('image/')) {
+                        event.preventDefault();
+                        uploadRef.current?.(file);
+                        return true;
+                      }
+                    }
+                    return false;
+                  },
+                },
+              }),
+            ];
+          },
+        }),
+      [],
+    );
 
     const editor = useEditor({
       extensions: [
@@ -62,12 +125,17 @@ export const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
         Link.configure({ openOnClick: false }),
         Underline,
         Placeholder.configure({ placeholder: placeholder ?? '' }),
+        Image.configure({ inline: true, allowBase64: false }),
+        ImageUploadHandler,
       ],
       content,
       onUpdate: ({ editor: e }) => {
         onUpdate(e.getHTML());
       },
     });
+
+    // Keep uploadRef in sync with current editor instance
+    uploadRef.current = (file: File) => uploadAndInsertImage(file, editor);
 
     // Expose imperative methods to parent
     useImperativeHandle(
@@ -122,6 +190,17 @@ export const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
       onUpdate(formatted);
     };
 
+    const handleImageUpload = () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = () => {
+        const file = input.files?.[0];
+        if (file) uploadAndInsertImage(file, editor);
+      };
+      input.click();
+    };
+
     if (!editor) return null;
 
     const canIndent = editor.can().sinkListItem('listItem');
@@ -157,7 +236,7 @@ export const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
           >
             <EditorContent
               editor={editor}
-              className="h-full prose prose-sm max-w-none px-4 py-3 focus:outline-none [&_.ProseMirror]:min-h-full [&_.ProseMirror]:outline-none [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-muted-foreground [&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.ProseMirror_p.is-editor-empty:first-child::before]:float-left [&_.ProseMirror_p.is-editor-empty:first-child::before]:h-0 [&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none"
+              className="h-full prose prose-sm max-w-none px-4 py-3 focus:outline-none [&_.ProseMirror]:min-h-full [&_.ProseMirror]:outline-none [&_.ProseMirror_p.is-editor-empty:first-child::before]:text-muted-foreground [&_.ProseMirror_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.ProseMirror_p.is-editor-empty:first-child::before]:float-left [&_.ProseMirror_p.is-editor-empty:first-child::before]:h-0 [&_.ProseMirror_p.is-editor-empty:first-child::before]:pointer-events-none [&_.ProseMirror_img]:max-w-full [&_.ProseMirror_img]:h-auto [&_.ProseMirror_img]:rounded"
             />
           </div>
         )}
@@ -264,6 +343,14 @@ export const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
             title="Lien"
           >
             <Link2 className="h-4 w-4" />
+          </ToolbarButton>
+          <ToolbarButton
+            active={false}
+            onClick={handleImageUpload}
+            title="Inserer une image"
+            disabled={uploading || htmlMode}
+          >
+            <ImagePlus className="h-4 w-4" />
           </ToolbarButton>
           <ToolbarButton
             active={false}
