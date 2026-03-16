@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Templates & Agent IA WhatsApp
 status: executing
-stopped_at: Completed 05-02-PLAN.md
-last_updated: "2026-03-16T22:34:08Z"
+stopped_at: Completed 05-03-PLAN.md
+last_updated: "2026-03-16T22:41:08.014Z"
 last_activity: 2026-03-16 — Completed 05-02 Media Upload & GCS Storage
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 4
-  completed_plans: 2
+  completed_plans: 3
   percent: 50
 ---
 
@@ -53,6 +53,7 @@ Progress: [█████░░░░░] 50%
 - Trend: Improving
 
 *Updated after each plan completion*
+| Phase 05 P03 | 3min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,8 @@ Recent decisions affecting current work:
 - [05-01]: js-beautify with indent_size=2, wrap_line_length=120 for HTML formatting
 - [05-02]: Public GCS URLs (not signed) for assets bucket -- permanent access for template images
 - [05-02]: 25MB upload limit, UUID filenames, multer memoryStorage
+- [Phase 05]: useRef pattern for stable upload callback in ProseMirror plugin
+- [Phase 05]: Public GCS URLs for inline images (consistent with 05-02)
 
 ### Pending Todos
 
@@ -82,6 +85,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-16
-Stopped at: Completed 05-02-PLAN.md
+Last session: 2026-03-16T22:41:08.012Z
+Stopped at: Completed 05-03-PLAN.md
 Resume file: None
