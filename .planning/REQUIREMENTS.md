@@ -13,7 +13,7 @@ Requirements for milestone v1.1: Templates & Agent IA WhatsApp.
 - [x] **TMPL-02**: Le code HTML brut est automatiquement formate/indente (pretty print)
 - [x] **TMPL-03**: L'utilisateur peut inserer des images inline via upload GCS dans l'editeur TipTap
 - [x] **TMPL-04**: L'utilisateur peut gerer les pieces jointes d'un modele (upload drag & drop, suppression)
-- [ ] **TMPL-05**: Lors de la selection d'un modele dans le composeur, les pieces jointes du modele sont pre-chargees
+- [x] **TMPL-05**: Lors de la selection d'un modele dans le composeur, les pieces jointes du modele sont pre-chargees
 
 ### Agent IA WhatsApp
 
@@ -60,7 +60,7 @@ Requirements for milestone v1.1: Templates & Agent IA WhatsApp.
 | TMPL-02 | Phase 5 | Complete |
 | TMPL-03 | Phase 5 | Complete |
 | TMPL-04 | Phase 5 | Complete |
-| TMPL-05 | Phase 5 | Pending |
+| TMPL-05 | Phase 5 | Complete |
 | WAIA-01 | Phase 6 | Pending |
 | WAIA-02 | Phase 6 | Pending |
 | WAIA-03 | Phase 6 | Pending |
