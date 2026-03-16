@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Templates & Agent IA WhatsApp
 status: executing
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-16T22:33:06Z"
-last_activity: 2026-03-16 — Completed 05-01 CodeMirror HTML Editor
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-16T22:34:08Z"
+last_activity: 2026-03-16 — Completed 05-02 Media Upload & GCS Storage
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 4
-  completed_plans: 1
-  percent: 0
+  completed_plans: 2
+  percent: 50
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 ## Current Position
 
 Phase: 5 of 7 (Advanced Template Editor)
-Plan: 1 of 4 in current phase (executing)
+Plan: 2 of 4 in current phase (executing)
 Status: Executing
-Last activity: 2026-03-16 — Completed 05-01 CodeMirror HTML Editor
+Last activity: 2026-03-16 — Completed 05-02 Media Upload & GCS Storage
 
-Progress: [███░░░░░░░] 25%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
@@ -68,6 +68,8 @@ Recent decisions affecting current work:
 - [Quick-9]: WYSIWYG improvements already shipped (undo/redo, lists, attachments, HTML toggle)
 - [05-01]: No autocompletion in CodeMirror (avoid noisy tag completion)
 - [05-01]: js-beautify with indent_size=2, wrap_line_length=120 for HTML formatting
+- [05-02]: Public GCS URLs (not signed) for assets bucket -- permanent access for template images
+- [05-02]: 25MB upload limit, UUID filenames, multer memoryStorage
 
 ### Pending Todos
 
@@ -81,5 +83,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-16
-Stopped at: Completed 05-01-PLAN.md
+Stopped at: Completed 05-02-PLAN.md
 Resume file: None

@@ -87,6 +87,6 @@ Plans:
 | 2. Lead Management UI | v1.0 | 5/5 | Complete | 2026-03-10 |
 | 3. Pipedrive Sync | v1.0 | 5/5 | Complete | 2026-03-14 |
 | 4. Gmail Inbox, AI Drafting & WhatsApp | v1.0 | 8/8 | Complete | 2026-03-15 |
-| 5. Advanced Template Editor | 1/4 | In Progress|  | - |
+| 5. Advanced Template Editor | 2/4 | In Progress|  | - |
 | 6. WhatsApp AI Agent | v1.1 | 0/? | Not started | - |
 | 7. AI Observability & Decision UI | v1.1 | 0/? | Not started | - |
