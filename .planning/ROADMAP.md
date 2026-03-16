@@ -37,11 +37,13 @@
   3. L'utilisateur peut inserer une image dans un template via upload, et l'image est stockee sur GCS et affichee inline
   4. L'utilisateur peut ajouter/supprimer des pieces jointes sur un modele via drag & drop
   5. Quand l'utilisateur selectionne un modele dans le composeur email, les pieces jointes du modele sont automatiquement pre-chargees
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
+- [ ] 05-01-PLAN.md — CodeMirror 6 HTML mode + pretty-print (TMPL-01, TMPL-02)
+- [ ] 05-02-PLAN.md — Backend upload endpoint + GCS storage service (TMPL-03, TMPL-04)
+- [ ] 05-03-PLAN.md — Inline images + template attachment management UI (TMPL-03, TMPL-04)
+- [ ] 05-04-PLAN.md — Composer attachment pre-loading + GCS migration (TMPL-05)
 
 ### Phase 6: WhatsApp AI Agent
 **Goal**: Un agent IA autonome repond aux messages WhatsApp des prospects, avec capacite de passer la main a l'humain quand le sujet depasse son perimetre
@@ -85,6 +87,6 @@ Plans:
 | 2. Lead Management UI | v1.0 | 5/5 | Complete | 2026-03-10 |
 | 3. Pipedrive Sync | v1.0 | 5/5 | Complete | 2026-03-14 |
 | 4. Gmail Inbox, AI Drafting & WhatsApp | v1.0 | 8/8 | Complete | 2026-03-15 |
-| 5. Advanced Template Editor | v1.1 | 0/? | Not started | - |
+| 5. Advanced Template Editor | v1.1 | 0/4 | Not started | - |
 | 6. WhatsApp AI Agent | v1.1 | 0/? | Not started | - |
 | 7. AI Observability & Decision UI | v1.1 | 0/? | Not started | - |
