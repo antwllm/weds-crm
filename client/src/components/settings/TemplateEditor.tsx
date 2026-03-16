@@ -2,9 +2,9 @@ import { useState, useRef } from 'react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { TipTapEditor, type TipTapEditorHandle } from '@/components/inbox/TipTapEditor';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -52,46 +52,36 @@ export function TemplateEditor() {
     body: '',
   });
 
-  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<TipTapEditorHandle>(null);
 
   function startCreate() {
     setEditingId(null);
     setIsCreating(true);
     setForm({ name: '', subject: '', body: '' });
+    editorRef.current?.setContent('');
   }
 
   function startEdit(template: EmailTemplate) {
     setIsCreating(false);
     setEditingId(template.id);
+    const body = template.body || '';
     setForm({
       name: template.name,
       subject: template.subject || '',
-      body: template.body || '',
+      body,
     });
+    editorRef.current?.setContent(body);
   }
 
   function cancelEdit() {
     setEditingId(null);
     setIsCreating(false);
     setForm({ name: '', subject: '', body: '' });
+    editorRef.current?.setContent('');
   }
 
   function insertVariable(variable: string) {
-    const textarea = bodyRef.current;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const newBody =
-      form.body.substring(0, start) + variable + form.body.substring(end);
-    setForm((prev) => ({ ...prev, body: newBody }));
-
-    // Restore cursor position after variable
-    requestAnimationFrame(() => {
-      textarea.focus();
-      const newPos = start + variable.length;
-      textarea.setSelectionRange(newPos, newPos);
-    });
+    editorRef.current?.insertContent(variable);
   }
 
   async function handleSave() {
@@ -117,6 +107,7 @@ export function TemplateEditor() {
       setEditingId(null);
     }
     setForm({ name: '', subject: '', body: '' });
+    editorRef.current?.setContent('');
   }
 
   async function handleDelete(id: number) {
@@ -256,15 +247,16 @@ export function TemplateEditor() {
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Corps du message</label>
-              <Textarea
-                ref={bodyRef}
-                value={form.body}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, body: e.target.value }))
-                }
-                placeholder="Bonjour {{nom}},&#10;&#10;Merci pour votre demande..."
-                rows={6}
-              />
+              <div className="rounded-md border">
+                <TipTapEditor
+                  ref={editorRef}
+                  content={form.body}
+                  onUpdate={(html) =>
+                    setForm((prev) => ({ ...prev, body: html }))
+                  }
+                  placeholder="Bonjour {{nom}}, Merci pour votre demande..."
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
