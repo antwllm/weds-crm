@@ -130,6 +130,11 @@
 
 /* TipTap editor styles */
 .ProseMirror p { margin: 0.25em 0; }
-.ProseMirror ul, .ProseMirror ol { padding-left: 1.5em; }
+.ProseMirror ul { padding-left: 1.5em; list-style-type: disc; }
+.ProseMirror ol { padding-left: 1.5em; list-style-type: decimal; }
+.ProseMirror ul ul { list-style-type: circle; }
+.ProseMirror ul ul ul { list-style-type: square; }
+.ProseMirror li { margin: 0.15em 0; }
+.ProseMirror li > p { margin: 0; }
 .ProseMirror blockquote { border-left: 3px solid #e5e7eb; padding-left: 1em; color: #6b7280; }
 .ProseMirror a { color: #2563eb; text-decoration: underline; }

@@ -10,6 +10,7 @@ import type { LinkedEmail } from '@/types';
 
 interface LeadEmailsProps {
   leadId: number;
+  leadEmail?: string;
 }
 
 /** Group linked emails by gmailThreadId, keeping the most recent email per thread on top */
@@ -137,7 +138,7 @@ function InlineThread({ threadId, leadId }: { threadId: string; leadId: number }
   );
 }
 
-export function LeadEmails({ leadId }: LeadEmailsProps) {
+export function LeadEmails({ leadId, leadEmail }: LeadEmailsProps) {
   const { data: emailsData, isLoading } = useLeadEmails(leadId);
   const [expandedThread, setExpandedThread] = useState<string | null>(null);
 
@@ -157,7 +158,7 @@ export function LeadEmails({ leadId }: LeadEmailsProps) {
   if (emails.length === 0) {
     return (
       <div className="space-y-4">
-        <ComposeReply leadId={leadId} />
+        <ComposeReply leadId={leadId} leadEmail={leadEmail} />
         <p className="py-2 text-center text-xs text-muted-foreground">
           Aucun email lié à ce lead
         </p>

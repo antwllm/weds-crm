@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Send,
@@ -6,7 +6,7 @@ import {
   Loader2,
   FileText,
   Paperclip,
-  Eye,
+  X,
   Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -39,10 +39,29 @@ const VARIABLE_OPTIONS = [
   { label: 'Telephone', value: '{{telephone}}' },
 ];
 
+/** Extract email from "Name <email>" format */
+function extractEmailFromHeader(header: string): string {
+  const match = header.match(/<([^>]+)>/);
+  return match ? match[1] : header.trim();
+}
+
+interface AttachmentFile {
+  file: File;
+  name: string;
+  size: number;
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} o`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} Ko`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} Mo`;
+}
+
 interface ComposeReplyProps {
   threadId?: string;
   lastMessage?: GmailMessage;
   leadId?: number;
+  leadEmail?: string;
   initialDraft?: string;
   initialTo?: string;
   initialSubject?: string;
@@ -52,12 +71,18 @@ export function ComposeReply({
   threadId,
   lastMessage,
   leadId,
+  leadEmail,
   initialDraft,
   initialTo,
   initialSubject,
 }: ComposeReplyProps) {
   const [body, setBody] = useState(initialDraft ?? '');
-  const [to, setTo] = useState(initialTo ?? lastMessage?.from ?? '');
+  // Default "to": initialTo > lastMessage sender (non-weds) > leadEmail
+  const defaultTo = initialTo
+    ?? ((lastMessage?.from && !lastMessage.from.includes('weds.fr')
+      ? extractEmailFromHeader(lastMessage.from)
+      : '') || leadEmail || '');
+  const [to, setTo] = useState(defaultTo);
   const [subject, setSubject] = useState(
     initialSubject ??
     (lastMessage?.subject
@@ -66,7 +91,9 @@ export function ComposeReply({
   );
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
   const [variableKey, setVariableKey] = useState<string>('');
+  const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
   const editorRef = useRef<TipTapEditorHandle>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const navigate = useNavigate();
   const sendReply = useSendReply();
@@ -117,10 +144,9 @@ export function ComposeReply({
     }
   };
 
-  const handleVariableInsert = (value: string) => {
+  const handleVariableInsert = (value: string | null) => {
     if (!value) return;
     editorRef.current?.insertContent(value);
-    // Reset so user can insert the same variable again
     setVariableKey('');
   };
 
@@ -132,6 +158,45 @@ export function ComposeReply({
       editorRef.current?.setContent(result.draft);
     } catch {
       toast.error('Erreur lors de la generation du brouillon');
+    }
+  };
+
+  // File attachment handling
+  const addFiles = useCallback((files: FileList | File[]) => {
+    const newFiles = Array.from(files).map((file) => ({
+      file,
+      name: file.name,
+      size: file.size,
+    }));
+    setAttachments((prev) => [...prev, ...newFiles]);
+  }, []);
+
+  const removeAttachment = (index: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleFileSelect = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      addFiles(e.target.files);
+      e.target.value = '';
+    }
+  };
+
+  // Drag & drop on the whole compose area
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      addFiles(e.dataTransfer.files);
     }
   };
 
@@ -168,6 +233,7 @@ export function ComposeReply({
       toast.success('Reponse envoyee');
       setBody('');
       editorRef.current?.setContent('');
+      setAttachments([]);
     } catch {
       toast.error("Erreur lors de l'envoi");
     }
@@ -179,12 +245,26 @@ export function ComposeReply({
     setSubject('');
     setTo('');
     setSelectedTemplateId(null);
+    setAttachments([]);
   };
 
   const templates = templatesData?.templates ?? [];
 
   return (
-    <div className="border rounded-lg bg-background">
+    <div
+      className="border rounded-lg bg-background"
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        className="hidden"
+        onChange={handleFileInputChange}
+      />
+
       {/* Email header fields */}
       <div className="px-4 pt-3 space-y-0">
         {/* De: */}
@@ -225,13 +305,13 @@ export function ComposeReply({
           onValueChange={handleTemplateSelect}
           disabled={templates.length === 0}
         >
-          <SelectTrigger className="w-56 h-8 text-xs">
+          <SelectTrigger className="w-auto max-w-80 h-8 text-xs">
             <FileText className="h-3.5 w-3.5 mr-1.5 shrink-0" />
             <SelectValue placeholder={templates.length === 0 ? 'Aucun modele' : 'Choisir un modele'} />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="max-w-96">
             {templates.map((t) => (
-              <SelectItem key={t.id} value={String(t.id)}>
+              <SelectItem key={t.id} value={String(t.id)} className="whitespace-normal">
                 {t.name}
               </SelectItem>
             ))}
@@ -283,31 +363,49 @@ export function ComposeReply({
         )}
       </div>
 
-      {/* TipTap editor area */}
+      {/* TipTap editor area — reduced default height */}
       <TipTapEditor
         ref={editorRef}
         content={body}
         onUpdate={setBody}
         placeholder="Votre message..."
+        defaultHeight="150px"
       />
+
+      {/* Attachments list */}
+      {attachments.length > 0 && (
+        <div className="px-4 py-2 border-t border-border/50 flex flex-wrap gap-2">
+          {attachments.map((att, i) => (
+            <div
+              key={`${att.name}-${i}`}
+              className="flex items-center gap-1.5 rounded-md bg-muted px-2.5 py-1 text-xs"
+            >
+              <Paperclip className="h-3 w-3 shrink-0 text-muted-foreground" />
+              <span className="truncate max-w-40">{att.name}</span>
+              <span className="text-muted-foreground">({formatFileSize(att.size)})</span>
+              <button
+                type="button"
+                onClick={() => removeAttachment(i)}
+                className="ml-0.5 rounded hover:bg-destructive/10 p-0.5"
+              >
+                <X className="h-3 w-3 text-muted-foreground hover:text-destructive" />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Footer */}
       <div className="px-4 py-3 border-t flex items-center justify-between">
-        {/* Left: placeholder icons */}
+        {/* Left: attachment button */}
         <div className="flex items-center gap-1">
           <button
             type="button"
             className="p-1.5 rounded hover:bg-muted text-muted-foreground"
             title="Piece jointe"
+            onClick={handleFileSelect}
           >
             <Paperclip className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            className="p-1.5 rounded hover:bg-muted text-muted-foreground"
-            title="Apercu"
-          >
-            <Eye className="h-4 w-4" />
           </button>
         </div>
 

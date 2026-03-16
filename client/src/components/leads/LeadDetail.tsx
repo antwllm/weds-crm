@@ -208,7 +208,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
               {isGeneratingDraft ? 'Génération...' : 'Générer un brouillon'}
             </Button>
           </div>
-          <LeadEmails leadId={lead.id} />
+          <LeadEmails leadId={lead.id} leadEmail={lead.email ?? undefined} />
         </TabsContent>
 
         <TabsContent value="whatsapp" className="mt-4 flex-1 min-h-0 overflow-y-auto">
