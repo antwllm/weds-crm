@@ -17,6 +17,7 @@ import whatsappRouter from './routes/api/whatsapp.js';
 import templatesRouter from './routes/api/templates.js';
 import aiRouter from './routes/api/ai.js';
 import settingsRouter from './routes/api/settings.js';
+import uploadRouter from './routes/api/upload.js';
 import { config } from './config.js';
 
 const app = express();
@@ -69,6 +70,7 @@ app.use('/api', whatsappRouter);
 app.use('/api', templatesRouter);
 app.use('/api', aiRouter);
 app.use('/api', settingsRouter);
+app.use('/api', uploadRouter);
 
 // Serve the React SPA from client/dist (built by Docker or locally)
 const clientDist = path.join(__dirname, '..', 'client', 'dist');
