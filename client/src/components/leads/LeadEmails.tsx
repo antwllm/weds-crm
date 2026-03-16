@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { formatDistanceToNow } from 'date-fns';
+import { isToday, isYesterday, format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { ArrowDownLeft, ArrowUpRight, Loader2, ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -52,6 +52,18 @@ function extractEmail(from: string): string {
   return match ? match[1] : from;
 }
 
+/** Format date: "14:32" today, "Hier" yesterday, "14 Mars" otherwise */
+function formatSmartDate(dateStr: string): string {
+  try {
+    const date = new Date(dateStr);
+    if (isToday(date)) return format(date, 'HH:mm');
+    if (isYesterday(date)) return 'Hier';
+    return format(date, 'd MMM', { locale: fr });
+  } catch {
+    return dateStr;
+  }
+}
+
 /** Inline thread detail that loads messages from Gmail API */
 function InlineThread({ threadId, leadId }: { threadId: string; leadId: number }) {
   const { data, isLoading } = useThread(threadId);
@@ -81,15 +93,7 @@ function InlineThread({ threadId, leadId }: { threadId: string; leadId: number }
       <div className="space-y-3 py-2">
         {messages.map((msg) => {
           const sent = isSentByMe(msg.from);
-          let dateLabel = '';
-          try {
-            dateLabel = formatDistanceToNow(new Date(msg.date), {
-              addSuffix: true,
-              locale: fr,
-            });
-          } catch {
-            dateLabel = msg.date;
-          }
+          const dateLabel = formatSmartDate(msg.date);
 
           return (
             <div
@@ -182,43 +186,42 @@ export function LeadEmails({ leadId, leadEmail, initialDraft }: LeadEmailsProps)
         const isExpanded = expandedThread === threadId;
         const isInbound = latest.direction === 'inbound';
         const DirectionIcon = isInbound ? ArrowDownLeft : ArrowUpRight;
-        const timeAgo = formatDistanceToNow(new Date(latest.receivedAt), {
-          addSuffix: true,
-          locale: fr,
-        });
+        const dateLabel = formatSmartDate(latest.receivedAt);
 
         return (
           <div key={threadId} className="min-w-0 overflow-hidden">
             {/* Thread header row */}
             <button
               type="button"
-              className="w-full text-left flex items-start gap-2 rounded-md p-2 hover:bg-muted transition-colors cursor-pointer overflow-hidden"
+              className="w-full text-left flex items-center gap-2 rounded-md p-2 hover:bg-muted transition-colors cursor-pointer overflow-hidden"
               onClick={() =>
                 setExpandedThread(isExpanded ? null : threadId)
               }
             >
               {isExpanded ? (
-                <ChevronDown className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
+                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
               ) : (
-                <ChevronRight className="h-4 w-4 mt-0.5 shrink-0 text-muted-foreground" />
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
               )}
               <DirectionIcon
-                className={`h-4 w-4 mt-0.5 shrink-0 ${
+                className={`h-4 w-4 shrink-0 ${
                   isInbound ? 'text-blue-500' : 'text-indigo-500'
                 }`}
               />
-              <div className="w-0 flex-1 overflow-hidden">
-                <p className="text-sm font-medium truncate">{latest.subject}</p>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium truncate flex-1 min-w-0">{latest.subject}</p>
+                  <span className="text-[10px] text-muted-foreground whitespace-nowrap shrink-0 ml-auto">
+                    {threadEmails.length > 1 && (
+                      <span className="mr-1 font-medium">{threadEmails.length}</span>
+                    )}
+                    {dateLabel}
+                  </span>
+                </div>
                 <p className="text-xs text-muted-foreground truncate">
                   {latest.snippet}
                 </p>
               </div>
-              <span className="text-[10px] text-muted-foreground whitespace-nowrap mt-0.5 shrink-0">
-                {threadEmails.length > 1 && (
-                  <span className="mr-1 font-medium">{threadEmails.length}</span>
-                )}
-                {timeAgo}
-              </span>
             </button>
 
             {/* Expanded thread detail */}
