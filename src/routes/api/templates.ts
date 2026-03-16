@@ -14,11 +14,20 @@ router.use(ensureAuthenticated);
 
 // --- Validation schemas ---
 
+const attachmentSchema = z.array(z.object({
+  filename: z.string(),
+  gcsPath: z.string(),
+  url: z.string(),
+  mimeType: z.string(),
+  size: z.number(),
+})).optional();
+
 const createTemplateSchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
   subject: z.string().optional(),
   body: z.string().optional(),
   variables: z.array(z.string()).optional(),
+  attachments: attachmentSchema,
 });
 
 const updateTemplateSchema = z.object({
@@ -26,6 +35,7 @@ const updateTemplateSchema = z.object({
   subject: z.string().optional(),
   body: z.string().optional(),
   variables: z.array(z.string()).optional(),
+  attachments: attachmentSchema,
 });
 
 const previewSchema = z.object({
@@ -66,6 +76,7 @@ router.post('/templates', async (req, res) => {
       subject: parsed.data.subject,
       body: parsed.data.body,
       variables: parsed.data.variables,
+      attachments: parsed.data.attachments,
     }).returning();
 
     logger.info('Template email créé', { templateId: created.id, name: created.name });

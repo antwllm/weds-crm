@@ -4,12 +4,21 @@ import { apiFetch } from '@/lib/api';
 
 // --- Types ---
 
+export interface TemplateAttachment {
+  filename: string;
+  gcsPath: string;
+  url: string;
+  mimeType: string;
+  size: number;
+}
+
 export interface EmailTemplate {
   id: number;
   name: string;
   subject: string | null;
   body: string | null;
   variables: string[] | null;
+  attachments: TemplateAttachment[] | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -19,6 +28,7 @@ export interface CreateTemplateRequest {
   subject?: string;
   body?: string;
   variables?: string[];
+  attachments?: TemplateAttachment[];
 }
 
 export interface UpdateTemplateRequest {
@@ -26,6 +36,7 @@ export interface UpdateTemplateRequest {
   subject?: string;
   body?: string;
   variables?: string[];
+  attachments?: TemplateAttachment[];
 }
 
 export interface AiPromptConfig {

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { TipTapEditor, type TipTapEditorHandle } from '@/components/inbox/TipTapEditor';
+import { AttachmentZone, type TemplateAttachment } from '@/components/settings/AttachmentZone';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,6 +37,7 @@ interface TemplateFormData {
   name: string;
   subject: string;
   body: string;
+  attachments: TemplateAttachment[];
 }
 
 export function TemplateEditor() {
@@ -50,6 +52,7 @@ export function TemplateEditor() {
     name: '',
     subject: '',
     body: '',
+    attachments: [],
   });
 
   const editorRef = useRef<TipTapEditorHandle>(null);
@@ -57,7 +60,7 @@ export function TemplateEditor() {
   function startCreate() {
     setEditingId(null);
     setIsCreating(true);
-    setForm({ name: '', subject: '', body: '' });
+    setForm({ name: '', subject: '', body: '', attachments: [] });
     editorRef.current?.setContent('');
   }
 
@@ -69,6 +72,7 @@ export function TemplateEditor() {
       name: template.name,
       subject: template.subject || '',
       body,
+      attachments: (template.attachments as TemplateAttachment[]) || [],
     });
     editorRef.current?.setContent(body);
   }
@@ -76,7 +80,7 @@ export function TemplateEditor() {
   function cancelEdit() {
     setEditingId(null);
     setIsCreating(false);
-    setForm({ name: '', subject: '', body: '' });
+    setForm({ name: '', subject: '', body: '', attachments: [] });
     editorRef.current?.setContent('');
   }
 
@@ -93,6 +97,7 @@ export function TemplateEditor() {
         subject: form.subject,
         body: form.body,
         variables: AVAILABLE_VARIABLES.map((v) => v.replace(/\{\{|\}\}/g, '')),
+        attachments: form.attachments,
       });
       setIsCreating(false);
     } else if (editingId !== null) {
@@ -102,11 +107,12 @@ export function TemplateEditor() {
           name: form.name,
           subject: form.subject,
           body: form.body,
+          attachments: form.attachments,
         },
       });
       setEditingId(null);
     }
-    setForm({ name: '', subject: '', body: '' });
+    setForm({ name: '', subject: '', body: '', attachments: [] });
     editorRef.current?.setContent('');
   }
 
@@ -279,6 +285,14 @@ export function TemplateEditor() {
                 Cliquez sur une variable pour l&apos;insérer dans le corps du
                 message
               </p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Pieces jointes</label>
+              <AttachmentZone
+                attachments={form.attachments}
+                onAttachmentsChange={(atts) => setForm((prev) => ({ ...prev, attachments: atts }))}
+              />
             </div>
 
             <div className="flex gap-2">
