@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Templates & Agent IA WhatsApp
-status: executing
+status: completed
 stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-03-16T22:46:47.649Z"
+last_updated: "2026-03-16T22:51:04.159Z"
 last_activity: 2026-03-16 — Completed 05-04 Template Attachment Wiring
 progress:
   total_phases: 3
