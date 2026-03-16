@@ -66,7 +66,8 @@ export function ActivityLog() {
     offset,
   });
 
-  const handleTypeChange = (value: string) => {
+  const handleTypeChange = (value: string | null) => {
+    if (!value) return;
     setTypeFilter(value);
     setOffset(0);
   };

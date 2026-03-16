@@ -256,10 +256,13 @@ export interface SendReplyParams {
   body: string;
   inReplyTo?: string;
   references?: string;
+  html?: boolean;
+  attachments?: { filename: string; content: Buffer; mimeType: string }[];
 }
 
 /**
  * Send a reply within a thread with proper RFC 2822 headers.
+ * Supports HTML content and attachments.
  */
 export async function sendReply(
   gmail: gmail_v1.Gmail,
@@ -269,16 +272,54 @@ export async function sendReply(
     ? params.subject
     : `Re: ${params.subject}`;
 
-  const messageParts = [
-    `To: ${params.to}`,
-    `Subject: ${subject}`,
-    ...(params.inReplyTo ? [`In-Reply-To: ${params.inReplyTo}`] : []),
-    ...(params.references ? [`References: ${params.references}`] : []),
-    'MIME-Version: 1.0',
-    'Content-Type: text/plain; charset="UTF-8"',
-    '',
-    params.body,
-  ];
+  const hasAttachments = params.attachments && params.attachments.length > 0;
+  const contentType = params.html ? 'text/html' : 'text/plain';
+
+  let messageParts: string[];
+
+  if (hasAttachments) {
+    const boundary = '__weds_crm_reply_boundary__';
+    messageParts = [
+      `To: ${params.to}`,
+      `Subject: ${subject}`,
+      ...(params.inReplyTo ? [`In-Reply-To: ${params.inReplyTo}`] : []),
+      ...(params.references ? [`References: ${params.references}`] : []),
+      'MIME-Version: 1.0',
+      `Content-Type: multipart/mixed; boundary="${boundary}"`,
+      '',
+      `--${boundary}`,
+      `Content-Type: ${contentType}; charset="UTF-8"`,
+      'Content-Transfer-Encoding: 7bit',
+      '',
+      params.body,
+      '',
+    ];
+
+    for (const attachment of params.attachments!) {
+      messageParts.push(
+        `--${boundary}`,
+        `Content-Type: ${attachment.mimeType}; name="${attachment.filename}"`,
+        `Content-Disposition: attachment; filename="${attachment.filename}"`,
+        'Content-Transfer-Encoding: base64',
+        '',
+        attachment.content.toString('base64'),
+        '',
+      );
+    }
+
+    messageParts.push(`--${boundary}--`);
+  } else {
+    messageParts = [
+      `To: ${params.to}`,
+      `Subject: ${subject}`,
+      ...(params.inReplyTo ? [`In-Reply-To: ${params.inReplyTo}`] : []),
+      ...(params.references ? [`References: ${params.references}`] : []),
+      'MIME-Version: 1.0',
+      `Content-Type: ${contentType}; charset="UTF-8"`,
+      '',
+      params.body,
+    ];
+  }
 
   const raw = Buffer.from(messageParts.join('\n')).toString('base64url');
 
@@ -293,16 +334,19 @@ export async function sendReply(
 
 /**
  * Send an email with optional attachments using raw MIME construction.
+ * Supports both text/plain and text/html body content.
  */
 export async function sendEmail(
   gmail: gmail_v1.Gmail,
   to: string,
   subject: string,
   body: string,
-  attachments?: { filename: string; content: string; mimeType: string }[],
+  attachments?: { filename: string; content: string | Buffer; mimeType: string }[],
+  options?: { html?: boolean },
 ): Promise<void> {
   const boundary = '__weds_crm_boundary__';
   const nl = '\n';
+  const contentType = options?.html ? 'text/html' : 'text/plain';
 
   let messageParts = [
     `To: ${to}`,
@@ -311,7 +355,7 @@ export async function sendEmail(
     `Content-Type: multipart/mixed; boundary="${boundary}"`,
     '',
     `--${boundary}`,
-    'Content-Type: text/plain; charset="UTF-8"',
+    `Content-Type: ${contentType}; charset="UTF-8"`,
     'Content-Transfer-Encoding: 7bit',
     '',
     body,
@@ -320,7 +364,9 @@ export async function sendEmail(
 
   if (attachments) {
     for (const attachment of attachments) {
-      const attachmentBase64 = Buffer.from(attachment.content).toString('base64');
+      const attachmentBase64 = Buffer.isBuffer(attachment.content)
+        ? attachment.content.toString('base64')
+        : Buffer.from(attachment.content).toString('base64');
       const attachmentPart = [
         `--${boundary}`,
         `Content-Type: ${attachment.mimeType}; name="${attachment.filename}"`,

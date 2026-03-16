@@ -70,7 +70,7 @@ export function Sidebar({ onNavigate, collapsed, onToggleCollapse }: SidebarProp
             collapsed ? 'justify-center px-2' : 'justify-start',
           )}
           title={collapsed ? 'Déconnexion' : undefined}
-          onClick={() => { window.location.href = '/auth/logout'; }}
+          onClick={() => { window.location.href = '/logout'; }}
         >
           <LogOut className="h-4 w-4 shrink-0" />
           {!collapsed && 'Déconnexion'}

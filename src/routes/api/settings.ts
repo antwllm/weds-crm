@@ -39,7 +39,13 @@ async function seedDefaults() {
 router.get('/settings/notifications', async (_req, res) => {
   try {
     const rows = await seedDefaults();
-    res.json(rows);
+    // Enrich with labels from DEFAULT_CHANNELS
+    const labelMap = new Map(DEFAULT_CHANNELS.map((c) => [c.channel, c.label]));
+    const enriched = rows.map((row) => ({
+      ...row,
+      label: labelMap.get(row.channel) ?? row.channel,
+    }));
+    res.json(enriched);
   } catch (error) {
     logger.error('Erreur lors de la recuperation des parametres de notification', { error });
     res.status(500).json({ error: 'Erreur interne du serveur' });

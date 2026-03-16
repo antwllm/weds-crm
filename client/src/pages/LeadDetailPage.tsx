@@ -33,7 +33,7 @@ export function LeadDetailPage() {
   const navigate = useNavigate();
   const leadId = Number(id);
 
-  const { data: leads, isLoading } = useLeads();
+  const { data: leads, isLoading } = useLeads({ includeArchived: 'true' });
   const deleteLead = useDeleteLead();
   const updateLead = useUpdateLead();
   const queryClient = useQueryClient();
@@ -158,18 +158,37 @@ export function LeadDetailPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleArchiveToggle}
-          >
-            {lead.archived ? (
+          {lead.archived ? (
+            <Button variant="outline" size="sm" onClick={handleArchiveToggle}>
               <ArchiveRestore className="h-4 w-4" data-icon="inline-start" />
-            ) : (
-              <Archive className="h-4 w-4" data-icon="inline-start" />
-            )}
-            {lead.archived ? 'Desarchiver' : 'Archiver'}
-          </Button>
+              Restaurer
+            </Button>
+          ) : (
+            <AlertDialog>
+              <AlertDialogTrigger
+                render={
+                  <Button variant="outline" size="sm">
+                    <Archive className="h-4 w-4" data-icon="inline-start" />
+                    Archiver
+                  </Button>
+                }
+              />
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Archiver ce lead ?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Le lead sera masque du pipeline mais restera accessible via le filtre &quot;Afficher les archives&quot; en vue liste.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleArchiveToggle}>
+                    Archiver
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
 
           <Button
             variant="outline"

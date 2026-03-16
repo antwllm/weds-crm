@@ -195,4 +195,63 @@ router.post('/templates/:id/preview', async (req, res) => {
   }
 });
 
+// --- GET /api/templates/default ---
+router.get('/templates/default', async (_req, res) => {
+  try {
+    const db = getDb();
+    const [template] = await db
+      .select()
+      .from(emailTemplates)
+      .where(eq(emailTemplates.isDefault, true))
+      .limit(1);
+
+    if (!template) {
+      res.status(404).json({ error: 'Aucun template par défaut configuré' });
+      return;
+    }
+
+    res.json(template);
+  } catch (error) {
+    logger.error('Erreur lors de la récupération du template par défaut', { error });
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+// --- PUT /api/templates/:id/set-default ---
+router.put('/templates/:id/set-default', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) {
+      res.status(400).json({ error: 'ID invalide' });
+      return;
+    }
+
+    const db = getDb();
+
+    // Remove default from all templates
+    await db
+      .update(emailTemplates)
+      .set({ isDefault: false, updatedAt: new Date() })
+      .where(eq(emailTemplates.isDefault, true));
+
+    // Set this template as default
+    const [updated] = await db
+      .update(emailTemplates)
+      .set({ isDefault: true, updatedAt: new Date() })
+      .where(eq(emailTemplates.id, id))
+      .returning();
+
+    if (!updated) {
+      res.status(404).json({ error: 'Template non trouvé' });
+      return;
+    }
+
+    logger.info('Template par défaut mis à jour', { templateId: id });
+    res.json(updated);
+  } catch (error) {
+    logger.error('Erreur lors de la mise à jour du template par défaut', { error });
+    res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
 export default router;

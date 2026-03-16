@@ -34,6 +34,7 @@ RUN npm ci --omit=dev
 
 COPY --from=backend-builder /app/dist ./dist
 COPY --from=frontend-builder /app/client/dist ./client/dist
+COPY assets/ ./assets/
 
 EXPOSE 8080
 

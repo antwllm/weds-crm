@@ -1,8 +1,10 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import { eq, desc } from 'drizzle-orm';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import { getDb } from '../../db/index.js';
-import { leads, linkedEmails, activities } from '../../db/schema.js';
+import { leads, linkedEmails, activities, emailTemplates } from '../../db/schema.js';
 import { ensureAuthenticated } from '../../auth/middleware.js';
 import { getGmailClientInstance } from '../../services/gmail-client-holder.js';
 import { listThreads, getThread, sendReply, sendEmail } from '../../services/gmail.js';
@@ -21,6 +23,8 @@ const replySchema = z.object({
   body: z.string().min(1, 'Le corps du message est requis'),
   inReplyTo: z.string().optional(),
   references: z.string().optional(),
+  html: z.boolean().optional(),
+  templateId: z.number().int().optional(), // If set, load template attachments
 });
 
 const linkEmailSchema = z.object({
@@ -184,14 +188,41 @@ router.post('/inbox/threads/:threadId/reply', async (req, res) => {
       return;
     }
 
-    const { to, subject, body, inReplyTo, references } = parsed.data;
+    const { to, subject, body, inReplyTo, references, html, templateId } = parsed.data;
     const threadId = req.params.threadId;
+
+    // Load template attachments if templateId is provided
+    let fileAttachments: { filename: string; content: Buffer; mimeType: string }[] = [];
+    if (templateId) {
+      const db2 = getDb();
+      const [template] = await db2
+        .select()
+        .from(emailTemplates)
+        .where(eq(emailTemplates.id, templateId))
+        .limit(1);
+
+      if (template?.attachments) {
+        const attachmentDefs = template.attachments as { filename: string; path: string; mimeType: string }[];
+        for (const att of attachmentDefs) {
+          try {
+            const filePath = resolve(process.cwd(), att.path);
+            const content = readFileSync(filePath);
+            fileAttachments.push({ filename: att.filename, content, mimeType: att.mimeType });
+          } catch (err) {
+            logger.warn('Piece jointe introuvable', { path: att.path, error: err });
+          }
+        }
+      }
+    }
 
     if (threadId === 'new') {
       // New message (not a reply) — use sendEmail
-      await sendEmail(gmail, to, subject, body);
+      const emailAttachments = fileAttachments.length > 0
+        ? fileAttachments.map(a => ({ filename: a.filename, content: a.content, mimeType: a.mimeType }))
+        : undefined;
+      await sendEmail(gmail, to, subject, body, emailAttachments, { html });
     } else {
-      await sendReply(gmail, { threadId, to, subject, body, inReplyTo, references });
+      await sendReply(gmail, { threadId, to, subject, body, inReplyTo, references, html, attachments: fileAttachments.length > 0 ? fileAttachments : undefined });
     }
 
     const db = getDb();
