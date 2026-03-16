@@ -103,6 +103,78 @@ export function useDeleteTemplate() {
   });
 }
 
+// --- Notification settings hooks ---
+
+export interface NotificationSetting {
+  id: number;
+  channel: string;
+  enabled: boolean;
+  label: string;
+  updatedAt: string;
+}
+
+export interface ActivityLogEntry {
+  id: number;
+  leadId: number;
+  leadName: string;
+  type: string;
+  content: string | null;
+  metadata: unknown;
+  createdAt: string;
+}
+
+export function useNotificationSettings() {
+  return useQuery<NotificationSetting[]>({
+    queryKey: ['notification-settings'],
+    queryFn: () => apiFetch<NotificationSetting[]>('/settings/notifications'),
+  });
+}
+
+export function useToggleNotification() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ channel, enabled }: { channel: string; enabled: boolean }) =>
+      apiFetch<NotificationSetting>(`/settings/notifications/${channel}`, {
+        method: 'PUT',
+        body: JSON.stringify({ enabled }),
+      }),
+    onMutate: async ({ channel, enabled }) => {
+      await queryClient.cancelQueries({ queryKey: ['notification-settings'] });
+      const previous = queryClient.getQueryData<NotificationSetting[]>(['notification-settings']);
+      queryClient.setQueryData<NotificationSetting[]>(['notification-settings'], (old) =>
+        old?.map((s) => (s.channel === channel ? { ...s, enabled } : s))
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['notification-settings'], context.previous);
+      }
+      toast.error('Erreur lors de la mise a jour de la notification');
+    },
+    onSuccess: () => {
+      toast.success('Notification mise a jour');
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['notification-settings'] });
+    },
+  });
+}
+
+export function useActivityLog(params: { type?: string; limit?: number; offset?: number }) {
+  return useQuery<{ activities: ActivityLogEntry[]; total: number }>({
+    queryKey: ['activity-log', params],
+    queryFn: () => {
+      const searchParams = new URLSearchParams();
+      if (params.type) searchParams.set('type', params.type);
+      if (params.limit) searchParams.set('limit', String(params.limit));
+      if (params.offset) searchParams.set('offset', String(params.offset));
+      const qs = searchParams.toString();
+      return apiFetch(`/settings/activities${qs ? `?${qs}` : ''}`);
+    },
+  });
+}
+
 // --- AI Prompt hooks ---
 
 export function useAiPrompt() {
