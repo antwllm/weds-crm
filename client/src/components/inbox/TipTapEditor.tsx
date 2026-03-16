@@ -19,8 +19,18 @@ import {
   Undo2,
   Redo2,
   Code2,
+  AlignLeft,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { CodeMirrorEditor } from '@/components/editor/CodeMirrorEditor';
+import { html_beautify } from 'js-beautify';
+
+const BEAUTIFY_OPTIONS = {
+  indent_size: 2,
+  wrap_line_length: 120,
+  preserve_newlines: true,
+  max_preserve_newlines: 2,
+};
 
 export interface TipTapEditorHandle {
   setContent: (html: string) => void;
@@ -98,11 +108,18 @@ export const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
         onUpdate(htmlSource);
         setHtmlMode(false);
       } else {
-        // Switching to HTML — capture current editor content
+        // Switching to HTML — capture current editor content and pretty-print
         const currentHtml = editor?.getHTML() ?? '';
-        setHtmlSource(currentHtml);
+        const formatted = html_beautify(currentHtml, BEAUTIFY_OPTIONS);
+        setHtmlSource(formatted);
         setHtmlMode(true);
       }
+    };
+
+    const formatHtml = () => {
+      const formatted = html_beautify(htmlSource, BEAUTIFY_OPTIONS);
+      setHtmlSource(formatted);
+      onUpdate(formatted);
     };
 
     if (!editor) return null;
@@ -125,15 +142,13 @@ export const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
       <div className={cn('flex flex-col', className)}>
         {/* Editor area — vertically resizable */}
         {htmlMode ? (
-          <textarea
-            className={`resize-y overflow-auto font-mono text-xs px-4 py-3 bg-muted/30 outline-none`}
-            style={{ minHeight: '120px', maxHeight: '80vh', height: defaultHeight }}
+          <CodeMirrorEditor
             value={htmlSource}
-            onChange={(e) => {
-              setHtmlSource(e.target.value);
-              onUpdate(e.target.value);
+            onChange={(val) => {
+              setHtmlSource(val);
+              onUpdate(val);
             }}
-            spellCheck={false}
+            height={defaultHeight}
           />
         ) : (
           <div
@@ -270,6 +285,15 @@ export const TipTapEditor = forwardRef<TipTapEditorHandle, TipTapEditorProps>(
           >
             <Code2 className="h-4 w-4" />
           </ToolbarButton>
+          {htmlMode && (
+            <ToolbarButton
+              active={false}
+              onClick={formatHtml}
+              title="Formater le HTML"
+            >
+              <AlignLeft className="h-4 w-4" />
+            </ToolbarButton>
+          )}
         </div>
       </div>
     );
