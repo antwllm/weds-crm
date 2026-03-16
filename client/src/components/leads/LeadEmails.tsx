@@ -11,6 +11,7 @@ import type { LinkedEmail } from '@/types';
 interface LeadEmailsProps {
   leadId: number;
   leadEmail?: string;
+  initialDraft?: string;
 }
 
 /** Group linked emails by gmailThreadId, keeping the most recent email per thread on top */
@@ -138,7 +139,7 @@ function InlineThread({ threadId, leadId }: { threadId: string; leadId: number }
   );
 }
 
-export function LeadEmails({ leadId, leadEmail }: LeadEmailsProps) {
+export function LeadEmails({ leadId, leadEmail, initialDraft }: LeadEmailsProps) {
   const { data: emailsData, isLoading } = useLeadEmails(leadId);
   const [expandedThread, setExpandedThread] = useState<string | null>(null);
 
@@ -158,7 +159,7 @@ export function LeadEmails({ leadId, leadEmail }: LeadEmailsProps) {
   if (emails.length === 0) {
     return (
       <div className="space-y-4">
-        <ComposeReply leadId={leadId} leadEmail={leadEmail} />
+        <ComposeReply leadId={leadId} leadEmail={leadEmail} initialDraft={initialDraft} />
         <p className="py-2 text-center text-xs text-muted-foreground">
           Aucun email lié à ce lead
         </p>
@@ -170,6 +171,12 @@ export function LeadEmails({ leadId, leadEmail }: LeadEmailsProps) {
 
   return (
     <div className="space-y-1 min-w-0 overflow-hidden">
+      {/* Show compose with draft when AI generates a brouillon */}
+      {initialDraft && (
+        <div className="mb-3">
+          <ComposeReply leadId={leadId} leadEmail={leadEmail} initialDraft={initialDraft} />
+        </div>
+      )}
       {threads.map(([threadId, threadEmails]) => {
         const latest = threadEmails[0];
         const isExpanded = expandedThread === threadId;

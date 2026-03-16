@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Sparkles, Loader2 } from 'lucide-react';
 import { InlineField } from '@/components/leads/InlineField';
 import { ActivityTimeline } from '@/components/leads/ActivityTimeline';
@@ -30,8 +29,9 @@ interface LeadDetailProps {
 export function LeadDetail({ lead }: LeadDetailProps) {
   const updateLead = useUpdateLead();
   const { data: activities = [] } = useActivities(lead.id);
-  const navigate = useNavigate();
   const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
+  const [draftContent, setDraftContent] = useState<string | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState('notes');
 
   const sourceOptions = [
     ...Object.entries(SOURCE_BADGES).map(([value, info]) => ({
@@ -84,13 +84,8 @@ export function LeadDetail({ lead }: LeadDetailProps) {
         method: 'POST',
         body: JSON.stringify({ leadId: lead.id }),
       });
-      navigate('/inbox', {
-        state: {
-          draft: res.draft,
-          leadId: lead.id,
-          leadEmail: lead.email,
-        },
-      });
+      setDraftContent(res.draft);
+      setActiveTab('emails');
     } catch {
       toast.error('Erreur lors de la génération du brouillon');
     } finally {
@@ -181,7 +176,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
       </div>
 
       {/* Right content area: Tabbed interface */}
-      <Tabs defaultValue="notes" className="flex flex-col min-h-0 min-w-0 overflow-hidden">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col min-h-0 min-w-0 overflow-hidden">
         <TabsList className="shrink-0">
           <TabsTrigger value="notes">Notes</TabsTrigger>
           <TabsTrigger value="emails">Emails</TabsTrigger>
@@ -208,7 +203,7 @@ export function LeadDetail({ lead }: LeadDetailProps) {
               {isGeneratingDraft ? 'Génération...' : 'Générer un brouillon'}
             </Button>
           </div>
-          <LeadEmails leadId={lead.id} leadEmail={lead.email ?? undefined} />
+          <LeadEmails leadId={lead.id} leadEmail={lead.email ?? undefined} initialDraft={draftContent} />
         </TabsContent>
 
         <TabsContent value="whatsapp" className="mt-4 flex-1 min-h-0 overflow-y-auto">
