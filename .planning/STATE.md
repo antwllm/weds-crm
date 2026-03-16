@@ -162,6 +162,7 @@ Recent decisions affecting current work:
 | 2 | Add granular notification toggles and activity log in Settings | 2026-03-16 | f778615 | [2-add-granular-notification-toggles-in-set](./quick/2-add-granular-notification-toggles-in-set/) |
 | 8 | Replace template editor textarea with TipTap WYSIWYG editor | 2026-03-16 | 84008e7 | [8-replace-template-editor-textarea-with-ti](./quick/8-replace-template-editor-textarea-with-ti/) |
 | 9 | WYSIWYG editor improvements: undo/redo, lists, attachments, HTML toggle, composer sizing, default recipient | 2026-03-16 | cd22553 | [9-wysiwyg-editor-improvements-undo-redo-li](./quick/9-wysiwyg-editor-improvements-undo-redo-li/) |
+| 10 | AI draft stays on lead page instead of navigating to inbox | 2026-03-16 | db02685 | - |
 
 ### Blockers/Concerns
 
