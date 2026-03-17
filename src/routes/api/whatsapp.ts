@@ -228,7 +228,10 @@ router.post('/leads/:leadId/whatsapp/send-template', ensureAuthenticated, async 
     };
 
     // Fetch template definition to know exact param count and order
-    let templateParams: Array<{ type: string; text: string }> | undefined;
+    // Meta templates use positional params {{1}}, {{2}}, etc.
+    // Named params like {{name}} are display-only — the API expects positional parameters
+    let templateParams: Array<{ type: string; text: string; parameter_name?: string }> | undefined;
+    let templateHeaderComponent: { type: string; [key: string]: any } | undefined;
     try {
       if (config.WHATSAPP_BUSINESS_ACCOUNT_ID) {
         const { listWhatsAppTemplates } = await import('../../services/whatsapp.js');
@@ -238,18 +241,62 @@ router.post('/leads/:leadId/whatsapp/send-template', ensureAuthenticated, async 
         );
         const tpl = templates.find((t) => t.name === templateName);
         if (tpl?.bodyText) {
-          // Extract {{param}} placeholders in order
-          const matches = [...tpl.bodyText.matchAll(/\{\{(\w+)\}\}/g)];
-          if (matches.length > 0) {
-            templateParams = matches.map((m) => ({
+          // Extract all {{param}} placeholders
+          const allMatches = [...tpl.bodyText.matchAll(/\{\{(\w+)\}\}/g)];
+          const positionalMatches = allMatches.filter((m) => /^\d+$/.test(m[1]));
+          const namedMatches = allMatches.filter((m) => !/^\d+$/.test(m[1]));
+
+          if (positionalMatches.length > 0) {
+            // Positional: {{1}}, {{2}} — map in order
+            const positionalValues = [lead.name || '', lead.email || '', lead.eventDate || ''];
+            templateParams = positionalMatches
+              .sort((a, b) => Number(a[1]) - Number(b[1]))
+              .map((m) => ({
+                type: 'text',
+                text: positionalValues[Number(m[1]) - 1] || '',
+              }));
+          } else if (namedMatches.length > 0) {
+            // Named: {{name}}, {{email}} — use parameter_name field for Meta API
+            templateParams = namedMatches.map((m) => ({
               type: 'text',
+              parameter_name: m[1],
               text: paramValues[m[1]] || m[1],
             }));
           }
+
+          logger.info('Template params resolus', {
+            templateName,
+            bodyText: tpl.bodyText.slice(0, 100),
+            positionalCount: positionalMatches.length,
+            namedCount: namedMatches.length,
+            params: templateParams,
+          });
+        }
+
+        // Build header component if template has a HEADER with media
+        if (tpl?.headerFormat === 'DOCUMENT') {
+          // Use the brochure PDF as the document header
+          // GCS public URL or a publicly accessible URL is required
+          const bucketName = config.GCS_BUCKET_NAME;
+          const brochureUrl = bucketName
+            ? `https://storage.googleapis.com/${bucketName}/Brochure_Weds.pdf`
+            : null;
+
+          if (brochureUrl) {
+            templateHeaderComponent = {
+              type: 'document',
+              document: { link: brochureUrl, filename: 'Brochure_Weds.pdf' },
+            };
+          }
+          logger.info('Template header document', { templateName, brochureUrl });
+        } else if (tpl?.headerFormat === 'IMAGE') {
+          logger.warn('Template header IMAGE non supporte pour le moment', { templateName });
         }
       }
     } catch (e) {
-      logger.warn('Impossible de recuperer les parametres du template, envoi sans params');
+      logger.warn('Impossible de recuperer les parametres du template, envoi sans params', {
+        error: e instanceof Error ? e.message : String(e),
+      });
     }
 
     const waMessageId = await sendWhatsAppTemplate(
@@ -259,6 +306,7 @@ router.post('/leads/:leadId/whatsapp/send-template', ensureAuthenticated, async 
       templateName,
       languageCode,
       templateParams,
+      templateHeaderComponent,
     );
 
     await db.insert(whatsappMessages).values({
@@ -278,11 +326,98 @@ router.post('/leads/:leadId/whatsapp/send-template', ensureAuthenticated, async 
     logger.info('WhatsApp template envoyé', { leadId, waMessageId, templateName });
     res.status(200).json({ status: 'sent', waMessageId });
   } catch (error) {
-    const metaError = (error as any)?.response?.data?.error?.message;
+    const metaData = (error as any)?.response?.data?.error;
+    const metaError = metaData?.message;
+    const metaDetail = metaData?.error_data?.details;
     logger.error('Erreur envoi template WhatsApp', {
       error: metaError || (error instanceof Error ? error.message : String(error)),
+      detail: metaDetail,
+      metaErrorData: metaData,
     });
-    res.status(500).json({ error: metaError || 'Erreur envoi template WhatsApp' });
+    res.status(500).json({
+      error: metaError || 'Erreur envoi template WhatsApp',
+      detail: metaDetail || undefined,
+    });
+  }
+});
+
+/**
+ * PATCH /api/leads/:leadId/whatsapp/ai-toggle
+ * Toggle AI agent for a specific lead.
+ */
+router.patch('/leads/:leadId/whatsapp/ai-toggle', ensureAuthenticated, async (req, res) => {
+  try {
+    const leadId = Number(req.params.leadId);
+    const { enabled } = z.object({ enabled: z.boolean() }).parse(req.body);
+
+    const db = getDb();
+    const [updated] = await db.update(leads)
+      .set({ whatsappAiEnabled: enabled })
+      .where(eq(leads.id, leadId))
+      .returning({
+        whatsappAiEnabled: leads.whatsappAiEnabled,
+        whatsappAiHandoffAt: leads.whatsappAiHandoffAt,
+      });
+
+    if (!updated) {
+      res.status(404).json({ error: 'Lead non trouve' });
+      return;
+    }
+
+    logger.info('Agent IA WhatsApp toggle', { leadId, enabled });
+    res.json(updated);
+  } catch (error) {
+    logger.error('Erreur toggle agent IA', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    res.status(500).json({ error: 'Erreur toggle agent IA' });
+  }
+});
+
+/**
+ * GET /api/leads/:leadId/whatsapp/ai-status
+ * Get AI agent status for a lead.
+ */
+router.get('/leads/:leadId/whatsapp/ai-status', ensureAuthenticated, async (req, res) => {
+  try {
+    const leadId = Number(req.params.leadId);
+    const db = getDb();
+    const [lead] = await db.select({
+      whatsappAiEnabled: leads.whatsappAiEnabled,
+      whatsappAiHandoffAt: leads.whatsappAiHandoffAt,
+    }).from(leads).where(eq(leads.id, leadId));
+
+    if (!lead) {
+      res.status(404).json({ error: 'Lead non trouve' });
+      return;
+    }
+
+    // Check if there's an active handoff (handoff happened and no human reply since)
+    let hasActiveHandoff = false;
+    if (lead.whatsappAiHandoffAt) {
+      const lastHumanOutbound = await db.select({ createdAt: whatsappMessages.createdAt })
+        .from(whatsappMessages)
+        .where(and(
+          eq(whatsappMessages.leadId, leadId),
+          eq(whatsappMessages.direction, 'outbound'),
+          eq(whatsappMessages.sentBy, 'human'),
+        ))
+        .orderBy(desc(whatsappMessages.createdAt))
+        .limit(1);
+
+      hasActiveHandoff = !lastHumanOutbound[0]?.createdAt ||
+        new Date(lead.whatsappAiHandoffAt) > lastHumanOutbound[0].createdAt;
+    }
+
+    res.json({
+      whatsappAiEnabled: lead.whatsappAiEnabled,
+      hasActiveHandoff,
+    });
+  } catch (error) {
+    logger.error('Erreur AI status', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    res.status(500).json({ error: 'Erreur AI status' });
   }
 });
 

@@ -61,6 +61,36 @@ export function useWhatsAppTemplates() {
   });
 }
 
+export function useLeadAiStatus(leadId: number) {
+  return useQuery<{ whatsappAiEnabled: boolean; hasActiveHandoff: boolean }>({
+    queryKey: ['whatsapp-ai-status', leadId],
+    queryFn: () =>
+      apiFetch<{ whatsappAiEnabled: boolean; hasActiveHandoff: boolean }>(
+        `/leads/${leadId}/whatsapp/ai-status`,
+      ),
+    enabled: !!leadId,
+  });
+}
+
+export function useToggleAiAgent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ leadId, enabled }: { leadId: number; enabled: boolean }) =>
+      apiFetch<{ whatsappAiEnabled: boolean }>(
+        `/leads/${leadId}/whatsapp/ai-toggle`,
+        {
+          method: 'PATCH',
+          body: JSON.stringify({ enabled }),
+        },
+      ),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['whatsapp-ai-status', variables.leadId],
+      });
+    },
+  });
+}
+
 export function useSendWhatsAppTemplate() {
   const queryClient = useQueryClient();
   return useMutation({
