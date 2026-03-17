@@ -3,6 +3,7 @@ import { TemplateEditor } from '@/components/settings/TemplateEditor';
 import { AiPromptEditor } from '@/components/settings/AiPromptEditor';
 import { NotificationToggles } from '@/components/settings/NotificationToggles';
 import { ActivityLog } from '@/components/settings/ActivityLog';
+import { WhatsAppAgentSettings } from '@/components/settings/WhatsAppAgentSettings';
 
 export default function SettingsPage() {
   return (
@@ -14,6 +15,7 @@ export default function SettingsPage() {
           <TabsTrigger value="templates">Modèles</TabsTrigger>
           <TabsTrigger value="ai">Paramètres IA</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="whatsapp-agent">Agent WhatsApp</TabsTrigger>
           <TabsTrigger value="activity-log">Journal d'activite</TabsTrigger>
         </TabsList>
 
@@ -27,6 +29,10 @@ export default function SettingsPage() {
 
         <TabsContent value="notifications" className="mt-4">
           <NotificationToggles />
+        </TabsContent>
+
+        <TabsContent value="whatsapp-agent" className="mt-4">
+          <WhatsAppAgentSettings />
         </TabsContent>
 
         <TabsContent value="activity-log" className="mt-4">
