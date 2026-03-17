@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Templates & Agent IA WhatsApp
 status: in_progress
-stopped_at: Completed 06-01 Schema & Config API
-last_updated: "2026-03-17T09:23:08Z"
-last_activity: 2026-03-17 — Completed 06-01 Schema & Config API
+stopped_at: Completed 06-03 Frontend UI (checkpoint pending)
+last_updated: "2026-03-17T09:28:09Z"
+last_activity: 2026-03-17 — Completed 06-03 Frontend UI
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 8
-  completed_plans: 5
-  percent: 62
+  completed_plans: 7
+  percent: 81
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 ## Current Position
 
 Phase: 6 of 7 (WhatsApp AI Agent)
-Plan: 1 of 4 in current phase (complete)
+Plan: 3 of 4 in current phase (checkpoint pending)
 Status: In Progress
-Last activity: 2026-03-17 — Completed 06-01 Schema & Config API
+Last activity: 2026-03-17 — Completed 06-03 Frontend UI (checkpoint pending)
 
-Progress: [██████░░░░] 62%
+Progress: [████████░░] 81%
 
 ## Performance Metrics
 
@@ -56,6 +56,8 @@ Progress: [██████░░░░] 62%
 | Phase 05 P03 | 3min | 2 tasks | 7 files |
 | Phase 05 P04 | 3min | 2 tasks | 5 files |
 | Phase 06 P01 | 3min | 2 tasks | 6 files |
+| Phase 06 P02 | 2min | 2 tasks | 3 files |
+| Phase 06 P03 | 2min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -80,6 +82,11 @@ Recent decisions affecting current work:
 - [06-01]: DEFAULT_WA_PROMPT_TEMPLATE uses JSON response format with action reply|pass_to_human
 - [06-01]: whatsapp_agent_config follows single-row pattern like ai_prompt_config
 - [06-01]: sentBy column defaults to 'human' for backward compatibility
+- [06-02]: Force handoff at 5th consecutive AI exchange (>= 4 count check)
+- [06-02]: Gmail email alert alongside Free Mobile SMS for handoff
+- [06-02]: setImmediate async dispatch in webhook for non-blocking AI processing
+- [06-03]: Banner above chat with rounded-t-lg, messages border-t-0 for visual continuity
+- [06-03]: Handoff detection server-side: compare whatsappAiHandoffAt vs last human outbound
 
 ### Pending Todos
 
@@ -93,5 +100,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-03-17T09:23:08Z
-Stopped at: Completed 06-01 Schema & Config API
-Resume file: .planning/phases/06-whatsapp-ai-agent/06-02-PLAN.md
+Stopped at: Completed 06-03 Frontend UI (checkpoint pending verification)
+Resume file: .planning/phases/06-whatsapp-ai-agent/06-04-PLAN.md

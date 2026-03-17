@@ -19,10 +19,10 @@ Requirements for milestone v1.1: Templates & Agent IA WhatsApp.
 
 - [x] **WAIA-01**: L'utilisateur peut activer/desactiver l'agent IA WhatsApp par lead via un toggle
 - [x] **WAIA-02**: Quand l'agent est actif et qu'un message arrive, le systeme genere une reponse IA basee sur le contexte du lead
-- [ ] **WAIA-03**: L'IA repond en JSON structure (action: reply/pass_to_human, response, reason)
-- [ ] **WAIA-04**: Si action=reply, la reponse est envoyee automatiquement via WhatsApp
+- [x] **WAIA-03**: L'IA repond en JSON structure (action: reply/pass_to_human, response, reason)
+- [x] **WAIA-04**: Si action=reply, la reponse est envoyee automatiquement via WhatsApp
 - [x] **WAIA-05**: Si action=pass_to_human, l'agent est desactive pour cette conversation et une alerte admin est envoyee
-- [ ] **WAIA-06**: Si le lead renvoie un nouveau message, l'agent peut a nouveau analyser et repondre (re-activation automatique)
+- [x] **WAIA-06**: Si le lead renvoie un nouveau message, l'agent peut a nouveau analyser et repondre (re-activation automatique)
 - [ ] **WAIA-07**: L'historique des decisions IA (action + reason) est visible dans l'UI WhatsApp du lead
 
 ### Observabilite IA
@@ -63,10 +63,10 @@ Requirements for milestone v1.1: Templates & Agent IA WhatsApp.
 | TMPL-05 | Phase 5 | Complete |
 | WAIA-01 | Phase 6 | Complete |
 | WAIA-02 | Phase 6 | Complete |
-| WAIA-03 | Phase 6 | Pending |
-| WAIA-04 | Phase 6 | Pending |
+| WAIA-03 | Phase 6 | Complete |
+| WAIA-04 | Phase 6 | Complete |
 | WAIA-05 | Phase 6 | Complete |
-| WAIA-06 | Phase 6 | Pending |
+| WAIA-06 | Phase 6 | Complete |
 | WAIA-07 | Phase 7 | Pending |
 | OBSV-01 | Phase 7 | Pending |
 | OBSV-02 | Phase 7 | Pending |
