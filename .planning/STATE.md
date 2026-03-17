@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Templates & Agent IA WhatsApp
-status: completed
-stopped_at: Phase 7 context gathered
-last_updated: "2026-03-17T10:17:25.135Z"
-last_activity: 2026-03-17 -- Completed 06-03 Frontend UI (approved)
+status: in-progress
+stopped_at: Completed 07-01-PLAN.md
+last_updated: "2026-03-17T10:56:30Z"
+last_activity: 2026-03-17 -- Completed 07-01 Langfuse AI Observability
 progress:
   total_phases: 3
   completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
-  percent: 100
+  total_plans: 9
+  completed_plans: 8
+  percent: 89
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** Every Mariages.net lead is captured, organized, and actionable from a single interface — no switching between Gmail, Pipedrive, and phone
-**Current focus:** v1.1 Phase 6 complete -- next: Phase 7 AI Observability
+**Current focus:** v1.1 Phase 7 AI Observability & Decision UI -- Plan 01 complete
 
 ## Current Position
 
-Phase: 6 of 7 (WhatsApp AI Agent) -- COMPLETE
-Plan: 3 of 3 in current phase (all complete)
-Status: Phase 6 Complete
-Last activity: 2026-03-17 -- Completed 06-03 Frontend UI (approved)
+Phase: 7 of 7 (AI Observability & Decision UI)
+Plan: 1 of 2 in current phase
+Status: Phase 7 In Progress
+Last activity: 2026-03-17 -- Completed 07-01 Langfuse AI Observability
 
-Progress: [██████████] 100%
+Progress: [████████░░] 89%
 
 ## Performance Metrics
 
@@ -58,6 +58,7 @@ Progress: [██████████] 100%
 | Phase 06 P01 | 3min | 2 tasks | 6 files |
 | Phase 06 P02 | 2min | 2 tasks | 3 files |
 | Phase 06 P03 | 2min | 3 tasks | 6 files |
+| Phase 07 P01 | 4min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,9 @@ Recent decisions affecting current work:
 - [06-03]: Banner above chat with rounded-t-lg, messages border-t-0 for visual continuity
 - [06-03]: Handoff detection server-side: compare whatsappAiHandoffAt vs last human outbound
 - [Phase 06]: Banner above chat with rounded-t-lg, messages border-t-0 for visual continuity
+- [07-01]: Lazy SDK loading for Langfuse in CJS (no top-level await)
+- [07-01]: AiCallResult type with content + optional usage for token propagation
+- [07-01]: Best-effort tracing: Langfuse failure never blocks AI response
 
 ### Pending Todos
 
@@ -100,6 +104,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-17T10:17:25.127Z
-Stopped at: Phase 7 context gathered
-Resume file: .planning/phases/07-ai-observability-decision-ui/07-CONTEXT.md
+Last session: 2026-03-17T10:56:30Z
+Stopped at: Completed 07-01-PLAN.md
+Resume file: .planning/phases/07-ai-observability-decision-ui/07-02-PLAN.md

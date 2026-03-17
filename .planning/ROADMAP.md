@@ -89,4 +89,4 @@ Plans:
 | 4. Gmail Inbox, AI Drafting & WhatsApp | v1.0 | 8/8 | Complete | 2026-03-15 |
 | 5. Advanced Template Editor | v1.1 | 4/4 | Complete | - |
 | 6. WhatsApp AI Agent | v1.1 | 3/3 | Complete | 2026-03-17 |
-| 7. AI Observability & Decision UI | v1.1 | 0/2 | Not started | - |
+| 7. AI Observability & Decision UI | 1/2 | In Progress|  | - |

@@ -27,8 +27,8 @@ Requirements for milestone v1.1: Templates & Agent IA WhatsApp.
 
 ### Observabilite IA
 
-- [ ] **OBSV-01**: Chaque appel IA (WhatsApp agent + email draft) est trace dans Langfuse
-- [ ] **OBSV-02**: Les traces Langfuse incluent : prompt, contexte lead, reponse, action, latence
+- [x] **OBSV-01**: Chaque appel IA (WhatsApp agent + email draft) est trace dans Langfuse
+- [x] **OBSV-02**: Les traces Langfuse incluent : prompt, contexte lead, reponse, action, latence
 - [ ] **OBSV-03**: Le dashboard Langfuse permet de calibrer et evaluer la qualite de l'agent
 
 ## Future Requirements
@@ -68,8 +68,8 @@ Requirements for milestone v1.1: Templates & Agent IA WhatsApp.
 | WAIA-05 | Phase 6 | Complete |
 | WAIA-06 | Phase 6 | Complete |
 | WAIA-07 | Phase 7 | Pending |
-| OBSV-01 | Phase 7 | Pending |
-| OBSV-02 | Phase 7 | Pending |
+| OBSV-01 | Phase 7 | Complete |
+| OBSV-02 | Phase 7 | Complete |
 | OBSV-03 | Phase 7 | Pending |
 
 **Coverage:**
