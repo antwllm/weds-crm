@@ -23,13 +23,13 @@ Requirements for milestone v1.1: Templates & Agent IA WhatsApp.
 - [x] **WAIA-04**: Si action=reply, la reponse est envoyee automatiquement via WhatsApp
 - [x] **WAIA-05**: Si action=pass_to_human, l'agent est desactive pour cette conversation et une alerte admin est envoyee
 - [x] **WAIA-06**: Si le lead renvoie un nouveau message, l'agent peut a nouveau analyser et repondre (re-activation automatique)
-- [ ] **WAIA-07**: L'historique des decisions IA (action + reason) est visible dans l'UI WhatsApp du lead
+- [x] **WAIA-07**: L'historique des decisions IA (action + reason) est visible dans l'UI WhatsApp du lead
 
 ### Observabilite IA
 
 - [x] **OBSV-01**: Chaque appel IA (WhatsApp agent + email draft) est trace dans Langfuse
 - [x] **OBSV-02**: Les traces Langfuse incluent : prompt, contexte lead, reponse, action, latence
-- [ ] **OBSV-03**: Le dashboard Langfuse permet de calibrer et evaluer la qualite de l'agent
+- [x] **OBSV-03**: Le dashboard Langfuse permet de calibrer et evaluer la qualite de l'agent
 
 ## Future Requirements
 
@@ -67,10 +67,10 @@ Requirements for milestone v1.1: Templates & Agent IA WhatsApp.
 | WAIA-04 | Phase 6 | Complete |
 | WAIA-05 | Phase 6 | Complete |
 | WAIA-06 | Phase 6 | Complete |
-| WAIA-07 | Phase 7 | Pending |
+| WAIA-07 | Phase 7 | Complete |
 | OBSV-01 | Phase 7 | Complete |
 | OBSV-02 | Phase 7 | Complete |
-| OBSV-03 | Phase 7 | Pending |
+| OBSV-03 | Phase 7 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 15 total
