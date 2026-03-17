@@ -7,7 +7,9 @@ let startActiveObservation: any;
 let startObservation: any;
 let propagateAttributes: any;
 let getActiveTraceId: any;
+let updateActiveObservation: any;
 let langfuseClient: any;
+let _spanProcessor: any = null;
 
 const langfuseEnabled = !!(process.env.LANGFUSE_SECRET_KEY && process.env.LANGFUSE_PUBLIC_KEY);
 
@@ -24,6 +26,15 @@ function ensureSdkLoaded(): Promise<boolean> {
       startObservation = tracing.startObservation;
       propagateAttributes = tracing.propagateAttributes;
       getActiveTraceId = tracing.getActiveTraceId;
+      updateActiveObservation = (tracing as any).updateActiveObservation;
+
+      // Get the span processor from the global tracer provider
+      const tracerProvider = tracing.getLangfuseTracerProvider?.();
+      if (tracerProvider) {
+        // Access internal processors to force flush
+        _spanProcessor = tracerProvider;
+      }
+
       const client = await import('@langfuse/client');
       langfuseClient = new client.LangfuseClient();
       return true;
@@ -51,6 +62,7 @@ export interface AiTraceInput {
   systemPrompt: string;
   userMessage: string;
   promptVersion: string;
+  langfusePrompt?: any;   // Langfuse prompt object for trace linking
 }
 
 export interface AiTraceResult {
@@ -64,6 +76,29 @@ export interface AiTraceResult {
 
 export function computePromptVersion(promptTemplate: string): string {
   return createHash('sha256').update(promptTemplate).digest('hex').slice(0, 8);
+}
+
+async function flushTraces(): Promise<void> {
+  try {
+    // Method 1: flush via LangfuseClient
+    if (langfuseClient?.flush) {
+      await langfuseClient.flush();
+    }
+    // Method 2: flush via the tracer provider
+    if (_spanProcessor?.forceFlush) {
+      await _spanProcessor.forceFlush();
+    }
+    // Method 3: flush via global OTel API
+    const { trace } = await import('@opentelemetry/api');
+    const provider = trace.getTracerProvider() as any;
+    if (provider?.forceFlush) {
+      await provider.forceFlush();
+    } else if (provider?.getDelegate?.()?.forceFlush) {
+      await provider.getDelegate().forceFlush();
+    }
+  } catch {
+    // Best effort
+  }
 }
 
 export async function traceAiCall(
@@ -93,7 +128,7 @@ export async function traceAiCall(
       return await propagateAttributes(
         {
           userId: String(input.leadId),
-          metadata: { leadId: input.leadId, leadName: input.leadName, promptVersion: input.promptVersion },
+          metadata: { leadId: String(input.leadId), leadName: input.leadName, promptVersion: input.promptVersion },
           tags: [input.name, `prompt:${input.promptVersion}`],
         },
         async () => {
@@ -108,6 +143,15 @@ export async function traceAiCall(
             },
             { asType: 'generation' },
           );
+
+          // Link Langfuse prompt object to the generation (best-effort)
+          if (input.langfusePrompt && updateActiveObservation) {
+            try {
+              updateActiveObservation({ prompt: input.langfusePrompt }, { asType: 'generation' });
+            } catch {
+              // Best-effort: prompt linking failure never blocks tracing
+            }
+          }
 
           const result = await callFn();
           capturedUsage = result.usage;
@@ -136,6 +180,10 @@ export async function traceAiCall(
         },
       );
     });
+
+    // Flush traces to Langfuse Cloud immediately
+    await flushTraces();
+    logger.info('Langfuse trace envoyee', { traceId: langfuseTraceId, name: input.name, leadId: input.leadId });
 
     return {
       langfuseTraceId,
@@ -169,7 +217,7 @@ export async function submitScore(
   }
 
   try {
-    await langfuseClient.score.create({
+    await langfuseClient.createScore({
       traceId,
       name: 'user-feedback',
       value: score,

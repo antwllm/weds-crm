@@ -84,6 +84,9 @@ const envSchema = z.object({
   ADMIN_EMAIL: z.string().email().default('contact@weds.fr'),
   ALLOWED_USER_EMAIL: z.string().email().optional(),
 
+  // Langfuse (optionnel)
+  LANGFUSE_WEBHOOK_SECRET: z.string().optional(),
+
   // Configuration defaults
   VCARD_EXPIRY_DAYS: z.coerce.number().default(7),
   FALLBACK_SWEEP_INTERVAL: z.string().default('*/30 * * * *'),

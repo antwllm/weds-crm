@@ -15,6 +15,7 @@ import { logger } from '../logger.js';
 import { getGmailClientInstance } from './gmail-client-holder.js';
 import { traceAiCall, computePromptVersion } from './langfuse.js';
 import type { AiCallResult } from './langfuse.js';
+import { getLangfusePrompt } from './langfuse-prompts.js';
 import type { Lead } from '../types.js';
 
 // --- Zod schema for structured AI response ---
@@ -33,6 +34,7 @@ type AgentConfig = {
   promptTemplate: string;
   knowledgeBase: string | null;
   model: string | null;
+  langfusePromptName: string | null;
 };
 
 type StoredMessage = {
@@ -98,6 +100,10 @@ export async function processWhatsAppAiResponse(
   const model = agentConfig.model || 'anthropic/claude-sonnet-4';
   const promptVersion = computePromptVersion(agentConfig.promptTemplate);
 
+  // Fetch Langfuse prompt object for trace linking (best-effort)
+  const langfusePromptName = agentConfig.langfusePromptName || 'whatsapp-agent-prompt';
+  const langfusePromptObj = await getLangfusePrompt(langfusePromptName);
+
   // Trace AI call via Langfuse (best-effort)
   const traceResult = await traceAiCall(
     {
@@ -108,6 +114,7 @@ export async function processWhatsAppAiResponse(
       systemPrompt,
       userMessage: incomingText,
       promptVersion,
+      langfusePrompt: langfusePromptObj,
     },
     () => callOpenRouter(systemPrompt, incomingText, model),
   );
@@ -115,10 +122,10 @@ export async function processWhatsAppAiResponse(
   const responseContent = traceResult.response;
   const parsed = parseAiResponse(responseContent);
 
-  // Check consecutive counter: force handoff at 5th consecutive AI exchange
+  // Check consecutive counter: force handoff at 10th consecutive AI exchange
   const consecutiveCount = lead.whatsappAiConsecutiveCount || 0;
-  if (consecutiveCount >= 4 && parsed.action === 'reply') {
-    logger.info('Agent IA WhatsApp: limite de 5 echanges IA consecutifs atteinte', {
+  if (consecutiveCount >= 10 && parsed.action === 'reply') {
+    logger.info('Agent IA WhatsApp: limite de 10 echanges IA consecutifs atteinte', {
       leadId: lead.id,
       consecutiveCount,
     });
@@ -147,6 +154,14 @@ export async function processWhatsAppAiResponse(
   }
 
   if (parsed.action === 'reply') {
+    // Simulate human-like response delay (5-15 seconds)
+    const delayMs = 5000 + Math.random() * 10000;
+    logger.info('Agent IA WhatsApp: delai de reponse simule', {
+      leadId: lead.id,
+      delayMs: Math.round(delayMs),
+    });
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+
     // Send auto-reply via WhatsApp
     const waMessageId = await sendWhatsAppMessage(
       config.WHATSAPP_PHONE_NUMBER_ID!,

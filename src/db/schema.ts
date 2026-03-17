@@ -157,6 +157,8 @@ export const whatsappAgentConfig = pgTable('whatsapp_agent_config', {
   promptTemplate: text('prompt_template').notNull(),
   knowledgeBase: text('knowledge_base'),
   model: varchar('model', { length: 100 }).default('anthropic/claude-sonnet-4'),
+  langfusePromptName: varchar('langfuse_prompt_name', { length: 100 }).default('whatsapp-agent-prompt'),
+  langfuseSyncedAt: timestamp('langfuse_synced_at'),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 

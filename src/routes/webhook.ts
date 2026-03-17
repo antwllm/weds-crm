@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { timingSafeEqual } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 import { z } from 'zod';
 import { logger } from '../logger.js';
 import { config } from '../config.js';
@@ -7,8 +7,9 @@ import { handlePubSubMessage } from '../services/pubsub.js';
 import { processPendingEmails } from '../pipeline/process-email.js';
 import { getGmailClientInstance } from '../services/gmail-client-holder.js';
 import { getDb } from '../db/index.js';
-import { leads, whatsappMessages, activities } from '../db/schema.js';
+import { leads, whatsappMessages, activities, whatsappAgentConfig } from '../db/schema.js';
 import { eq, or } from 'drizzle-orm';
+import { pullPromptFromLangfuse } from '../services/langfuse-prompts.js';
 import {
   isWithinSuppressionWindow,
   handleDealUpdate,
@@ -427,6 +428,123 @@ router.post('/whatsapp', async (req, res) => {
       error: 'Erreur interne lors du traitement',
       detail: error instanceof Error ? error.message : String(error),
     });
+  }
+});
+
+// --- Langfuse Webhook ---
+
+/**
+ * POST /webhook/langfuse
+ *
+ * Receives Langfuse webhook events (prompt-version created/updated).
+ * When a prompt version with the "production" label is created,
+ * pulls the prompt text and updates the CRM database.
+ * Public endpoint (no app-level auth -- uses optional HMAC verification).
+ */
+router.post('/langfuse', async (req, res) => {
+  // HMAC signature verification (if secret configured)
+  if (config.LANGFUSE_WEBHOOK_SECRET) {
+    const signature = req.headers['x-langfuse-signature'] as string | undefined;
+    const rawBody = (req as any).rawBody as Buffer | undefined;
+
+    if (!signature || !rawBody) {
+      logger.warn('Webhook Langfuse: signature ou rawBody manquant');
+      res.status(403).json({ error: 'Signature manquante' });
+      return;
+    }
+
+    const expected = createHmac('sha256', config.LANGFUSE_WEBHOOK_SECRET)
+      .update(rawBody)
+      .digest('hex');
+
+    const sigHex = signature.startsWith('sha256=') ? signature.slice(7) : signature;
+
+    try {
+      const sigBuffer = Buffer.from(sigHex, 'hex');
+      const expectedBuffer = Buffer.from(expected, 'hex');
+      if (sigBuffer.length !== expectedBuffer.length || !timingSafeEqual(sigBuffer, expectedBuffer)) {
+        logger.warn('Webhook Langfuse: signature invalide');
+        res.status(403).json({ error: 'Signature invalide' });
+        return;
+      }
+    } catch {
+      logger.warn('Webhook Langfuse: erreur verification signature');
+      res.status(403).json({ error: 'Signature invalide' });
+      return;
+    }
+  }
+
+  try {
+    const body = req.body;
+    const eventType = body?.type;
+    const action = body?.action;
+
+    // Only process prompt-version events
+    if (eventType !== 'prompt-version' || (action !== 'created' && action !== 'updated')) {
+      logger.debug('Webhook Langfuse: evenement ignore', { type: eventType, action });
+      res.status(200).json({ received: true });
+      return;
+    }
+
+    // Check for production label
+    const labels: string[] = body?.prompt?.labels || body?.data?.labels || [];
+    if (!labels.includes('production')) {
+      logger.debug('Webhook Langfuse: version sans label production, ignoree', { labels });
+      res.status(200).json({ received: true });
+      return;
+    }
+
+    const promptName = body?.prompt?.name || body?.data?.name;
+    if (!promptName) {
+      logger.warn('Webhook Langfuse: nom de prompt manquant dans le payload');
+      res.status(200).json({ received: true });
+      return;
+    }
+
+    const db = getDb();
+
+    // Check if this prompt name matches a known config
+    const configRows = await db
+      .select()
+      .from(whatsappAgentConfig)
+      .where(eq(whatsappAgentConfig.langfusePromptName, promptName))
+      .limit(1);
+
+    if (configRows.length === 0) {
+      logger.info('Webhook Langfuse: prompt non associe a une config CRM', { promptName });
+      res.status(200).json({ received: true });
+      return;
+    }
+
+    // Pull actual prompt text from Langfuse
+    const pulled = await pullPromptFromLangfuse(promptName);
+    if (!pulled) {
+      logger.warn('Webhook Langfuse: impossible de recuperer le prompt depuis Langfuse', { promptName });
+      res.status(200).json({ received: true });
+      return;
+    }
+
+    // Update CRM database
+    await db
+      .update(whatsappAgentConfig)
+      .set({
+        promptTemplate: pulled.prompt,
+        langfuseSyncedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(eq(whatsappAgentConfig.langfusePromptName, promptName));
+
+    logger.info('Webhook Langfuse: prompt CRM mis a jour depuis Langfuse', {
+      promptName,
+      version: pulled.version,
+    });
+
+    res.status(200).json({ received: true });
+  } catch (error) {
+    logger.error('Webhook Langfuse: erreur traitement', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    res.status(500).json({ error: 'Erreur interne' });
   }
 });
 

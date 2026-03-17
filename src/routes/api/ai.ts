@@ -5,6 +5,7 @@ import { getDb } from '../../db/index.js';
 import { aiPromptConfig, whatsappAgentConfig } from '../../db/schema.js';
 import { ensureAuthenticated } from '../../auth/middleware.js';
 import { assembleLeadContext, generateDraft } from '../../services/openrouter.js';
+import { pushPromptToLangfuse } from '../../services/langfuse-prompts.js';
 import { config } from '../../config.js';
 import { logger } from '../../logger.js';
 
@@ -185,6 +186,8 @@ router.get('/ai/whatsapp-prompt', async (_req, res) => {
         promptTemplate: DEFAULT_WA_PROMPT_TEMPLATE,
         knowledgeBase: null,
         model: 'anthropic/claude-sonnet-4',
+        langfusePromptName: null,
+        langfuseSyncedAt: null,
       });
       return;
     }
@@ -240,6 +243,25 @@ router.put('/ai/whatsapp-prompt', async (req, res) => {
     }
 
     logger.info('Prompt WhatsApp AI mis a jour');
+
+    // Fire-and-forget: push prompt to Langfuse Prompt Management
+    const promptName = result.langfusePromptName || 'whatsapp-agent-prompt';
+    pushPromptToLangfuse(parsed.data.promptTemplate, promptName).then(async (pushResult) => {
+      if (pushResult) {
+        try {
+          await db
+            .update(whatsappAgentConfig)
+            .set({ langfuseSyncedAt: new Date() })
+            .where(eq(whatsappAgentConfig.id, result.id));
+          logger.info('Langfuse sync timestamp mis a jour', { promptName, version: pushResult.version });
+        } catch (err) {
+          logger.warn('Erreur mise a jour langfuseSyncedAt', { error: err });
+        }
+      }
+    }).catch((err) => {
+      logger.warn('Langfuse push prompt echoue (fire-and-forget)', { error: err });
+    });
+
     res.json(result);
   } catch (error) {
     logger.error('Erreur lors de la mise a jour du prompt WhatsApp AI', { error });
