@@ -20,6 +20,7 @@ import {
   parseIncomingMessage,
   verifyWebhookSignature,
 } from '../services/whatsapp.js';
+import { processWhatsAppAiResponse } from '../services/whatsapp-agent.js';
 import type { Lead } from '../types.js';
 import axios from 'axios';
 
@@ -365,22 +366,37 @@ router.post('/whatsapp', async (req, res) => {
         content: text,
       });
 
-      // Send Free Mobile SMS alert (best-effort, never throw)
-      try {
-        const alertMsg = `WhatsApp de ${lead.name}: ${text.slice(0, 100)}`;
-        if (config.FREE_MOBILE_USER && config.FREE_MOBILE_PASS) {
-          await axios.get('https://smsapi.free-mobile.fr/sendmsg', {
-            params: {
-              user: config.FREE_MOBILE_USER,
-              pass: config.FREE_MOBILE_PASS,
-              msg: alertMsg,
-            },
+      // AI Agent or SMS alert
+      if (lead.whatsappAiEnabled) {
+        // AI agent processes the message asynchronously
+        setImmediate(async () => {
+          try {
+            await processWhatsAppAiResponse(lead as Lead, text);
+          } catch (error) {
+            logger.error('Agent IA WhatsApp: erreur traitement', {
+              leadId: lead.id,
+              error: error instanceof Error ? error.message : String(error),
+            });
+          }
+        });
+      } else {
+        // Existing behavior: Free Mobile SMS alert (best-effort)
+        try {
+          const alertMsg = `WhatsApp de ${lead.name}: ${text.slice(0, 100)}`;
+          if (config.FREE_MOBILE_USER && config.FREE_MOBILE_PASS) {
+            await axios.get('https://smsapi.free-mobile.fr/sendmsg', {
+              params: {
+                user: config.FREE_MOBILE_USER,
+                pass: config.FREE_MOBILE_PASS,
+                msg: alertMsg,
+              },
+            });
+          }
+        } catch (smsError) {
+          logger.error('Webhook WhatsApp: echec alerte SMS', {
+            error: smsError instanceof Error ? smsError.message : String(smsError),
           });
         }
-      } catch (smsError) {
-        logger.error('Webhook WhatsApp: echec alerte SMS', {
-          error: smsError instanceof Error ? smsError.message : String(smsError),
-        });
       }
 
       logger.info('Webhook WhatsApp: message entrant traite', {

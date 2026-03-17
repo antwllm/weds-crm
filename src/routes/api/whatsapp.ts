@@ -81,6 +81,11 @@ router.post('/leads/:leadId/whatsapp/send', ensureAuthenticated, async (req, res
       content: message,
     });
 
+    // Reset AI consecutive counter when human sends manually
+    await db.update(leads)
+      .set({ whatsappAiConsecutiveCount: 0 })
+      .where(eq(leads.id, leadId));
+
     logger.info('WhatsApp message envoyé', { leadId, waMessageId });
     res.status(200).json({ status: 'sent', waMessageId });
   } catch (error) {
