@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Templates & Agent IA WhatsApp
-status: completed
-stopped_at: Completed 05-04-PLAN.md
-last_updated: "2026-03-16T22:51:04.159Z"
-last_activity: 2026-03-16 — Completed 05-04 Template Attachment Wiring
+status: in_progress
+stopped_at: Completed 06-01 Schema & Config API
+last_updated: "2026-03-17T09:23:08Z"
+last_activity: 2026-03-17 — Completed 06-01 Schema & Config API
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 4
-  percent: 100
+  total_plans: 8
+  completed_plans: 5
+  percent: 62
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-16)
 
 **Core value:** Every Mariages.net lead is captured, organized, and actionable from a single interface — no switching between Gmail, Pipedrive, and phone
-**Current focus:** v1.1 Phase 5 — Advanced Template Editor
+**Current focus:** v1.1 Phase 6 — WhatsApp AI Agent
 
 ## Current Position
 
-Phase: 5 of 7 (Advanced Template Editor) -- COMPLETE
-Plan: 4 of 4 in current phase (complete)
-Status: Phase Complete
-Last activity: 2026-03-16 — Completed 05-04 Template Attachment Wiring
+Phase: 6 of 7 (WhatsApp AI Agent)
+Plan: 1 of 4 in current phase (complete)
+Status: In Progress
+Last activity: 2026-03-17 — Completed 06-01 Schema & Config API
 
-Progress: [██████████] 100%
+Progress: [██████░░░░] 62%
 
 ## Performance Metrics
 
@@ -55,6 +55,7 @@ Progress: [██████████] 100%
 *Updated after each plan completion*
 | Phase 05 P03 | 3min | 2 tasks | 7 files |
 | Phase 05 P04 | 3min | 2 tasks | 5 files |
+| Phase 06 P01 | 3min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -76,6 +77,9 @@ Recent decisions affecting current work:
 - [Phase 05]: Public GCS URLs for inline images (consistent with 05-02)
 - [Phase 05]: Separate templateAttachments state from manual attachments for clean GCS vs client-side distinction
 - [Phase 05]: GCS fallback pattern: check gcsPath first, fall back to local path for backward compat
+- [06-01]: DEFAULT_WA_PROMPT_TEMPLATE uses JSON response format with action reply|pass_to_human
+- [06-01]: whatsapp_agent_config follows single-row pattern like ai_prompt_config
+- [06-01]: sentBy column defaults to 'human' for backward compatibility
 
 ### Pending Todos
 
@@ -88,6 +92,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-16T22:46:47.647Z
-Stopped at: Completed 05-04-PLAN.md
-Resume file: None
+Last session: 2026-03-17T09:23:08Z
+Stopped at: Completed 06-01 Schema & Config API
+Resume file: .planning/phases/06-whatsapp-ai-agent/06-02-PLAN.md
