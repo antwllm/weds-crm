@@ -5,7 +5,7 @@ milestone_name: Templates & Agent IA WhatsApp
 status: completed
 stopped_at: Completed 07-02-PLAN.md
 last_updated: "2026-03-17T11:06:34.569Z"
-last_activity: 2026-03-17 -- Completed 07-02 AI Decisions API & UI
+last_activity: 2026-03-17 - Completed quick task 260317-k0u: Langfuse prompt management bidirectional sync
 progress:
   total_phases: 3
   completed_phases: 3
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 Phase: 7 of 7 (AI Observability & Decision UI)
 Plan: 2 of 2 in current phase
 Status: v1.1 Milestone Complete
-Last activity: 2026-03-17 -- Completed 07-02 AI Decisions API & UI
+Last activity: 2026-03-17 - Completed quick task 260317-k0u: Langfuse prompt management bidirectional sync
 
 Progress: [██████████] 100%
 
@@ -104,6 +104,12 @@ Recent decisions affecting current work:
 
 - Phase 4: WhatsApp Business API approval — verify status before Phase 6 (agent needs production API)
 - GCS upload endpoint needed for Phase 5 (image inline + attachments)
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260317-k0u | Langfuse prompt management: bidirectional sync, settings UI, link prompts to WhatsApp AI traces, webhook for Langfuse→CRM updates | 2026-03-17 | c71d8ce | [260317-k0u-langfuse-prompt-management-bidirectional](./quick/260317-k0u-langfuse-prompt-management-bidirectional/) |
 
 ## Session Continuity
 
