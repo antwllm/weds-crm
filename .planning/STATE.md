@@ -5,7 +5,7 @@ milestone_name: Templates & Agent IA WhatsApp
 status: completed
 stopped_at: Completed 07-02-PLAN.md
 last_updated: "2026-03-17T11:06:34.569Z"
-last_activity: 2026-03-17 - Completed quick task 260317-k0u: Langfuse prompt management bidirectional sync
+last_activity: 2026-03-17 - Completed quick task 260317-l7i: Persist selected tab and email thread via URL params
 progress:
   total_phases: 3
   completed_phases: 3
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-03-16)
 Phase: 7 of 7 (AI Observability & Decision UI)
 Plan: 2 of 2 in current phase
 Status: v1.1 Milestone Complete
-Last activity: 2026-03-17 - Completed quick task 260317-k0u: Langfuse prompt management bidirectional sync
+Last activity: 2026-03-17 - Completed quick task 260317-l7i: Persist selected tab and email thread via URL params
 
 Progress: [██████████] 100%
 
@@ -110,9 +110,10 @@ Recent decisions affecting current work:
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260317-k0u | Langfuse prompt management: bidirectional sync, settings UI, link prompts to WhatsApp AI traces, webhook for Langfuse→CRM updates | 2026-03-17 | c71d8ce | [260317-k0u-langfuse-prompt-management-bidirectional](./quick/260317-k0u-langfuse-prompt-management-bidirectional/) |
+| 260317-l7i | Persist selected tab and expanded email thread on lead detail page via URL search params | 2026-03-17 | 6b805e3 | [260317-l7i-persist-selected-tab-and-active-field-em](./quick/260317-l7i-persist-selected-tab-and-active-field-em/) |
 
 ## Session Continuity
 
-Last session: 2026-03-17T11:02:53.143Z
-Stopped at: Completed 07-02-PLAN.md
+Last session: 2026-03-17T14:19:26Z
+Stopped at: Completed quick task 260317-l7i
 Resume file: None
