@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { isToday, isYesterday, format } from 'date-fns';
 import { fr } from 'date-fns/locale/fr';
 import { ArrowDownLeft, ArrowUpRight, Loader2, ChevronDown, ChevronRight } from 'lucide-react';
@@ -145,7 +145,21 @@ function InlineThread({ threadId, leadId }: { threadId: string; leadId: number }
 
 export function LeadEmails({ leadId, leadEmail, initialDraft }: LeadEmailsProps) {
   const { data: emailsData, isLoading } = useLeadEmails(leadId);
-  const [expandedThread, setExpandedThread] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const expandedThread = searchParams.get('thread');
+
+  function setExpandedThread(threadId: string | null) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      if (threadId) {
+        next.set('thread', threadId);
+      } else {
+        next.delete('thread');
+      }
+      return next;
+    }, { replace: true });
+  }
 
   // Handle both response shapes: { emails: [...] } or direct array
   const emails = Array.isArray(emailsData)
