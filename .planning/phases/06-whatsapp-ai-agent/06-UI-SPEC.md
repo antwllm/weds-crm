@@ -39,7 +39,7 @@ Declared values (must be multiples of 4):
 | 2xl | 48px | Major section breaks |
 | 3xl | 64px | Page-level spacing |
 
-Exceptions: 44px touch target for AI toggle switch area (label + switch row)
+Exceptions: 44px min-height constraint (not spacing token) for AI toggle switch area — Apple HIG / WCAG 2.5.8 touch target minimum
 
 ---
 
@@ -48,11 +48,11 @@ Exceptions: 44px touch target for AI toggle switch area (label + switch row)
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body | 14px | 400 (regular) | 1.5 |
-| Label | 12px | 500 (medium) | 1.4 |
+| Label | 12px | 400 (regular) | 1.4 |
 | Heading | 20px | 700 (bold) | 1.2 |
 | Display | 24px | 700 (bold) | 1.2 |
 
-Note: Matches existing project typography. Body at 14px (`text-sm`) is the standard in the chat interface. Labels at 12px (`text-xs`) match existing `text-xs font-medium` pattern in `AiPromptEditor`. Display at 24px matches existing `text-2xl font-bold` in SettingsPage heading.
+Note: Two weights only — 400 (regular) for body and labels, 700 (bold) for headings/display. Label vs body distinction is handled by the 12px vs 14px size difference. Matches existing project typography: Body at 14px (`text-sm`) is the standard in the chat interface. Display at 24px matches existing `text-2xl font-bold` in SettingsPage heading.
 
 ---
 
@@ -117,6 +117,7 @@ All required primitives (Switch, Badge, AlertDialog, Textarea, Input, Button, Ta
 | Chat messages area (existing)                                     |
 ```
 
+- **Focal point:** The AI Agent banner switch is the primary visual anchor above the chat area — immediately visible without scrolling
 - Position: Between the tab navigation and the chat message area
 - Height: auto (single row, vertically centered content)
 - Padding: `px-3 py-2` (12px horizontal, 8px vertical)
@@ -137,7 +138,7 @@ All required primitives (Switch, Badge, AlertDialog, Textarea, Input, Button, Ta
 ```
 
 - Position: Inline next to the sender label ("Vous")
-- Badge size: `h-4 px-1.5 text-[10px]` (smaller than default badge)
+- Badge size: `h-4 px-1.5 text-xs` (uses label role 12px, compact within h-4 height)
 - Badge content: "IA" (two letters only)
 - Badge color: `bg-violet-100 text-violet-700` (purple semantic)
 - Only shown when `message.sentBy === 'ai'`
@@ -177,9 +178,9 @@ All required primitives (Switch, Badge, AlertDialog, Textarea, Input, Button, Ta
 ```
 
 - Container: `max-w-2xl space-y-6` (matches existing AiPromptEditor)
-- Labels: `text-sm font-medium` (existing pattern)
+- Labels: `text-xs font-normal` (label role at 12px/400)
 - Help text: `text-xs text-muted-foreground` (existing pattern)
-- Variable badges: `variant="secondary"` with `flex flex-wrap gap-1.5` (existing pattern)
+- Variable badges: `variant="secondary"` with `flex flex-wrap gap-2` (8px, on spacing grid)
 - Two textareas: prompt template (10 rows) + knowledge base (8 rows)
 - Both textareas: `font-mono text-sm` (existing pattern)
 
@@ -194,7 +195,7 @@ All required primitives (Switch, Badge, AlertDialog, Textarea, Input, Button, Ta
 | Handoff status badge | En attente de reponse humaine |
 | Disable confirmation title | Desactiver l'agent IA ? |
 | Disable confirmation description | L'agent ne repondra plus automatiquement aux messages WhatsApp de ce lead. Vous pouvez le reactiver a tout moment. |
-| Disable confirmation action | Desactiver |
+| Disable confirmation action | Desactiver l'agent |
 | Disable confirmation cancel | Annuler |
 | Settings tab label | Agent WhatsApp |
 | Prompt label | Prompt systeme WhatsApp |
@@ -225,7 +226,7 @@ All required primitives (Switch, Badge, AlertDialog, Textarea, Input, Button, Ta
 | Toggling on | Immediate switch, optimistic update |
 | Toggling off | AlertDialog opens first, switch stays on until confirmed |
 | Loading | Switch disabled with `opacity-50` |
-| Error | Toast with error message, revert switch state |
+| Error | Toast "Impossible de modifier l'agent IA. Reessayez.", revert switch state |
 
 ### Handoff Badge
 
@@ -244,7 +245,7 @@ All required primitives (Switch, Badge, AlertDialog, Textarea, Input, Button, Ta
 | Dirty (unsaved changes) | Save button enabled |
 | Saving | Save button shows "Sauvegarde...", disabled |
 | Saved | Toast notification, button reverts to disabled |
-| Error | Toast with error, button re-enabled |
+| Error | Toast "Erreur lors de la sauvegarde. Reessayez.", button re-enabled |
 
 ---
 
@@ -282,11 +283,11 @@ No third-party registries used.
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved (2026-03-17)
