@@ -1,21 +1,11 @@
-// Must be imported before any traced code runs (right after Sentry in index.ts)
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { LangfuseSpanProcessor } from '@langfuse/otel';
+// Langfuse tracing now uses REST API directly (src/services/langfuse.ts)
+// No OTel SDK needed — keeping this file for the export used by other modules
+
+export const langfuseSpanProcessor = null;
 
 const langfuseEnabled = !!(process.env.LANGFUSE_SECRET_KEY && process.env.LANGFUSE_PUBLIC_KEY);
-
-let sdk: NodeSDK | null = null;
-
 if (langfuseEnabled) {
-  sdk = new NodeSDK({
-    spanProcessors: [new LangfuseSpanProcessor()],
-  });
-  sdk.start();
-  console.log('Langfuse instrumentation demarree');
+  console.log('Langfuse tracing active (REST API)');
 } else {
   console.warn('Langfuse: LANGFUSE_SECRET_KEY ou LANGFUSE_PUBLIC_KEY manquant, tracing desactive');
 }
-
-process.on('SIGTERM', () => {
-  if (sdk) sdk.shutdown();
-});

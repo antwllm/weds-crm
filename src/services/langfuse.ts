@@ -1,50 +1,87 @@
-import { createHash } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { logger } from '../logger.js';
 
-// --- Lazy-loaded Langfuse SDK references ---
+// --- Langfuse via OTLP HTTP (real-time ingestion) + REST fallback for scores ---
 
-let startActiveObservation: any;
-let startObservation: any;
-let propagateAttributes: any;
-let getActiveTraceId: any;
-let updateActiveObservation: any;
-let langfuseClient: any;
-let _spanProcessor: any = null;
+const LANGFUSE_SECRET_KEY = process.env.LANGFUSE_SECRET_KEY || '';
+const LANGFUSE_PUBLIC_KEY = process.env.LANGFUSE_PUBLIC_KEY || '';
+const LANGFUSE_BASE_URL = process.env.LANGFUSE_BASE_URL || 'https://cloud.langfuse.com';
+const langfuseEnabled = !!(LANGFUSE_SECRET_KEY && LANGFUSE_PUBLIC_KEY);
 
-const langfuseEnabled = !!(process.env.LANGFUSE_SECRET_KEY && process.env.LANGFUSE_PUBLIC_KEY);
+const basicAuth = langfuseEnabled
+  ? 'Basic ' + Buffer.from(`${LANGFUSE_PUBLIC_KEY}:${LANGFUSE_SECRET_KEY}`).toString('base64')
+  : '';
 
-let sdkReady: Promise<boolean> | null = null;
+// --- OTLP helpers ---
 
-function ensureSdkLoaded(): Promise<boolean> {
-  if (!langfuseEnabled) return Promise.resolve(false);
-  if (sdkReady) return sdkReady;
+function randomHex(bytes: number): string {
+  return randomBytes(bytes).toString('hex');
+}
 
-  sdkReady = (async () => {
-    try {
-      const tracing = await import('@langfuse/tracing');
-      startActiveObservation = tracing.startActiveObservation;
-      startObservation = tracing.startObservation;
-      propagateAttributes = tracing.propagateAttributes;
-      getActiveTraceId = tracing.getActiveTraceId;
-      updateActiveObservation = (tracing as any).updateActiveObservation;
+function toNanos(date: Date): string {
+  return (BigInt(date.getTime()) * 1_000_000n).toString();
+}
 
-      // Get the span processor from the global tracer provider
-      const tracerProvider = tracing.getLangfuseTracerProvider?.();
-      if (tracerProvider) {
-        // Access internal processors to force flush
-        _spanProcessor = tracerProvider;
-      }
+function stringAttr(key: string, value: string): { key: string; value: Record<string, string> } {
+  return { key, value: { stringValue: value } };
+}
 
-      const client = await import('@langfuse/client');
-      langfuseClient = new client.LangfuseClient();
-      return true;
-    } catch (err) {
-      logger.warn('Langfuse SDK import echoue, tracing desactive', { error: err });
+function intAttr(key: string, value: number): { key: string; value: Record<string, string> } {
+  return { key, value: { intValue: value.toString() } };
+}
+
+// Send OTLP JSON to Langfuse OTel endpoint (real-time)
+async function sendOtlpTrace(spans: any[]): Promise<boolean> {
+  if (!langfuseEnabled || spans.length === 0) return false;
+  try {
+    const payload = {
+      resourceSpans: [{
+        resource: { attributes: [stringAttr('service.name', 'weds-crm')] },
+        scopeSpans: [{
+          scope: { name: 'langfuse-sdk', version: '5.0.1' },
+          spans,
+        }],
+      }],
+    };
+
+    const res = await fetch(`${LANGFUSE_BASE_URL}/api/public/otel/v1/traces`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': basicAuth,
+      },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      logger.warn('Langfuse OTLP erreur', { status: res.status, body: text.slice(0, 300) });
       return false;
     }
-  })();
+    return true;
+  } catch (err) {
+    logger.warn('Langfuse OTLP echouee (best-effort)', { error: (err as Error).message });
+    return false;
+  }
+}
 
-  return sdkReady;
+// REST API for scores (not available via OTel)
+async function langfuseRest(path: string, body: any): Promise<string | null> {
+  if (!langfuseEnabled) return null;
+  try {
+    const res = await fetch(`${LANGFUSE_BASE_URL}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: basicAuth },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!res.ok) return null;
+    const json = await res.json().catch(() => ({}));
+    return (json as any).id || 'ok';
+  } catch {
+    return null;
+  }
 }
 
 // --- Public types ---
@@ -55,14 +92,14 @@ export interface AiCallResult {
 }
 
 export interface AiTraceInput {
-  name: string;           // 'whatsapp-agent' | 'email-draft'
+  name: string;
   leadId: number;
   leadName: string;
   model: string;
   systemPrompt: string;
   userMessage: string;
   promptVersion: string;
-  langfusePrompt?: any;   // Langfuse prompt object for trace linking
+  langfusePrompt?: any;
 }
 
 export interface AiTraceResult {
@@ -72,33 +109,8 @@ export interface AiTraceResult {
   usage?: { promptTokens: number; completionTokens: number };
 }
 
-// --- Public functions ---
-
 export function computePromptVersion(promptTemplate: string): string {
   return createHash('sha256').update(promptTemplate).digest('hex').slice(0, 8);
-}
-
-async function flushTraces(): Promise<void> {
-  try {
-    // Method 1: flush via LangfuseClient
-    if (langfuseClient?.flush) {
-      await langfuseClient.flush();
-    }
-    // Method 2: flush via the tracer provider
-    if (_spanProcessor?.forceFlush) {
-      await _spanProcessor.forceFlush();
-    }
-    // Method 3: flush via global OTel API
-    const { trace } = await import('@opentelemetry/api');
-    const provider = trace.getTracerProvider() as any;
-    if (provider?.forceFlush) {
-      await provider.forceFlush();
-    } else if (provider?.getDelegate?.()?.forceFlush) {
-      await provider.getDelegate().forceFlush();
-    }
-  } catch {
-    // Best effort
-  }
 }
 
 export async function traceAiCall(
@@ -106,102 +118,93 @@ export async function traceAiCall(
   callFn: () => Promise<AiCallResult>,
 ): Promise<AiTraceResult> {
   const start = Date.now();
-
-  const ready = await ensureSdkLoaded();
-
-  // If Langfuse not available, just call directly
-  if (!ready || !startActiveObservation) {
-    const result = await callFn();
-    return {
-      langfuseTraceId: null,
-      latencyMs: Date.now() - start,
-      response: result.content,
-      usage: result.usage,
-    };
-  }
+  const result = await callFn();
+  const latencyMs = Date.now() - start;
 
   let langfuseTraceId: string | null = null;
-  let capturedUsage: AiCallResult['usage'] | undefined;
 
-  try {
-    const response = await startActiveObservation(input.name, async (span: any) => {
-      return await propagateAttributes(
+  if (langfuseEnabled) {
+    try {
+      const traceId = randomHex(16);
+      const rootSpanId = randomHex(8);
+      const genSpanId = randomHex(8);
+      const startNanos = toNanos(new Date(start));
+      const endNanos = toNanos(new Date(start + latencyMs));
+      langfuseTraceId = traceId;
+
+      // Build Langfuse-specific attributes for the root span (trace)
+      const rootAttributes = [
+        stringAttr('langfuse.trace.name', input.name),
+        stringAttr('langfuse.trace.user.id', String(input.leadId)),
+        stringAttr('langfuse.trace.metadata.leadId', String(input.leadId)),
+        stringAttr('langfuse.trace.metadata.leadName', input.leadName),
+        stringAttr('langfuse.trace.metadata.promptVersion', input.promptVersion),
+        stringAttr('langfuse.trace.metadata.model', input.model),
+        stringAttr('langfuse.trace.tags', input.name),
+        stringAttr('langfuse.observation.type', 'span'),
+        stringAttr('langfuse.observation.input', JSON.stringify({
+          systemPrompt: input.systemPrompt,
+          userMessage: input.userMessage,
+        })),
+        stringAttr('langfuse.observation.output', JSON.stringify({ content: result.content })),
+      ];
+
+      // Build generation span attributes
+      const genAttributes = [
+        stringAttr('langfuse.observation.type', 'generation'),
+        stringAttr('langfuse.observation.name', 'llm-call'),
+        stringAttr('langfuse.observation.model.name', input.model),
+        stringAttr('langfuse.observation.input', JSON.stringify([
+          { role: 'system', content: input.systemPrompt },
+          { role: 'user', content: input.userMessage },
+        ])),
+        stringAttr('langfuse.observation.output', JSON.stringify({ content: result.content })),
+      ];
+
+      if (result.usage) {
+        genAttributes.push(intAttr('langfuse.observation.usage.input', result.usage.promptTokens));
+        genAttributes.push(intAttr('langfuse.observation.usage.output', result.usage.completionTokens));
+      }
+
+      const spans = [
+        // Root span = Langfuse trace
         {
-          userId: String(input.leadId),
-          metadata: { leadId: String(input.leadId), leadName: input.leadName, promptVersion: input.promptVersion },
-          tags: [input.name, `prompt:${input.promptVersion}`],
+          traceId,
+          spanId: rootSpanId,
+          name: input.name,
+          kind: 1, // SPAN_KIND_INTERNAL
+          startTimeUnixNano: startNanos,
+          endTimeUnixNano: endNanos,
+          attributes: rootAttributes,
+          status: { code: 1 }, // OK
         },
-        async () => {
-          const generation = startObservation(
-            'llm-call',
-            {
-              model: input.model,
-              input: [
-                { role: 'system', content: input.systemPrompt },
-                { role: 'user', content: input.userMessage },
-              ],
-            },
-            { asType: 'generation' },
-          );
-
-          // Link Langfuse prompt object to the generation (best-effort)
-          if (input.langfusePrompt && updateActiveObservation) {
-            try {
-              updateActiveObservation({ prompt: input.langfusePrompt }, { asType: 'generation' });
-            } catch {
-              // Best-effort: prompt linking failure never blocks tracing
-            }
-          }
-
-          const result = await callFn();
-          capturedUsage = result.usage;
-
-          // Build generation update with output and optional usage details
-          const generationUpdate: Record<string, any> = {
-            output: { content: result.content },
-          };
-          if (result.usage) {
-            generationUpdate.usageDetails = {
-              input: result.usage.promptTokens,
-              output: result.usage.completionTokens,
-            };
-          }
-
-          generation.update(generationUpdate).end();
-
-          span.update({ output: result.content });
-
-          // Capture trace ID for DB storage
-          if (getActiveTraceId) {
-            langfuseTraceId = getActiveTraceId();
-          }
-
-          return result.content;
+        // Child span = generation
+        {
+          traceId,
+          spanId: genSpanId,
+          parentSpanId: rootSpanId,
+          name: 'llm-call',
+          kind: 1,
+          startTimeUnixNano: startNanos,
+          endTimeUnixNano: endNanos,
+          attributes: genAttributes,
+          status: { code: 1 },
         },
-      );
-    });
+      ];
 
-    // Flush traces to Langfuse Cloud immediately
-    await flushTraces();
-    logger.info('Langfuse trace envoyee', { traceId: langfuseTraceId, name: input.name, leadId: input.leadId });
-
-    return {
-      langfuseTraceId,
-      latencyMs: Date.now() - start,
-      response,
-      usage: capturedUsage,
-    };
-  } catch (error) {
-    logger.warn('Langfuse tracing echoue, appel direct', { error });
-    // Fallback: call without tracing
-    const result = await callFn();
-    return {
-      langfuseTraceId: null,
-      latencyMs: Date.now() - start,
-      response: result.content,
-      usage: result.usage,
-    };
+      const ok = await sendOtlpTrace(spans);
+      if (ok) {
+        logger.info('Langfuse trace OTLP envoyee', { traceId, name: input.name, leadId: input.leadId });
+      } else {
+        langfuseTraceId = null;
+      }
+    } catch (err) {
+      logger.warn('Langfuse trace echouee (best-effort)', { error: (err as Error).message });
+      langfuseTraceId = null;
+    }
   }
+
+  return { langfuseTraceId, latencyMs, response: result.content, usage: result.usage };
 }
 
 export async function submitScore(
@@ -209,23 +212,11 @@ export async function submitScore(
   score: number,
   comment?: string,
 ): Promise<void> {
-  const ready = await ensureSdkLoaded();
-
-  if (!ready || !langfuseClient) {
-    logger.warn('Langfuse client non disponible, score ignore');
-    return;
-  }
-
-  try {
-    await langfuseClient.createScore({
-      traceId,
-      name: 'user-feedback',
-      value: score,
-      dataType: 'NUMERIC',
-      comment: comment || undefined,
-    });
-    await langfuseClient.flush();
-  } catch (error) {
-    logger.error('Langfuse score submission echoue', { error });
-  }
+  await langfuseRest('/api/public/scores', {
+    traceId,
+    name: 'user-feedback',
+    value: score,
+    dataType: 'NUMERIC',
+    ...(comment ? { comment } : {}),
+  });
 }
