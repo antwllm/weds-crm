@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Sparkles, Loader2 } from 'lucide-react';
+import { Sparkles, Loader2, Bot } from 'lucide-react';
 import { InlineField } from '@/components/leads/InlineField';
 import { ActivityTimeline } from '@/components/leads/ActivityTimeline';
 import { NoteInput } from '@/components/leads/NoteInput';
 import { LeadEmails } from '@/components/leads/LeadEmails';
 import { WhatsAppChat } from '@/components/whatsapp/WhatsAppChat';
+import { AiDecisionsTab } from '@/components/ai/AiDecisionsTab';
 import { Button } from '@/components/ui/button';
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -177,10 +178,14 @@ export function LeadDetail({ lead }: LeadDetailProps) {
 
       {/* Right content area: Tabbed interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col min-h-0 min-w-0 overflow-hidden">
-        <TabsList className="shrink-0">
+        <TabsList className="grid w-full grid-cols-4 shrink-0">
           <TabsTrigger value="notes">Notes</TabsTrigger>
           <TabsTrigger value="emails">Emails</TabsTrigger>
           <TabsTrigger value="whatsapp">WhatsApp</TabsTrigger>
+          <TabsTrigger value="decisions" className="flex items-center gap-1.5">
+            <Bot className="h-4 w-4" />
+            Decisions IA
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="notes" className="mt-4 flex-1 min-h-0 overflow-y-auto">
@@ -208,6 +213,10 @@ export function LeadDetail({ lead }: LeadDetailProps) {
 
         <TabsContent value="whatsapp" className="mt-4 flex-1 min-h-0 overflow-y-auto">
           <WhatsAppChat leadId={lead.id} leadPhone={lead.phone} leadName={lead.name ?? undefined} />
+        </TabsContent>
+
+        <TabsContent value="decisions" className="mt-4 flex-1 min-h-0 overflow-y-auto">
+          <AiDecisionsTab leadId={lead.id} />
         </TabsContent>
       </Tabs>
     </div>
