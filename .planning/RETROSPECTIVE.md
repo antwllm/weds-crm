@@ -47,21 +47,72 @@
 
 ---
 
+## Milestone: v1.1 — Templates & Agent IA WhatsApp
+
+**Shipped:** 2026-03-17
+**Phases:** 3 | **Plans:** 9 | **Timeline:** 2 days
+
+### What Was Built
+- Advanced HTML template editor with CodeMirror syntax highlighting and js-beautify formatting
+- Inline image upload via GCS in TipTap editor + template attachment management
+- WhatsApp AI agent with autonomous reply/pass_to_human decision flow
+- AI handoff alerts via Free Mobile SMS + email with rate limiting (1/h per lead)
+- Settings page for WhatsApp agent prompt and knowledge base
+- AI decisions tab with full decision history, filtering, and scoring
+- Langfuse OTLP tracing for all AI calls (WhatsApp agent + email draft)
+- User feedback scoring (thumbs up/down + comment) forwarded to Langfuse
+
+### What Worked
+- UI-SPEC design contracts prevented ad-hoc styling decisions during execution
+- Phase verification (must-haves check) caught the token usage gap before shipping
+- Milestone audit with integration checker found 3 issues early
+- Parallel wave execution for independent plans saved significant time
+- GSD discuss → plan → execute workflow produced clean results consistently
+
+### What Was Inefficient
+- Langfuse integration required 6+ iterations — OTel SDK v5 `LangfuseSpanProcessor` doesn't flush in long-running Express processes
+- Docker rebuild cache issues (TypeScript not recompiling) caused false confidence
+- Database migrations lost on `docker compose down` — manual re-application each time
+- `docker compose down` recreates volumes — phase 6+7 migrations had to be reapplied repeatedly
+
+### Patterns Established
+- **Langfuse OTLP direct HTTP** (`/api/public/otel/v1/traces`) for Node.js long-running servers
+- **Langfuse REST** (`/api/public/scores`) for non-OTel features (scoring)
+- **Always compile TypeScript locally** before Docker build to ensure `dist/` is current
+- **UI-SPEC 2-weight typography rule** forces cleaner visual hierarchy
+
+### Key Lessons
+1. Langfuse v5 SDK is designed for short-lived processes — for Express servers, use OTLP HTTP directly
+2. Test integration code from within the running container, not separate test scripts
+3. AI agent consecutive counter (10 max) + per-lead rate-limited alerts prevents notification spam
+4. `docker compose down` destroys volumes — use `restart` or `stop/start` to preserve DB state
+
+### Cost Observations
+- Model mix: opus for planning/execution, sonnet for verification/checking
+- 2-day build for 3 phases, 9 plans — faster than v1.0 due to established patterns
+- Notable: Langfuse debugging consumed ~40% of Phase 7 time — SDK documentation gaps
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
 
-| Milestone | Timeline | Phases | Key Change |
-|-----------|----------|--------|------------|
-| v1.0 | 5 days | 4 | Initial build — established all patterns |
+| Milestone | Timeline | Phases | Plans | Key Change |
+|-----------|----------|--------|-------|------------|
+| v1.0 | 5 days | 4 | 23 | Initial build — established all patterns |
+| v1.1 | 2 days | 3 | 9 | AI agent + observability — UI-SPEC + OTLP patterns |
 
 ### Cumulative Quality
 
 | Milestone | Tests | Files | LOC |
 |-----------|-------|-------|-----|
 | v1.0 | 167 | 240 | 15,871 |
+| v1.1 | 167 | 260+ | 15,253 |
 
 ### Top Lessons (Verified Across Milestones)
 
 1. TDD for data transformation (parsing, normalization) pays off immediately
 2. Verification + gap closure is more efficient than trying to get it perfect first time
+3. External service integrations (Langfuse, WhatsApp) need in-container testing — test scripts ≠ app runtime
+4. UI-SPEC design contracts prevent styling churn during execution

@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: Templates & Agent IA WhatsApp
 status: completed
-stopped_at: Completed 07-02-PLAN.md
-last_updated: "2026-03-17T11:06:34.569Z"
-last_activity: 2026-03-17 - Completed quick task 260317-l7i: Persist selected tab and email thread via URL params
+stopped_at: Completed quick task 260317-l7i
+last_updated: "2026-03-17T15:41:23.050Z"
+last_activity: "2026-03-17 - Completed quick task 260317-l7i: Persist selected tab and email thread via URL params"
 progress:
   total_phases: 3
   completed_phases: 3
@@ -95,6 +95,10 @@ Recent decisions affecting current work:
 - [07-01]: Best-effort tracing: Langfuse failure never blocks AI response
 - [Phase 07]: Client-side filtering for instant UX (fetch all decisions, filter in React)
 - [Phase 07]: Fire-and-forget Langfuse score forwarding to avoid blocking user feedback
+
+### Roadmap Evolution
+
+- Phase 8 added: WhatsApp rich media chat — support all message types with Flowbite chat bubbles
 
 ### Pending Todos
 

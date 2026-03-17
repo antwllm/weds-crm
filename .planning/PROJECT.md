@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A custom CRM for weds.fr (wedding photography) that replaces the current email-parser automation and progressively eliminates the dependency on Pipedrive. It captures leads from Mariages.net, manages the full sales pipeline, integrates a Gmail inbox with AI-powered email drafting, and handles multi-channel notifications (SMS, email, WhatsApp). Built for a single user (William) with deployment on GCP.
+A custom CRM for weds.fr (wedding photography) that captures leads from Mariages.net, manages the full sales pipeline, integrates a Gmail inbox with AI-powered email drafting, handles multi-channel notifications (SMS, email, WhatsApp), and includes an autonomous WhatsApp AI agent with Langfuse observability. Built for a single user (William) with deployment on GCP.
 
 ## Core Value
 
@@ -27,10 +27,17 @@ Every Mariages.net lead is captured, organized, and actionable from a single int
 - ✓ WhatsApp messaging to prospects — v1.0
 - ✓ vCard generation and storage — v1.0
 - ✓ Duplicate detection before lead creation — v1.0
+- ✓ Advanced HTML template editor with syntax highlighting and formatting — v1.1
+- ✓ Inline image upload via GCS in templates and composer — v1.1
+- ✓ Template attachment management with pre-loading in composer — v1.1
+- ✓ WhatsApp AI agent: autonomous replies with human handoff — v1.1
+- ✓ AI decision history visible in lead WhatsApp UI — v1.1
+- ✓ Langfuse tracing for all AI calls (WhatsApp + email draft) — v1.1
+- ✓ User feedback scoring (thumbs up/down) forwarded to Langfuse — v1.1
 
 ### Active
 
-See: `.planning/REQUIREMENTS.md` for v1.1 requirements
+(Next milestone — define via `/gsd:new-milestone`)
 
 ### Out of Scope
 
@@ -39,53 +46,41 @@ See: `.planning/REQUIREMENTS.md` for v1.1 requirements
 - Real-time chat with prospects
 - Invoicing / billing features
 - Calendar / booking integration
-- Auto-send AI WhatsApp without human review on first activation — safety net required
-
-## Current Milestone: v1.1 Templates & Agent IA WhatsApp
-
-**Goal:** Transformer le CRM en outil de communication intelligent — editeur de templates professionnel avec images/PJ et agent IA WhatsApp autonome avec observabilite Langfuse.
-
-**Target features:**
-- Editeur HTML avance avec coloration syntaxique et formatage Prettier
-- Images inline via upload GCS dans les templates et le composeur
-- Gestion des pieces jointes dans les modeles (upload, pre-remplissage)
-- Agent IA WhatsApp : auto-reponse aux prospects avec handoff humain
-- Observabilite IA via Langfuse (traces, decisions, calibration)
-- Historique des decisions IA visible dans l'UI (action + reason)
 
 ## Context
 
-- v1.0 MVP shipped 2026-03-15 — 15,871 LOC TypeScript/TSX, 167 tests, 240 files
-- Replaces existing Node.js email-parser project (`/Users/william/Documents/Development/email-parser`)
+- v1.0 MVP shipped 2026-03-15 — 15,871 LOC TypeScript/TSX
+- v1.1 shipped 2026-03-17 — 15,253 LOC TypeScript/TSX, 3 phases, 9 plans
 - Tech stack: Bun + Express, Drizzle ORM, PostgreSQL 16, React + Vite + Tailwind v4 + shadcn/ui
 - Gmail API (OAuth 2.0), OpenRouter AI, WhatsApp Business API, Twilio SMS, Free Mobile SMS
+- Langfuse Cloud for AI observability (OTLP endpoint)
 - Pipedrive bidirectional sync active during migration period
-- AI prompt template managed in-app (replaced Google Doc)
 - All user-facing text in French
 - Docker Compose for local dev (port 8082), GCP Cloud Run for production
 - Single user: William
-
-## Constraints
-
-- **Pipedrive compatibility**: V1 must maintain full sync with existing Pipedrive setup — it's the current source of truth
-- **Gmail API**: Must use Google OAuth 2.0 with gmail.modify, drive, documents.readonly scopes
-- **Language**: All UI and notifications in French
-- **Deployment**: GCP Cloud Run with Docker
-- **Budget**: Minimize external service costs — leverage existing Twilio, Free Mobile, Google accounts
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Build custom CRM vs. stay on Pipedrive | Pipedrive doesn't fit the specific workflow; custom CRM allows inbox integration, AI drafts, and full control | ✓ Good — v1.0 delivered all features Pipedrive lacked |
-| Bidirectional Pipedrive sync in V1 | Allows gradual migration — can use either interface during transition | ✓ Good — dual-layer loop prevention works reliably |
-| Single-source (Mariages.net) for V1 | Keeps parsing simple, multi-source deferred to V2 | ✓ Good — focused scope, clean parser |
-| GCP deployment | Existing infrastructure, Cloud Run fits containerized Node.js apps | ✓ Good — Docker Compose local + Cloud Run prod |
-| AI drafts require mandatory review | Legal/quality risk of auto-sending AI content to prospects | ✓ Good — no auto-send path exists |
-| WhatsApp 24h window enforcement | Meta API constraint — free-form messages blocked after 24h | ✓ Good — UI disables input, template-only fallback |
-| Agent IA WhatsApp = reply or pass_to_human | Garder le controle sur les sujets sensibles (tarifs, dispo dates) | — Pending |
-| Pass-to-human = per-conversation, not permanent | Le lead qui renvoie un message relance l'agent automatiquement | — Pending |
-| Langfuse pour l'observabilite IA | Calibrer l'agent, tracer les decisions, mesurer la qualite | — Pending |
+| Build custom CRM vs. stay on Pipedrive | Pipedrive doesn't fit the specific workflow | ✓ Good — v1.0 delivered all features Pipedrive lacked |
+| Bidirectional Pipedrive sync in V1 | Allows gradual migration | ✓ Good — dual-layer loop prevention works |
+| Single-source (Mariages.net) for V1 | Keeps parsing simple | ✓ Good — focused scope, clean parser |
+| GCP deployment | Existing infrastructure | ✓ Good — Docker Compose local + Cloud Run prod |
+| AI drafts require mandatory review | Legal/quality risk of auto-sending | ✓ Good — no auto-send path exists |
+| WhatsApp 24h window enforcement | Meta API constraint | ✓ Good — UI disables input, template fallback |
+| Agent IA WhatsApp = reply or pass_to_human | Garder le controle sur les sujets sensibles | ✓ Good — handoff fonctionne, alerte SMS+email |
+| Pass-to-human = per-conversation, not permanent | Le lead qui renvoie relance l'agent auto | ✓ Good — re-activation automatique |
+| Langfuse OTLP pour l'observabilite IA | Calibrer l'agent, tracer, mesurer qualite | ✓ Good — traces temps reel via OTLP endpoint |
+| Langfuse REST API pour scores | Endpoint /scores non disponible via OTel | ✓ Good — feedback thumbs remonte correctement |
+
+## Constraints
+
+- **Pipedrive compatibility**: Must maintain full sync with existing Pipedrive setup
+- **Gmail API**: Google OAuth 2.0 with gmail.modify, drive, documents.readonly scopes
+- **Language**: All UI and notifications in French
+- **Deployment**: GCP Cloud Run with Docker
+- **Budget**: Minimize external service costs
 
 ---
-*Last updated: 2026-03-16 after v1.1 milestone start*
+*Last updated: 2026-03-17 after v1.1 milestone completion*
