@@ -58,7 +58,7 @@ Declared values (must be multiples of 4):
 | 2xl | 48px | Major section breaks |
 | 3xl | 64px | Page-level spacing |
 
-Exceptions: 44px touch target for thumbs up/down buttons (accessible tap size)
+Exceptions: 48px min-height/min-width constraint (not spacing token) for thumbs up/down buttons — WCAG 2.5.8 touch target minimum (48px > 44px requirement, stays on spacing grid)
 
 ---
 
@@ -67,11 +67,11 @@ Exceptions: 44px touch target for thumbs up/down buttons (accessible tap size)
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body | 14px | 400 (regular) | 1.5 |
-| Label | 12px | 500 (medium) | 1.4 |
+| Label | 12px | 400 (regular) | 1.4 |
 | Heading | 16px | 600 (semibold) | 1.3 |
 | Display | 20px | 600 (semibold) | 1.2 |
 
-Note: These match the existing app typography. Phase 7 does not introduce new type scales. The Label role (12px) is used for metadata (latence, modele, timestamp) within decision cards.
+Note: Two weights only — 400 (regular) for body and labels, 600 (semibold) for headings/display. Label vs body distinction is handled by the 12px vs 14px size difference. The Label role (12px) is used for metadata (latence, modele, timestamp) within decision cards.
 
 ---
 
@@ -147,7 +147,9 @@ TabsList: grid-cols-4
   [Notes] [Emails] [WhatsApp] [Decisions IA]
 ```
 
-The tab trigger displays `Bot` icon (16x16) + text "Decisions IA" at `text-sm font-medium`.
+The tab trigger displays `Bot` icon (16x16) + text "Decisions IA" at `text-sm font-normal`.
+
+**Focal point:** The action badge (green/orange) in the AiDecisionCard header row is the primary visual anchor — establishes decision type at a glance.
 
 ### AiDecisionsTab Layout
 
@@ -185,18 +187,18 @@ The tab trigger displays `Bot` icon (16x16) + text "Decisions IA" at `text-sm fo
 Card (border, rounded-lg, p-4, space-y-3)
   Header row (flex, items-center, justify-between):
     Left:  Badge(action) + timestamp (text-xs text-muted-foreground)
-    Right: latency (Clock icon + "120ms") + model name (text-xs) + ExternalLink to Langfuse
+    Right: latency (Clock icon + "120ms") + model name (text-xs)
 
   Reason section:
-    Label "Raison" (text-xs font-medium text-muted-foreground uppercase tracking-wide)
+    Label "Raison" (text-xs font-normal text-muted-foreground uppercase tracking-wide)
     Text (text-sm)
 
   Messages section (bg-muted/50 rounded-md p-3 space-y-2):
     Prospect message:
-      Label "Prospect" (text-xs font-medium) + MessageSquare icon
+      Label "Prospect" (text-xs font-normal) + MessageSquare icon
       Text (text-sm, italic)
     AI response:
-      Label "Reponse IA" (text-xs font-medium) + Bot icon
+      Label "Reponse IA" (text-xs font-normal) + Bot icon
       Text (text-sm)
 
   Footer row (flex, items-center, justify-between, pt-2, border-t):
@@ -301,11 +303,11 @@ This phase follows the existing LeadDetail responsive pattern:
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved (2026-03-17)
