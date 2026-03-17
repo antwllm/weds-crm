@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Sparkles, Loader2, Bot } from 'lucide-react';
 import { InlineField } from '@/components/leads/InlineField';
 import { ActivityTimeline } from '@/components/leads/ActivityTimeline';
@@ -16,6 +17,9 @@ import { apiFetch } from '@/lib/api';
 import { toast } from 'sonner';
 import type { Lead } from '@/types';
 
+const VALID_TABS = ['notes', 'emails', 'whatsapp', 'decisions'] as const;
+type TabValue = typeof VALID_TABS[number];
+
 const budgetFormatter = new Intl.NumberFormat('fr-FR', {
   style: 'currency',
   currency: 'EUR',
@@ -32,7 +36,20 @@ export function LeadDetail({ lead }: LeadDetailProps) {
   const { data: activities = [] } = useActivities(lead.id);
   const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
   const [draftContent, setDraftContent] = useState<string | undefined>(undefined);
-  const [activeTab, setActiveTab] = useState('notes');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const rawTab = searchParams.get('tab');
+  const activeTab: TabValue = VALID_TABS.includes(rawTab as TabValue) ? (rawTab as TabValue) : 'notes';
+
+  function setActiveTab(tab: string) {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev);
+      next.set('tab', tab);
+      // Clear thread param when leaving emails tab
+      if (tab !== 'emails') next.delete('thread');
+      return next;
+    }, { replace: true });
+  }
 
   const sourceOptions = [
     ...Object.entries(SOURCE_BADGES).map(([value, info]) => ({
