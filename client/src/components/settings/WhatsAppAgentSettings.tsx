@@ -128,6 +128,45 @@ export function WhatsAppAgentSettings() {
         </p>
       )}
 
+      {/* Langfuse sync status */}
+      <div className="space-y-1 rounded-md border p-3">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">Langfuse :</span>
+          {config?.langfuseSyncedAt ? (
+            <Badge variant="secondary" className="gap-1">
+              <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
+              Synchronise le{' '}
+              {new Date(config.langfuseSyncedAt).toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </Badge>
+          ) : (
+            <Badge variant="outline" className="gap-1">
+              <span className="inline-block h-2 w-2 rounded-full bg-gray-400" />
+              Non synchronise
+            </Badge>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Prompt : {config?.langfusePromptName || 'whatsapp-agent-prompt'}
+        </p>
+        {!hasChanges && (!config?.langfuseSyncedAt || (config.updatedAt && config.langfuseSyncedAt && new Date(config.langfuseSyncedAt) < new Date(config.updatedAt))) && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSave}
+            disabled={updateMutation.isPending || !promptTemplate.trim()}
+            className="mt-1"
+          >
+            {updateMutation.isPending ? 'Synchronisation...' : 'Synchroniser maintenant'}
+          </Button>
+        )}
+      </div>
+
       <Button
         onClick={handleSave}
         disabled={updateMutation.isPending || !hasChanges || !promptTemplate.trim()}

@@ -191,6 +191,8 @@ export interface WhatsAppAgentConfig {
   promptTemplate: string;
   knowledgeBase: string | null;
   model: string;
+  langfusePromptName: string | null;
+  langfuseSyncedAt: string | null;
   updatedAt: string | null;
 }
 
