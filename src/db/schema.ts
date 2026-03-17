@@ -53,6 +53,10 @@ export const leads = pgTable('leads', {
   archived: boolean('archived').default(false),
   lastSyncOrigin: varchar('last_sync_origin', { length: 10 }), // 'crm' | 'pipedrive' | null
   lastSyncAt: timestamp('last_sync_at'), // When last sync occurred (loop prevention)
+  whatsappAiEnabled: boolean('whatsapp_ai_enabled').default(false),
+  whatsappAiHandoffAt: timestamp('whatsapp_ai_handoff_at'),
+  whatsappAiLastAlertAt: timestamp('whatsapp_ai_last_alert_at'),
+  whatsappAiConsecutiveCount: integer('whatsapp_ai_consecutive_count').default(0),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });
@@ -133,6 +137,7 @@ export const whatsappMessages = pgTable('whatsapp_messages', {
   direction: varchar('direction', { length: 10 }).notNull(), // 'inbound' | 'outbound'
   body: text('body'),
   status: varchar('status', { length: 20 }), // 'sent' | 'delivered' | 'read' | 'failed'
+  sentBy: varchar('sent_by', { length: 10 }).default('human'), // 'human' | 'ai'
   createdAt: timestamp('created_at').defaultNow(),
 });
 
@@ -141,6 +146,16 @@ export const whatsappMessages = pgTable('whatsapp_messages', {
 export const aiPromptConfig = pgTable('ai_prompt_config', {
   id: serial('id').primaryKey(),
   promptTemplate: text('prompt_template').notNull(),
+  model: varchar('model', { length: 100 }).default('anthropic/claude-sonnet-4'),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// --- Phase 6: WhatsApp AI agent configuration ---
+
+export const whatsappAgentConfig = pgTable('whatsapp_agent_config', {
+  id: serial('id').primaryKey(),
+  promptTemplate: text('prompt_template').notNull(),
+  knowledgeBase: text('knowledge_base'),
   model: varchar('model', { length: 100 }).default('anthropic/claude-sonnet-4'),
   updatedAt: timestamp('updated_at').defaultNow(),
 });

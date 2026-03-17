@@ -43,6 +43,10 @@ export interface Lead {
   pipedrivePersonId: number | null;
   pipedriveDealId: number | null;
   archived: boolean;
+  whatsappAiEnabled: boolean;
+  whatsappAiHandoffAt: string | null;
+  whatsappAiLastAlertAt: string | null;
+  whatsappAiConsecutiveCount: number;
   createdAt: string | null;
   updatedAt: string | null;
 }
@@ -109,6 +113,7 @@ export interface WhatsAppMessage {
   direction: 'inbound' | 'outbound';
   body: string;
   status: string;
+  sentBy?: 'human' | 'ai';
   createdAt: string;
 }
 
@@ -179,4 +184,12 @@ export interface AiPromptConfig {
   id: number;
   promptTemplate: string;
   model: string;
+}
+
+export interface WhatsAppAgentConfig {
+  id: number;
+  promptTemplate: string;
+  knowledgeBase: string | null;
+  model: string;
+  updatedAt: string | null;
 }
