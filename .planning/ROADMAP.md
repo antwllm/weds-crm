@@ -55,12 +55,12 @@ Plans:
   3. L'agent repond en francais avec le ton adapte au contexte du lead (nom, date evenement, lieu, budget)
   4. Quand l'IA detecte un sujet sensible (tarifs, disponibilite dates), elle passe la main a l'humain et William recoit une alerte
   5. Si un lead ayant ete passe a l'humain renvoie un nouveau message, l'agent reprend automatiquement l'analyse
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
-- [ ] 06-03: TBD
+- [ ] 06-01-PLAN.md — Schema changes, types, and agent config API (WAIA-01, WAIA-02, WAIA-05)
+- [ ] 06-02-PLAN.md — AI agent service + webhook integration (WAIA-02, WAIA-03, WAIA-04, WAIA-05, WAIA-06)
+- [ ] 06-03-PLAN.md — Chat UI (toggle, badges, handoff) + Settings page (WAIA-01, WAIA-05)
 
 ### Phase 7: AI Observability & Decision UI
 **Goal**: Chaque appel IA est trace dans Langfuse et l'historique des decisions de l'agent est visible dans l'interface WhatsApp du lead
@@ -87,6 +87,6 @@ Plans:
 | 2. Lead Management UI | v1.0 | 5/5 | Complete | 2026-03-10 |
 | 3. Pipedrive Sync | v1.0 | 5/5 | Complete | 2026-03-14 |
 | 4. Gmail Inbox, AI Drafting & WhatsApp | v1.0 | 8/8 | Complete | 2026-03-15 |
-| 5. Advanced Template Editor | 3/4 | In Progress|  | - |
-| 6. WhatsApp AI Agent | v1.1 | 0/? | Not started | - |
+| 5. Advanced Template Editor | v1.1 | 4/4 | Complete | - |
+| 6. WhatsApp AI Agent | v1.1 | 0/3 | Not started | - |
 | 7. AI Observability & Decision UI | v1.1 | 0/? | Not started | - |
