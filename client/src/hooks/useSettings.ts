@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { apiFetch } from '@/lib/api';
+import type { WhatsAppAgentConfig } from '@/types';
 
 // --- Types ---
 
@@ -209,6 +210,33 @@ export function useUpdateAiPrompt() {
     },
     onError: () => {
       toast.error('Erreur lors de la sauvegarde du prompt IA');
+    },
+  });
+}
+
+// --- WhatsApp Agent Config hooks ---
+
+export function useWhatsAppAgentConfig() {
+  return useQuery<WhatsAppAgentConfig>({
+    queryKey: ['whatsapp-agent-config'],
+    queryFn: () => apiFetch<WhatsAppAgentConfig>('/ai/whatsapp-prompt'),
+  });
+}
+
+export function useUpdateWhatsAppAgentConfig() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { promptTemplate: string; knowledgeBase?: string; model?: string }) =>
+      apiFetch<WhatsAppAgentConfig>('/ai/whatsapp-prompt', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['whatsapp-agent-config'] });
+      toast.success('Configuration de l\'agent WhatsApp sauvegardee');
+    },
+    onError: () => {
+      toast.error('Erreur lors de la sauvegarde. Reessayez.');
     },
   });
 }
