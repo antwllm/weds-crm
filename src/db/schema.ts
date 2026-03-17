@@ -160,6 +160,27 @@ export const whatsappAgentConfig = pgTable('whatsapp_agent_config', {
   updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// --- Phase 7: AI decision tracking ---
+
+export const aiDecisions = pgTable('ai_decisions', {
+  id: serial('id').primaryKey(),
+  leadId: integer('lead_id').references(() => leads.id).notNull(),
+  messageId: integer('message_id'), // whatsapp_messages.id of the inbound message
+  action: varchar('action', { length: 20 }).notNull(), // 'reply' | 'pass_to_human'
+  reason: text('reason'),
+  responseText: text('response_text'),
+  prospectMessage: text('prospect_message'),
+  model: varchar('model', { length: 100 }),
+  latencyMs: integer('latency_ms'),
+  promptTokens: integer('prompt_tokens'),
+  completionTokens: integer('completion_tokens'),
+  promptVersion: varchar('prompt_version', { length: 20 }),
+  score: integer('score'), // 0 or 1, null if unscored
+  scoreComment: text('score_comment'),
+  langfuseTraceId: varchar('langfuse_trace_id', { length: 255 }),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
 // --- Notification settings (per-channel toggles) ---
 
 export const notificationSettings = pgTable('notification_settings', {

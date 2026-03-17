@@ -1,4 +1,4 @@
-import type { leads, activities, syncLog, emailTemplates, linkedEmails, whatsappMessages, aiPromptConfig, whatsappAgentConfig } from './db/schema.js';
+import type { leads, activities, syncLog, emailTemplates, linkedEmails, whatsappMessages, aiPromptConfig, whatsappAgentConfig, aiDecisions } from './db/schema.js';
 
 // --- Parsed lead data from Mariages.net email ---
 
@@ -82,6 +82,9 @@ export type NewAiPromptConfig = typeof aiPromptConfig.$inferInsert;
 
 export type WhatsAppAgentConfig = typeof whatsappAgentConfig.$inferSelect;
 export type NewWhatsAppAgentConfig = typeof whatsappAgentConfig.$inferInsert;
+
+export type AiDecision = typeof aiDecisions.$inferSelect;
+export type NewAiDecision = typeof aiDecisions.$inferInsert;
 
 // --- Lead context for AI draft generation ---
 
