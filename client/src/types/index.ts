@@ -193,3 +193,22 @@ export interface WhatsAppAgentConfig {
   model: string;
   updatedAt: string | null;
 }
+
+// --- AI Decision types (Phase 7) ---
+
+export interface AiDecision {
+  id: number;
+  leadId: number;
+  messageId: number | null;
+  action: 'reply' | 'pass_to_human';
+  reason: string | null;
+  responseText: string | null;
+  prospectMessage: string | null;
+  model: string | null;
+  latencyMs: number | null;
+  promptVersion: string | null;
+  score: number | null;
+  scoreComment: string | null;
+  langfuseTraceId: string | null;
+  createdAt: string | null;
+}

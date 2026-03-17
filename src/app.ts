@@ -18,6 +18,7 @@ import templatesRouter from './routes/api/templates.js';
 import aiRouter from './routes/api/ai.js';
 import settingsRouter from './routes/api/settings.js';
 import uploadRouter from './routes/api/upload.js';
+import aiDecisionsRouter from './routes/api/ai-decisions.js';
 import { config } from './config.js';
 
 const app = express();
@@ -71,6 +72,7 @@ app.use('/api', templatesRouter);
 app.use('/api', aiRouter);
 app.use('/api', settingsRouter);
 app.use('/api', uploadRouter);
+app.use('/api', aiDecisionsRouter);
 
 // Serve the React SPA from client/dist (built by Docker or locally)
 const clientDist = path.join(__dirname, '..', 'client', 'dist');
