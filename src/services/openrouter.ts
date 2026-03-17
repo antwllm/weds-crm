@@ -2,6 +2,7 @@ import axios, { type AxiosInstance } from 'axios';
 import { eq, desc } from 'drizzle-orm';
 import { getDb } from '../db/index.js';
 import { leads, linkedEmails, activities } from '../db/schema.js';
+import { traceAiCall, computePromptVersion } from './langfuse.js';
 import type { LeadContext } from '../types.js';
 
 /**
@@ -111,24 +112,49 @@ export async function generateDraft(
     notesSummary || 'Aucune note',
   ].join('\n');
 
-  const response = await client.post(
-    'https://openrouter.ai/api/v1/chat/completions',
+  const userMessage = `Rédige uniquement le corps d'un email professionnel de réponse pour ${leadContext.name}. Pas de SMS, pas de titre, pas de markdown. Juste le texte du mail prêt à envoyer. Commence directement par la salutation.`;
+  const promptVersion = computePromptVersion(promptTemplate);
+
+  const traceResult = await traceAiCall(
     {
+      name: 'email-draft',
+      leadId: 0,
+      leadName: leadContext.name,
       model: 'anthropic/claude-sonnet-4',
-      messages: [
-        { role: 'system', content: fullSystemPrompt },
-        { role: 'user', content: `Rédige uniquement le corps d'un email professionnel de réponse pour ${leadContext.name}. Pas de SMS, pas de titre, pas de markdown. Juste le texte du mail prêt à envoyer. Commence directement par la salutation.` },
-      ],
+      systemPrompt: fullSystemPrompt,
+      userMessage,
+      promptVersion,
     },
-    {
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://weds.fr',
-        'X-OpenRouter-Title': 'Weds CRM',
-        'Content-Type': 'application/json',
-      },
+    async () => {
+      const response = await client.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model: 'anthropic/claude-sonnet-4',
+          messages: [
+            { role: 'system', content: fullSystemPrompt },
+            { role: 'user', content: userMessage },
+          ],
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'HTTP-Referer': 'https://weds.fr',
+            'X-OpenRouter-Title': 'Weds CRM',
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const content = response.data.choices[0].message.content;
+      const rawUsage = response.data.usage;
+      return {
+        content,
+        usage: rawUsage ? {
+          promptTokens: rawUsage.prompt_tokens,
+          completionTokens: rawUsage.completion_tokens,
+        } : undefined,
+      };
     },
   );
 
-  return response.data.choices[0].message.content;
+  return traceResult.response;
 }

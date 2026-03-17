@@ -8,6 +8,9 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
+// Langfuse OTel must init before any traced imports
+import './instrumentation.js';
+
 // Import app AFTER Sentry initialization
 import { app } from './app.js';
 import { config } from './config.js';

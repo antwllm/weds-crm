@@ -7,11 +7,14 @@ import {
   whatsappMessages,
   activities,
   whatsappAgentConfig,
+  aiDecisions,
 } from '../db/schema.js';
 import { sendWhatsAppMessage } from './whatsapp.js';
 import { config } from '../config.js';
 import { logger } from '../logger.js';
 import { getGmailClientInstance } from './gmail-client-holder.js';
+import { traceAiCall, computePromptVersion } from './langfuse.js';
+import type { AiCallResult } from './langfuse.js';
 import type { Lead } from '../types.js';
 
 // --- Zod schema for structured AI response ---
@@ -93,8 +96,23 @@ export async function processWhatsAppAiResponse(
   // Build prompt and call AI
   const systemPrompt = buildSystemPrompt(agentConfig, lead, messages);
   const model = agentConfig.model || 'anthropic/claude-sonnet-4';
+  const promptVersion = computePromptVersion(agentConfig.promptTemplate);
 
-  const responseContent = await callOpenRouter(systemPrompt, incomingText, model);
+  // Trace AI call via Langfuse (best-effort)
+  const traceResult = await traceAiCall(
+    {
+      name: 'whatsapp-agent',
+      leadId: lead.id,
+      leadName: lead.name,
+      model,
+      systemPrompt,
+      userMessage: incomingText,
+      promptVersion,
+    },
+    () => callOpenRouter(systemPrompt, incomingText, model),
+  );
+
+  const responseContent = traceResult.response;
   const parsed = parseAiResponse(responseContent);
 
   // Check consecutive counter: force handoff at 5th consecutive AI exchange
@@ -104,6 +122,26 @@ export async function processWhatsAppAiResponse(
       leadId: lead.id,
       consecutiveCount,
     });
+
+    // Persist forced handoff decision
+    try {
+      await db.insert(aiDecisions).values({
+        leadId: lead.id,
+        action: 'pass_to_human',
+        reason: '5 echanges IA consecutifs sans resolution',
+        responseText: '',
+        prospectMessage: incomingText,
+        model,
+        latencyMs: traceResult.latencyMs,
+        promptTokens: traceResult.usage?.promptTokens ?? null,
+        completionTokens: traceResult.usage?.completionTokens ?? null,
+        promptVersion,
+        langfuseTraceId: traceResult.langfuseTraceId,
+      });
+    } catch (err) {
+      logger.warn('Erreur persistence ai_decision (forced handoff)', { leadId: lead.id, error: err });
+    }
+
     await handleHandoff(lead, '5 echanges IA consecutifs sans resolution', messages);
     return;
   }
@@ -148,6 +186,25 @@ export async function processWhatsAppAiResponse(
   } else {
     // Pass to human
     await handleHandoff(lead, parsed.reason, messages);
+  }
+
+  // Persist AI decision for the Decisions IA tab
+  try {
+    await db.insert(aiDecisions).values({
+      leadId: lead.id,
+      action: parsed.action,
+      reason: parsed.reason,
+      responseText: parsed.response,
+      prospectMessage: incomingText,
+      model,
+      latencyMs: traceResult.latencyMs,
+      promptTokens: traceResult.usage?.promptTokens ?? null,
+      completionTokens: traceResult.usage?.completionTokens ?? null,
+      promptVersion,
+      langfuseTraceId: traceResult.langfuseTraceId,
+    });
+  } catch (err) {
+    logger.warn('Erreur persistence ai_decision', { leadId: lead.id, error: err });
   }
 }
 
@@ -217,7 +274,7 @@ async function callOpenRouter(
   systemPrompt: string,
   userMessage: string,
   model: string,
-): Promise<string> {
+): Promise<AiCallResult> {
   const response = await axios.post(
     'https://openrouter.ai/api/v1/chat/completions',
     {
@@ -237,7 +294,15 @@ async function callOpenRouter(
     },
   );
 
-  return response.data.choices[0].message.content;
+  const content = response.data.choices[0].message.content;
+  const rawUsage = response.data.usage;
+  return {
+    content,
+    usage: rawUsage ? {
+      promptTokens: rawUsage.prompt_tokens,
+      completionTokens: rawUsage.completion_tokens,
+    } : undefined,
+  };
 }
 
 // --- Parse AI response ---
