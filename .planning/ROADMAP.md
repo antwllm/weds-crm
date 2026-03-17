@@ -71,11 +71,11 @@ Plans:
   2. Chaque appel IA (agent WhatsApp et email draft) apparait comme trace dans le dashboard Langfuse
   3. Les traces Langfuse incluent le prompt complet, le contexte lead, la reponse, l'action choisie et la latence
   4. William peut utiliser le dashboard Langfuse pour evaluer la qualite des reponses et calibrer l'agent
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
+- [ ] 07-01-PLAN.md — Langfuse tracing setup + ai_decisions schema + wire into AI services (OBSV-01, OBSV-02)
+- [ ] 07-02-PLAN.md — AI decisions API + Decisions IA tab UI with scoring (WAIA-07, OBSV-03)
 
 ## Progress
 
@@ -88,5 +88,5 @@ Plans:
 | 3. Pipedrive Sync | v1.0 | 5/5 | Complete | 2026-03-14 |
 | 4. Gmail Inbox, AI Drafting & WhatsApp | v1.0 | 8/8 | Complete | 2026-03-15 |
 | 5. Advanced Template Editor | v1.1 | 4/4 | Complete | - |
-| 6. WhatsApp AI Agent | 3/3 | Complete   | 2026-03-17 | - |
-| 7. AI Observability & Decision UI | v1.1 | 0/? | Not started | - |
+| 6. WhatsApp AI Agent | v1.1 | 3/3 | Complete | 2026-03-17 |
+| 7. AI Observability & Decision UI | v1.1 | 0/2 | Not started | - |
